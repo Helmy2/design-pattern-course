@@ -1,15 +1,20 @@
 package com.course.patterns.singleton;
 
 /**
- * STARTER CODE:
- * TODO: Implement Initialization-on-demand Holder Idiom.
+ * CLEAN CODE SOLUTION:
+ * Initialization-on-demand Holder Idiom:
+ * The static inner Holder class is not loaded until getInstance() is called,
+ * guaranteeing lazy evaluation and thread safety via JVM class initialization locks.
  */
 public class LazyRegistry {
 
     private LazyRegistry() {}
 
-    // TODO: Step 4 - Implement static inner Holder class
+    private static class Holder {
+        private static final LazyRegistry INSTANCE = new LazyRegistry();
+    }
+
     public static LazyRegistry getInstance() {
-        return null;
+        return Holder.INSTANCE;
     }
 }
