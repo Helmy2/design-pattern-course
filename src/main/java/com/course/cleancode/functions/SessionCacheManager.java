@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * STARTER CODE:
- * CQS Violation: checkAndEvictIfExpired mutates state AND queries expiration status simultaneously.
+ * CLEAN CODE SOLUTION:
+ * Command-Query Separation (CQS):
+ * - isExpired(key) is a query: reads state without side effects
+ * - evictSession(key) is a command: mutates state, returns void
  */
 public class SessionCacheManager {
 
@@ -22,16 +24,15 @@ public class SessionCacheManager {
         cache.put(key, session);
     }
 
-    // TODO: Step 3 - Separate command from query:
-    // Query: isExpired(key) -> returns boolean, zero mutation
-    // Command: evictSession(key) -> removes entry, returns void
-    public boolean checkAndEvictIfExpired(String sessionKey) {
+    // Query: reads state, zero side effects
+    public boolean isExpired(String sessionKey) {
         Session session = cache.get(sessionKey);
-        if (session != null && session.isExpired()) {
-            cache.remove(sessionKey);
-            return true;
-        }
-        return false;
+        return session != null && session.isExpired();
+    }
+
+    // Command: mutates state, returns void
+    public void evictSession(String sessionKey) {
+        cache.remove(sessionKey);
     }
 
     public boolean contains(String sessionKey) {
