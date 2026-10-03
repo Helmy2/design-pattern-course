@@ -1,34 +1,56 @@
 package com.course.cleancode.refactoring;
 
 /**
- * STARTER CODE:
- * Conditional switch statement checking type codes.
+ * CLEAN CODE SOLUTION:
+ * Replace Conditional with Polymorphism:
+ * Eliminates switch on type codes by subclassing an abstract Employee class.
  */
 public class EmployeeCompensation {
 
-    public enum EmployeeType {
-        ENGINEER, MANAGER, EXECUTIVE
-    }
-
-    // TODO: Step 4 - Replace Conditional with Polymorphism:
-    // Create abstract Employee class and subclasses: Engineer, Manager, Executive
-    public static class Employee {
-        private final EmployeeType type;
+    public static abstract class Employee {
         private final double salary;
 
-        public Employee(EmployeeType type, double salary) {
-            this.type = type;
+        protected Employee(double salary) {
             this.salary = salary;
         }
 
-        public double calculateBonus() {
-            return switch (type) {
-                case ENGINEER -> salary * 0.10;
-                case MANAGER -> salary * 0.25;
-                case EXECUTIVE -> salary * 0.50;
-            };
+        public double getSalary() {
+            return salary;
         }
 
-        public double getSalary() { return salary; }
+        public abstract double calculateBonus();
+    }
+
+    public static class Engineer extends Employee {
+        public Engineer(double salary) {
+            super(salary);
+        }
+
+        @Override
+        public double calculateBonus() {
+            return getSalary() * 0.10;
+        }
+    }
+
+    public static class Manager extends Employee {
+        public Manager(double salary) {
+            super(salary);
+        }
+
+        @Override
+        public double calculateBonus() {
+            return getSalary() * 0.25;
+        }
+    }
+
+    public static class Executive extends Employee {
+        public Executive(double salary) {
+            super(salary);
+        }
+
+        @Override
+        public double calculateBonus() {
+            return getSalary() * 0.50;
+        }
     }
 }

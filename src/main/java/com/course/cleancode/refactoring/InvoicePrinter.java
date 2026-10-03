@@ -1,33 +1,40 @@
 package com.course.cleancode.refactoring;
 
 /**
- * STARTER CODE:
- * Monolithic method mixing presentation, nested arithmetic, and output.
+ * CLEAN CODE SOLUTION:
+ * Applied:
+ * 1. Extract Method: printBanner(), calculateTotal(), printDetails()
+ * 2. Extract Variable: basePrice, quantityDiscount, shippingFee
  */
 public class InvoicePrinter {
 
     public record Invoice(String customerName, int quantity, double itemPrice) {}
 
-    // TODO: Step 1 - Extract Method and Extract Variable:
-    // Extract calculateTotal(Invoice), printBanner(), printDetails(name, total)
     public String printInvoice(Invoice invoice) {
         StringBuilder output = new StringBuilder();
+        printBanner(output);
+        double total = calculateTotal(invoice);
+        printDetails(output, invoice.customerName(), total);
+        return output.toString();
+    }
 
-        // Banner
+    private void printBanner(StringBuilder output) {
         output.append("***********************\n");
         output.append("**** Customer Owes ****\n");
         output.append("***********************\n");
+    }
 
-        // Complex formula without descriptive names
+    private double calculateTotal(Invoice invoice) {
+        // Extract Variable gives clear semantic names to sub-calculations
         double basePrice = invoice.quantity() * invoice.itemPrice();
-        double discount = Math.max(0, invoice.quantity() - 50) * invoice.itemPrice() * 0.05;
-        double shipping = Math.min(basePrice * 0.1, 100.0);
-        double total = basePrice - discount + shipping;
+        double quantityDiscount = Math.max(0, invoice.quantity() - 50) * invoice.itemPrice() * 0.05;
+        double shippingFee = Math.min(basePrice * 0.1, 100.0);
 
-        // Details
-        output.append("name: ").append(invoice.customerName()).append("\n");
+        return basePrice - quantityDiscount + shippingFee;
+    }
+
+    private void printDetails(StringBuilder output, String customerName, double total) {
+        output.append("name: ").append(customerName).append("\n");
         output.append("amount: ").append(total);
-
-        return output.toString();
     }
 }

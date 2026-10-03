@@ -1,8 +1,9 @@
 package com.course.cleancode.refactoring;
 
 /**
- * STARTER CODE:
- * Uses temporary variables holding calculated state.
+ * CLEAN CODE SOLUTION:
+ * Replace Temp with Query:
+ * Eliminates local mutable variables by extracting basePrice() and discountFactor() queries.
  */
 public class PricingCalculator {
     private final int quantity;
@@ -13,17 +14,15 @@ public class PricingCalculator {
         this.itemPrice = itemPrice;
     }
 
-    // TODO: Step 2 - Replace Temp with Query: extract basePrice() and discountFactor()
     public double getPrice() {
-        double basePrice = quantity * itemPrice;
-        double discountFactor;
+        return basePrice() * discountFactor();
+    }
 
-        if (basePrice > 1000) {
-            discountFactor = 0.95;
-        } else {
-            discountFactor = 0.98;
-        }
+    public double basePrice() {
+        return quantity * itemPrice;
+    }
 
-        return basePrice * discountFactor;
+    public double discountFactor() {
+        return basePrice() > 1000 ? 0.95 : 0.98;
     }
 }
