@@ -1,18 +1,21 @@
 package com.course.cleancode.smells;
 
 /**
- * STARTER CODE:
- * OO Abuser Smell: Refused Bequest (LSP Violation).
- * Subclasses forced to inherit and override methods with UnsupportedOperationException.
+ * CLEAN CODE SOLUTION:
+ * Fixes Refused Bequest (LSP Violation) using Interface Segregation.
+ * Penguin only implements Bird, and is never forced to provide an unsupported fly() method.
  */
 public class BirdHierarchy {
 
-    public static abstract class Bird {
-        public abstract String eat();
-        public abstract String fly();
+    public interface Bird {
+        String eat();
     }
 
-    public static class Eagle extends Bird {
+    public interface FlyingBird extends Bird {
+        String fly();
+    }
+
+    public static class Eagle implements FlyingBird {
         @Override
         public String eat() {
             return "Eagle eating";
@@ -24,17 +27,11 @@ public class BirdHierarchy {
         }
     }
 
-    // TODO: Step 3 - Refactor into Bird and FlyingBird interfaces so Penguin is not forced to fly
-    public static class Penguin extends Bird {
+    public static class Penguin implements Bird {
         @Override
         public String eat() {
             return "Penguin eating fish";
         }
-
-        @Override
-        public String fly() {
-            // Refused bequest: breaks Liskov Substitution Principle!
-            throw new UnsupportedOperationException("Penguins cannot fly!");
-        }
+        // No fly() method forced onto Penguin!
     }
 }

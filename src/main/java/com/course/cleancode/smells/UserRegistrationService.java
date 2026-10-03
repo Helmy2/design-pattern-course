@@ -1,21 +1,30 @@
 package com.course.cleancode.smells;
 
 /**
- * STARTER CODE:
- * Bloater Smell: Primitive Obsession.
- * Methods take raw Strings for email and phone numbers without type safety.
+ * CLEAN CODE SOLUTION:
+ * Replaces Primitive Obsession with Domain Value Objects.
+ * Validation occurs within compact constructors, ensuring invalid state cannot enter the domain.
  */
 public class UserRegistrationService {
 
-    // TODO: Step 1 - Extract Email and PhoneNumber into domain value objects (records)
-    // with self-validating compact constructors
-    public boolean registerUser(String email, String phoneNumber) {
-        if (email == null || !email.contains("@")) {
-            throw new IllegalArgumentException("Invalid email format");
+    public record Email(String value) {
+        public Email {
+            if (value == null || !value.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new IllegalArgumentException("Invalid email format: " + value);
+            }
         }
-        if (phoneNumber == null || !phoneNumber.matches("^\\+?[0-9]{10,13}$")) {
-            throw new IllegalArgumentException("Invalid phone number format");
+    }
+
+    public record PhoneNumber(String value) {
+        public PhoneNumber {
+            if (value == null || !value.matches("^\\+?[0-9]{10,13}$")) {
+                throw new IllegalArgumentException("Invalid phone number format: " + value);
+            }
         }
-        return true;
+    }
+
+    public boolean registerUser(Email email, PhoneNumber phoneNumber) {
+        // Business logic proceeds safely without defensive checks
+        return email != null && phoneNumber != null;
     }
 }

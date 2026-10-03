@@ -11,42 +11,46 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CodeSmellsTest {
 
     @Test
-    @DisplayName("Verify UserRegistrationService raw validation in starter")
-    void testUserRegistration() {
+    @DisplayName("Verify Domain Value Objects Email and PhoneNumber self-validation")
+    void testValueObjectsSelfValidation() {
         UserRegistrationService service = new UserRegistrationService();
-        assertThat(service.registerUser("dev@example.com", "+12025550143")).isTrue();
+        UserRegistrationService.Email email = new UserRegistrationService.Email("engineer@clean.com");
+        UserRegistrationService.PhoneNumber phone = new UserRegistrationService.PhoneNumber("+12025550143");
 
-        assertThatThrownBy(() -> service.registerUser("invalid-email", "+12025550143"))
+        assertThat(service.registerUser(email, phone)).isTrue();
+
+        assertThatThrownBy(() -> new UserRegistrationService.Email("bad-email"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> new UserRegistrationService.PhoneNumber("abc"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    @DisplayName("Verify DiscountCalculator switch ladder in starter")
-    void testDiscountCalculatorSwitch() {
+    @DisplayName("Verify Polymorphic DiscountPolicy Strategy replaces switch ladder")
+    void testDiscountPolicyPolymorphism() {
         DiscountCalculator calculator = new DiscountCalculator();
-        assertThat(calculator.applyDiscount(DiscountCalculator.CustomerType.REGULAR, 100.0)).isEqualTo(100.0);
-        assertThat(calculator.applyDiscount(DiscountCalculator.CustomerType.PREMIUM, 100.0)).isEqualTo(90.0);
-        assertThat(calculator.applyDiscount(DiscountCalculator.CustomerType.VIP, 100.0)).isEqualTo(80.0);
+
+        assertThat(calculator.calculate(new DiscountCalculator.RegularDiscount(), 100.0)).isEqualTo(100.0);
+        assertThat(calculator.calculate(new DiscountCalculator.PremiumDiscount(), 100.0)).isEqualTo(90.0);
+        assertThat(calculator.calculate(new DiscountCalculator.VipDiscount(), 100.0)).isEqualTo(80.0);
     }
 
     @Test
-    @DisplayName("Verify Refused Bequest throws unexpected exception on Penguin fly")
-    void testBirdRefusedBequest() {
-        BirdHierarchy.Bird eagle = new BirdHierarchy.Eagle();
+    @DisplayName("Verify Segregated Bird Interfaces satisfy Liskov Substitution Principle")
+    void testBirdInterfaceSegregation() {
+        BirdHierarchy.FlyingBird eagle = new BirdHierarchy.Eagle();
+        assertThat(eagle.eat()).isEqualTo("Eagle eating");
         assertThat(eagle.fly()).isEqualTo("Eagle soaring high");
 
         BirdHierarchy.Bird penguin = new BirdHierarchy.Penguin();
         assertThat(penguin.eat()).isEqualTo("Penguin eating fish");
-
-        // LSP violation verified: client expecting Bird.fly() gets runtime exception
-        assertThatThrownBy(penguin::fly)
-                .isInstanceOf(UnsupportedOperationException.class)
-                .hasMessageContaining("Penguins cannot fly");
+        // Penguin is not a FlyingBird, no UnsupportedOperationException risk!
     }
 
     @Test
-    @DisplayName("Verify Feature Envy and Demeter message chain in starter")
-    void testFeatureEnvyAndDemeter() {
+    @DisplayName("Verify Tell Don't Ask and Law of Demeter in Order processing")
+    void testTellDontAskAndDemeter() {
         OrderReceiptPrinter.Country usa = new OrderReceiptPrinter.Country("US", "United States");
         OrderReceiptPrinter.Address address = new OrderReceiptPrinter.Address("Wall St", usa);
         OrderReceiptPrinter.Customer customer = new OrderReceiptPrinter.Customer("Corp", 0.10, address);
@@ -55,9 +59,14 @@ class CodeSmellsTest {
                 customer
         );
 
+        // Tell, Don't Ask: calculation is on Order
+        assertThat(order.calculateTotalWithTax()).isEqualTo(110.0);
+
+        // Law of Demeter: delivery country code without chaining getters
+        assertThat(order.getDeliveryCountryCode()).isEqualTo("US");
+
         OrderReceiptPrinter printer = new OrderReceiptPrinter();
-        // 50 * 2 = 100 + 10% tax = 110
-        assertThat(printer.calculateTotalWithTax(order)).isEqualTo(110.0);
-        assertThat(printer.getCustomerCountryCode(order)).isEqualTo("US");
+        assertThat(printer.printReceipt(order))
+                .isEqualTo("Receipt: Total=110.0, Country=US");
     }
 }

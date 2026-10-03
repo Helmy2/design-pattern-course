@@ -1,22 +1,37 @@
 package com.course.cleancode.smells;
 
 /**
- * STARTER CODE:
- * OO Abuser Smell: Switch over Type Codes.
- * Missed opportunity for polymorphism / Strategy pattern.
+ * CLEAN CODE SOLUTION:
+ * Replaces Switch over Type Codes with Polymorphism (Strategy Pattern).
  */
 public class DiscountCalculator {
 
-    public enum CustomerType {
-        REGULAR, PREMIUM, VIP
+    public interface DiscountPolicy {
+        double apply(double amount);
     }
 
-    // TODO: Step 2 - Replace conditional with polymorphism using DiscountPolicy interface
-    public double applyDiscount(CustomerType type, double amount) {
-        return switch (type) {
-            case REGULAR -> amount;
-            case PREMIUM -> amount * 0.90;
-            case VIP -> amount * 0.80;
-        };
+    public static class RegularDiscount implements DiscountPolicy {
+        @Override
+        public double apply(double amount) {
+            return amount;
+        }
+    }
+
+    public static class PremiumDiscount implements DiscountPolicy {
+        @Override
+        public double apply(double amount) {
+            return amount * 0.90;
+        }
+    }
+
+    public static class VipDiscount implements DiscountPolicy {
+        @Override
+        public double apply(double amount) {
+            return amount * 0.80;
+        }
+    }
+
+    public double calculate(DiscountPolicy policy, double amount) {
+        return policy.apply(amount);
     }
 }
