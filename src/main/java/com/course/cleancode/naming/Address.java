@@ -1,22 +1,22 @@
 package com.course.cleancode.naming;
 
 /**
- * STARTER CODE:
- * Redundant 'addr*' prefixes inside Address class context.
+ * CLEAN CODE SOLUTION:
+ * Context is already established by the class name 'Address'.
+ * Attribute names remain concise: 'street', 'city', 'zipCode'.
  */
 public class Address {
-    // TODO: Step 6 - Eliminate redundant prefixes ('street', 'city', 'zipCode')
-    private String addrStreet;
-    private String addrCity;
-    private String addrZipCode;
+    private final String street;
+    private final String city;
+    private final String zipCode;
 
-    public Address(String addrStreet, String addrCity, String addrZipCode) {
-        this.addrStreet = addrStreet;
-        this.addrCity = addrCity;
-        this.addrZipCode = addrZipCode;
+    public Address(String street, String city, String zipCode) {
+        this.street = street;
+        this.city = city;
+        this.zipCode = zipCode;
     }
 
-    public String getAddrStreet() { return addrStreet; }
-    public String getAddrCity() { return addrCity; }
-    public String getAddrZipCode() { return addrZipCode; }
+    public String getStreet() { return street; }
+    public String getCity() { return city; }
+    public String getZipCode() { return zipCode; }
 }

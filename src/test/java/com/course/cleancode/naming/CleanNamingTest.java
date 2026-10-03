@@ -12,51 +12,58 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CleanNamingTest {
 
     @Test
-    @DisplayName("Verify legacy DtaRcrd102 calculation works, but smells are still present in starter")
-    void testLegacyRecordCalculations() {
+    @DisplayName("Verify CustomerRecord with pronounceable names and constants")
+    void testCustomerRecordCleanCalculations() {
         Instant now = Instant.now();
-        DtaRcrd102 record = new DtaRcrd102(now, now, "REC-102");
+        CustomerRecord record = new CustomerRecord(now, now, "REC-102");
 
-        assertThat(record.getPszrId()).isEqualTo("REC-102");
-        assertThat(record.calculateSessionExpiry(7)).isEqualTo(86400);
-        assertThat(record.calculateSessionExpiry(1)).isEqualTo(3600);
+        assertThat(record.getRecordId()).isEqualTo("REC-102");
+        assertThat(record.getGenerationTimestamp()).isEqualTo(now);
+        assertThat(record.getModificationTimestamp()).isEqualTo(now);
+
+        assertThat(record.calculateSessionExpiry(CustomerRecord.ROLE_ADMIN))
+                .isEqualTo(CustomerRecord.SECONDS_IN_A_DAY);
+        assertThat(record.calculateSessionExpiry(1))
+                .isEqualTo(CustomerRecord.DEFAULT_SESSION_EXPIRY_SECONDS);
+
         assertThat(record.countActiveUsers(Set.of("alice", "bob"))).isEqualTo(2);
     }
 
     @Test
-    @DisplayName("Verify ProcessOrder starter behavior")
-    void testProcessOrderBehavior() {
-        ProcessOrder po = new ProcessOrder();
-        po.transaction(150.0);
-        assertThat(po.flag()).isFalse();
+    @DisplayName("Verify OrderProcessor with verb methods and predicate naming")
+    void testOrderProcessorCleanBehavior() {
+        OrderProcessor processor = new OrderProcessor();
+        processor.processPayment(250.0);
+        assertThat(processor.hasExpired()).isFalse();
 
-        po.setExpired(true);
-        assertThat(po.flag()).isTrue();
+        processor.setExpired(true);
+        assertThat(processor.hasExpired()).isTrue();
 
-        assertThatThrownBy(() -> po.transaction(-10.0))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> processor.processPayment(-10.0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("greater than zero");
     }
 
     @Test
-    @DisplayName("Verify Address getter behavior")
-    void testAddressPrefixes() {
-        Address address = new Address("123 Main St", "Cairo", "11511");
-        assertThat(address.getAddrStreet()).isEqualTo("123 Main St");
-        assertThat(address.getAddrCity()).isEqualTo("Cairo");
-        assertThat(address.getAddrZipCode()).isEqualTo("11511");
+    @DisplayName("Verify Address without redundant addr prefixes")
+    void testAddressCleanNaming() {
+        Address address = new Address("45 Nile Corniche", "Cairo", "11511");
+        assertThat(address.getStreet()).isEqualTo("45 Nile Corniche");
+        assertThat(address.getCity()).isEqualTo("Cairo");
+        assertThat(address.getZipCode()).isEqualTo("11511");
     }
 
     @Test
-    @DisplayName("Verify inconsistent query naming across services")
-    void testInconsistentQueryServices() {
-        LegacyQueryServices.UserService userService = new LegacyQueryServices.UserService();
-        LegacyQueryServices.OrderService orderService = new LegacyQueryServices.OrderService();
-        LegacyQueryServices.PaymentService paymentService = new LegacyQueryServices.PaymentService();
-        LegacyQueryServices.InventoryService inventoryService = new LegacyQueryServices.InventoryService();
+    @DisplayName("Verify StandardQueryServices consistently using findById across services")
+    void testStandardizedQueryServices() {
+        StandardQueryServices.UserService userService = new StandardQueryServices.UserService();
+        StandardQueryServices.OrderService orderService = new StandardQueryServices.OrderService();
+        StandardQueryServices.PaymentService paymentService = new StandardQueryServices.PaymentService();
+        StandardQueryServices.InventoryService inventoryService = new StandardQueryServices.InventoryService();
 
-        assertThat(userService.fetchUser("1")).isEqualTo("User-1");
-        assertThat(orderService.retrieveOrder("2")).isEqualTo("Order-2");
-        assertThat(paymentService.getPayment("3")).isEqualTo("Payment-3");
-        assertThat(inventoryService.findItem("4")).isEqualTo("Item-4");
+        assertThat(userService.findById("101")).isEqualTo("User-101");
+        assertThat(orderService.findById("202")).isEqualTo("Order-202");
+        assertThat(paymentService.findById("303")).isEqualTo("Payment-303");
+        assertThat(inventoryService.findById("404")).isEqualTo("Item-404");
     }
 }
