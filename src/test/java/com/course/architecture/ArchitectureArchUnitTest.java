@@ -1,6 +1,6 @@
 package com.course.architecture;
 
-import com.course.architecture.overengineering.OverEngineeredUserService;
+import com.course.architecture.overengineering.PragmaticUserService;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ArchitectureArchUnitTest {
 
@@ -27,19 +29,29 @@ class ArchitectureArchUnitTest {
     }
 
     @Test
-    @DisplayName("Verify OverEngineeredUserService behavior in starter")
-    void testOverEngineeredUserService() {
-        OverEngineeredUserService.UserRepository repo = id -> Optional.of(
-                new OverEngineeredUserService.User(id, "Ada", "Lovelace")
-        );
-        OverEngineeredUserService.NameFormattingStrategy strategy = new OverEngineeredUserService.DefaultNameFormattingStrategy();
-        OverEngineeredUserService.IUserService service = new OverEngineeredUserService.UserServiceImpl(repo, strategy);
+    @DisplayName("ArchUnit: Package-by-Feature slices must be free of cyclic dependencies")
+    void packageByFeatureSlicesShouldBeFreeOfCycles() {
+        ArchRule rule = slices().matching("com.course.architecture.packagebyfeature.(*)..")
+                .should().beFreeOfCycles();
 
-        OverEngineeredUserService.UserDisplayNameDto result = service.getUserDisplayName(
-                new OverEngineeredUserService.UserIdSpecification(1L)
-        );
+        rule.check(classes);
+    }
 
-        assertThat(result.id()).isEqualTo(1L);
-        assertThat(result.displayName()).isEqualTo("Ada Lovelace");
+    @Test
+    @DisplayName("Verify PragmaticUserService achieves same result with zero accidental complexity")
+    void testPragmaticUserService() {
+        PragmaticUserService.UserRepository repo = id -> {
+            if (id == 999L) return Optional.empty();
+            return Optional.of(new PragmaticUserService.User(id, "Grace", "Hopper"));
+        };
+        PragmaticUserService service = new PragmaticUserService(repo);
+
+        PragmaticUserService.UserDisplayNameDto result = service.getUserDisplayName(42L);
+        assertThat(result.id()).isEqualTo(42L);
+        assertThat(result.displayName()).isEqualTo("Grace Hopper");
+
+        assertThatThrownBy(() -> service.getUserDisplayName(999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("User not found");
     }
 }
