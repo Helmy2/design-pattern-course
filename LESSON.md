@@ -1,46 +1,37 @@
-# Lesson 16: Strategy Pattern & Spring Boot Strategy Map
+# Lesson 16: Strategy Pattern & Spring Strategy Map
 
-> "Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from clients that use it."
+> "Defines a family of algorithms, encapsulates each one, and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it."
 
 ---
 
 ## 🎯 Learning Objectives
-1. **Three Foundational OO Design Principles**:
-   - **Encapsulate What Varies**: Quacking and flying vary across duck species; separate them from general duck behavior.
-   - **Program to Interfaces, Not Implementations**: Duck behavior is represented by polymorphic behavior contracts (`FlyBehavior`, `QuackBehavior`).
-   - **Favor Composition Over Inheritance**: Ducks acquire behavior dynamically via `HAS-A` rather than static `IS-A`.
-2. **Dynamic Runtime Behavior Swapping**:
-   - Changing flying behavior at runtime: a `ModelDuck` unable to fly can be fitted with a `FlyRocketPowered` strategy during execution via `setFlyBehavior()`.
-3. **Enterprise Reality — Spring Boot Strategy Map Pattern**:
-   - In production backends, avoid giant `switch/case` or `if/else` ladders selecting payment processors or tax engines.
-   - Inject all beans implementing `PaymentStrategy` into a `Map<PaymentProvider, PaymentStrategy>` automatically for O(1) dynamic strategy resolution.
+1. **Encapsulate What Varies**: Separate flying and quacking behaviors from the `Duck` superclass.
+2. **Favor Composition Over Inheritance (`HAS-A` vs. `IS-A`)**: Compose behavior interfaces rather than inheriting rigid implementations.
+3. **Program to an Interface, Not an Implementation**: Depend on `FlyBehavior` and `QuackBehavior`.
+4. **Dynamic Runtime Behavior Swapping**: Change behaviors on the fly via setter injection (`setFlyBehavior()`).
+5. **Modern Enterprise Reality — Spring Strategy Map**:
+   - Inject a list of strategy beans (`List<PaymentStrategy>`) into a service and collect into a `Map<PaymentProvider, PaymentStrategy>`.
+   - Dispatch requests in $O(1)$ without brittle `if/else` checks, satisfying the Open/Closed Principle.
 
 ---
 
-## 🏗️ The Problem: Rigid Inheritance & Fragile Conditionals
-Examine `src/main/java/com/course/patterns/strategy/problem/InflexibleDuckInheritanceProblem.java`:
-1. **Flawed Inheritance & Refused Bequest**: Putting `fly()` in a superclass forces `FlawedRubberDuck` to fly across the screen! Subclasses overriding methods to do nothing create code duplication.
-2. **Brittle Conditionals**: `NaivePaymentProcessor` relies on hardcoded `if/else` checks, violating the Open/Closed Principle.
+## 🏗️ The Problem: Flawed Inheritance & Rigid If/Else in Starter
+Examine `Duck.java` and `PaymentProcessor.java`:
+- `Duck.java` implements `fly()` and `quack()` in the base superclass. Subclasses like `RubberDuck` inherit `fly()` and fly across the screen!
+- `PaymentProcessor.java` processes payments using brittle `if/else` chains. Adding new providers forces modifying existing code (violating OCP).
 
-To resolve this, we implement the **Strategy Pattern**:
-- `FlyBehavior` / `QuackBehavior`: Strategy interfaces encapsulating interchangeable algorithms.
-- `Duck.java`: Client context holding behavior references via composition (`HAS-A`).
-- `setFlyBehavior(...)`: Allows dynamic runtime swapping of strategies.
-- `spring/PaymentStrategyMap.java`: Dynamic Spring strategy map injection eliminating conditional ladders.
+To resolve this, we introduce the **Strategy Pattern**:
+- Create `FlyBehavior` and `QuackBehavior` interface hierarchies.
+- Refactor `Duck` to compose behaviors and provide `performFly()` and `performQuack()`.
+- Implement `PaymentStrategyMap` with dynamic map-based dispatch.
 
 ---
 
 ## 📝 Refactoring Tasks
-1. Implement `FlyBehavior` implementations:
-   - `FlyWithWings`: "I'm flying!!"
-   - `FlyNoWay`: "I can't fly"
-   - `FlyRocketPowered`: "I'm flying with a rocket!"
-2. Implement `QuackBehavior` implementations:
-   - `Quack`: "Quack"
-   - `Squeak`: "Squeak"
-   - `MuteQuack`: "<< Silence >>"
-3. Configure `MallardDuck` and `ModelDuck` with appropriate initial strategies.
-4. Implement `CheckoutService` strategy map resolution.
+1. Create `FlyBehavior` and `QuackBehavior` interfaces with concrete strategy implementations.
+2. Refactor `Duck.java` to hold behavior references via composition.
+3. Create `ModelDuck.java` demonstrating runtime strategy swapping.
+4. Create `spring/PaymentStrategyMap.java` replacing `if/else` with Spring strategy map dispatch.
 
 ---
 
