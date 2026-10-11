@@ -5,43 +5,37 @@
 ---
 
 ## 🎯 Learning Objectives
-1. **Simplifying Complex Subsystems**: Wrap complex multi-component systems (e.g., 6 home theater devices or 5 backend microservices) behind a cohesive, high-level interface.
-2. **Principle of Least Knowledge / Law of Demeter**:
-   - Talk only to your immediate friends.
-   - Client code shouldn't need to know the configuration sequence of an amplifier, projector aspect ratio, screen motor, dimmer lights, and popcorn popper.
-3. **Non-Exclusivity of Facades**:
-   - Facades do not seal the subsystem into a black box. Power users can still interact directly with low-level subsystem devices when granular control is required.
-4. **Pattern Comparison**:
-   - **Adapter**: Converts one interface to match client expectations.
-   - **Decorator**: Adds responsibilities dynamically without altering interface.
-   - **Facade**: Simplifies and unifies access across an entire subsystem by exposing a higher-level contract.
-5. **Enterprise Reality**:
-   - Service Facades in multi-tier Spring Boot architectures (e.g. `CheckoutService`).
-   - Edge API Gateways (Spring Cloud Gateway, Kong) consolidating internal microservices into simplified payloads for mobile and web clients.
+1. **Subsystem Simplification**: Package complex interactions across disparate classes into a clean, intuitive entry point.
+2. **Principle of Least Knowledge (Law of Demeter)**:
+   - Talk only to your immediate friends:
+     - The object itself
+     - Objects passed in as method parameters
+     - Any object created or instantiated inside the method
+     - Any direct component of the object (`HAS-A`)
+   - Avoid calling methods on objects returned by other methods (`a.getB().getC().doSomething()`).
+3. **Decoupling**: Shield clients from subsystem changes and intricate configuration protocols.
+4. **Non-Exclusivity**: Facades simplify common workflows without sealing off low-level access for power users who require fine-grained control.
 
 ---
 
-## 🏗️ The Problem: Brittle Subsystem Orchestration in Starter
-Examine `src/main/java/com/course/patterns/facade/problem/ComplexSubsystemClientProblem.java`:
-- The client must directly coordinate 6 separate subsystem components through a verbose 12-method sequence.
-- Violates the Principle of Least Knowledge (Law of Demeter) and couples clients tightly to subsystem internals.
+## 🏗️ The Problem: Subsystem Overload in Starter
+Examine `HomeTheaterClient.java`:
+- To watch a movie, the client must instantiate and manually coordinate 6 different devices:
+  `Amplifier`, `StreamingPlayer`, `Projector`, `Screen`, `TheaterLights`, and `Popper`.
+- Violates the Principle of Least Knowledge: the client knows low-level details of every single device.
+- Watching a movie requires executing a rigid 12-step sequence in exact order.
 
-To resolve this, we implement the **Facade Pattern**:
-- `devices/`: Subsystem classes: `Amplifier`, `StreamingPlayer`, `Projector`, `TheaterLights`, `Screen`, `Popper`.
-- `HomeTheaterFacade.java`: High-level interface providing `watchMovie(String movie)` and `endMovie()`, encapsulating the subsystem complexity while leaving subsystems accessible for advanced use.
+To resolve this, we introduce the **Facade Pattern**:
+- Create `HomeTheaterFacade.java` that composes the 6 subsystem devices.
+- Expose high-level `watchMovie(String movie)` and `endMovie()`.
+- Decouple `HomeTheaterClient` from the 6 devices by injecting `HomeTheaterFacade`.
 
 ---
 
 ## 📝 Refactoring Tasks
-1. Implement `HomeTheaterFacade.watchMovie(String movie)`:
-   - Turn on popper & pop popcorn.
-   - Dim lights to 10%.
-   - Lower screen.
-   - Turn on projector & set widescreen mode.
-   - Turn on amp, set player, enable surround sound, and set volume to 5.
-   - Turn on player and play movie.
-2. Implement `HomeTheaterFacade.endMovie()`:
-   - Turn off popper, screen up, lights on, projector off, amp off, player stop and off.
+1. Create `HomeTheaterFacade.java` wrapping the 6 subsystem devices.
+2. Implement `watchMovie(String movie)` and `endMovie()` in `HomeTheaterFacade`.
+3. Refactor `HomeTheaterClient.java` to depend solely on `HomeTheaterFacade`.
 
 ---
 

@@ -8,11 +8,14 @@ import com.course.patterns.facade.devices.Devices.StreamingPlayer;
 import com.course.patterns.facade.devices.Devices.TheaterLights;
 
 /**
- * STARTER CODE:
- * Home Theater Facade:
- * Wraps 6 distinct subsystem components via composition.
+ * STARTER ANTI-PATTERN: Direct Subsystem Orchestration
+ *
+ * Flaws:
+ * 1. Tight Subsystem Coupling: Client directly references and instantiates 6 separate classes.
+ * 2. Violates Principle of Least Knowledge (Law of Demeter): Client talks to low-level subsystem internals.
+ * 3. High Cognitive Load & Brittle Code: Watching a movie requires executing a multi-step sequence with strict ordering.
  */
-public class HomeTheaterFacade {
+public class HomeTheaterClient {
 
     private final Amplifier amp;
     private final StreamingPlayer player;
@@ -21,7 +24,7 @@ public class HomeTheaterFacade {
     private final TheaterLights lights;
     private final Popper popper;
 
-    public HomeTheaterFacade(
+    public HomeTheaterClient(
             Amplifier amp,
             StreamingPlayer player,
             Projector projector,
@@ -37,15 +40,18 @@ public class HomeTheaterFacade {
         this.popper = popper;
     }
 
-    // TODO: Step 1 - Implement watchMovie(String movie):
-    // Coordinate popper, lights dim(10), screen down, projector widescreen, amp setup, and player playback.
     public void watchMovie(String movie) {
-        // Unimplemented starter
-    }
-
-    // TODO: Step 2 - Implement endMovie():
-    // Cleanly power down or reset all subsystem components.
-    public void endMovie() {
-        // Unimplemented starter
+        popper.on();
+        popper.pop();
+        lights.dim(10);
+        screen.down();
+        projector.on();
+        projector.wideScreenMode();
+        amp.on();
+        amp.setStreamingPlayer(player);
+        amp.setSurroundSound();
+        amp.setVolume(5);
+        player.on();
+        player.play(movie);
     }
 }
