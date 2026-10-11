@@ -5,39 +5,38 @@
 ---
 
 ## 🎯 Learning Objectives
-1. **Encapsulating Traversal**: Decouple client traversal code from underlying collection types (`ArrayList`, raw arrays, hash maps, linked lists).
+1. **Encapsulate Aggregate Traversal**: Decouple client code from underlying data structures (arrays, lists, sets, hash maps).
 2. **Single Responsibility Principle (SRP)**:
-   - An aggregate/collection class should have only ONE reason to change: **managing its elements** (adding, removing, storing).
-   - If it also handles **navigating/traversing** the data, it violates SRP. Extracting an `Iterator` isolates that second responsibility.
-3. **Array vs. List Traversal**:
-   - Lou's Pancake House uses `ArrayList<MenuItem>`.
-   - Mel's Diner uses a fixed-size `MenuItem[]` array.
-   - By implementing a unified `Menu` interface returning `Iterator<MenuItem>`, the client (`Waitress`) iterates polymorphically with zero knowledge of arrays or lists.
-4. **Modern Java Evolution**:
-   - `java.lang.Iterable<T>` and the enhanced `for (MenuItem item : menu)` loop.
-   - External iteration (`while(it.hasNext())`) vs. Internal iteration (`menuItems.stream().filter(...).forEach(...)`).
-   - Database cursor pagination in Spring Data (`Slice<T>`, `Page<T>`).
+   - A collection class manages its elements.
+   - An `Iterator` manages iteration state (current index, boundary checks).
+3. **Uniform Client Contract**: Clients depend solely on `java.util.Iterator<T>`, enabling polymorphic traversal across disparate collection types.
+4. **Modern Java & Streams Evolution**:
+   - Understand the transition from explicit external iteration (`while (it.hasNext())`) to functional internal iteration via the Stream API (`stream().filter().toList()`).
+   - Enterprise cursor pagination in Spring Data (`Slice<T>`, `Page<T>`).
 
 ---
 
-## 🏗️ The Problem: Incompatible Traversal Loops & Leaking Internal Data Structures
-Examine `src/main/java/com/course/patterns/iterator/problem/HeterogeneousCollectionProblem.java`:
-- Mel's Diner uses an array (`MenuItem[]`), while Lou's Pancake House uses a List (`List<MenuItem>`).
-- Client code (`NaiveWaitress`) is forced to write separate, incompatible loops (array indexing and bounds checks vs list loops), leaking the internal storage structures of both restaurants and violating SRP/OCP.
+## 🏗️ The Problem: Heterogeneous Collections in Starter
+Examine `PancakeHouseMenu.java`, `DinerMenu.java`, and `Waitress.java`:
+- Lou's Pancake House stores items in an `ArrayList<MenuItem>`.
+- Mel's Diner stores items in a fixed-size `MenuItem[]` array with trailing nulls.
+- `Waitress` is forced to know both concrete data structures and write two completely separate, brittle traversal loops:
+  - Loop 1 for List.
+  - Loop 2 for Array (with manual index and null checks).
 
-To resolve this, we implement the **Iterator Pattern**:
-- `Menu.java`: Common interface declaring `Iterator<MenuItem> createIterator()`.
-- `DinerMenuIterator.java`: Encapsulates array iteration, bounds, and null checking behind standard `java.util.Iterator`.
-- `Waitress.java`: Iterates uniformly across all menus with a single polymorphic loop.
+To resolve this, we introduce the **Iterator Pattern**:
+- Create `Menu.java` interface with `Iterator<MenuItem> createIterator()`.
+- Create `DinerMenuIterator.java` adapting fixed-size arrays to `java.util.Iterator<MenuItem>`.
+- Refactor `PancakeHouseMenu` and `DinerMenu` to implement `Menu`.
+- Refactor `Waitress` to iterate uniformly over `Iterator<MenuItem>`.
 
 ---
 
 ## 📝 Refactoring Tasks
-1. Implement `DinerMenuIterator`:
-   - `hasNext()`: Check whether `position < list.length && list[position] != null`.
-   - `next()`: Fetch item at `position` and increment `position`.
-2. Connect `DinerMenu.createIterator()` to `new DinerMenuIterator(menuItems)`.
-3. In `Waitress`: Write a single unified `printMenu(Iterator<MenuItem> iterator)` helper.
+1. Create `Menu.java` interface.
+2. Create `DinerMenuIterator.java` implementing `java.util.Iterator<MenuItem>`.
+3. Refactor `PancakeHouseMenu.java` and `DinerMenu.java` to implement `Menu`.
+4. Refactor `Waitress.java` to traverse items uniformly using iterators.
 
 ---
 
