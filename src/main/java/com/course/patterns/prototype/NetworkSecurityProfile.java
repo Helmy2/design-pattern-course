@@ -5,10 +5,23 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * STARTER CODE:
- * TODO: Implement deep copy constructor and Prototype<NetworkSecurityProfile>.
+ * STARTER PROBLEM CODE:
+ *
+ * NetworkSecurityProfile before applying the Prototype Pattern:
+ *
+ * 1. Heavy Configuration & Concrete Coupling:
+ *    To instantiate or duplicate profiles for different tenants, client code is forced
+ *    to directly invoke 'new NetworkSecurityProfile(...)'.
+ *
+ * 2. Manual Property Copying:
+ *    Without a standardized clone() contract, clients must manually extract every property
+ *    via getters and construct a duplicate from outside, violating encapsulation.
+ *
+ * 3. Cannot Duplicate via Abstractions:
+ *    If client code only holds a high-level reference to a profile, it cannot create a copy
+ *    without coupling to concrete classes and performing awkward type checks.
  */
-public class NetworkSecurityProfile implements Prototype<NetworkSecurityProfile> {
+public class NetworkSecurityProfile {
 
     private String profileName;
     private int maxBandwidthMbps;
@@ -18,23 +31,6 @@ public class NetworkSecurityProfile implements Prototype<NetworkSecurityProfile>
         this.profileName = profileName;
         this.maxBandwidthMbps = maxBandwidthMbps;
         this.firewallRules = new ArrayList<>(firewallRules);
-    }
-
-    // TODO: Step 1 - Implement Deep Copy Constructor:
-    // Create a new ArrayList for firewallRules so references are completely isolated
-    public NetworkSecurityProfile(NetworkSecurityProfile target) {
-        if (target != null) {
-            this.profileName = target.profileName;
-            this.maxBandwidthMbps = target.maxBandwidthMbps;
-            // TODO: allocate new list
-            this.firewallRules = target.firewallRules;
-        }
-    }
-
-    @Override
-    public NetworkSecurityProfile clone() {
-        // TODO: Step 2 - Return new deep copied instance
-        return new NetworkSecurityProfile(this);
     }
 
     public void addRule(String rule) {
