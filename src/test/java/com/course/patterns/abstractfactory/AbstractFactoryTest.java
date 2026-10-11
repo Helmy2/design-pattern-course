@@ -20,36 +20,65 @@ class AbstractFactoryTest {
     }
 
     @Test
-    @DisplayName("Verify NYPizzaStore creates NY pizzas with hardcoded NY ingredients (Factory Method Baseline)")
-    void testNYPizzaStoreFactoryMethodBaseline() {
-        PizzaStore store = new NYPizzaStore();
-        Pizza pizza = store.orderPizza("cheese");
+    @DisplayName("Verify NY ingredient factory provides authentic NY product family")
+    void testNYIngredientFactory() {
+        PizzaIngredientFactory nyFactory = new NYPizzaIngredientFactory();
+        CheesePizza cheesePizza = new CheesePizza(nyFactory);
+        cheesePizza.setName("New York Style Cheese Pizza");
+        cheesePizza.prepare();
 
-        assertThat(pizza.getName()).isEqualTo("NY Style Sauce and Cheese Pizza");
-        assertThat(pizza.getDough().getName()).isEqualTo("Thin Crust Dough");
-        assertThat(pizza.getSauce().getName()).isEqualTo("Marinara Sauce");
-        assertThat(pizza.getCheese().getName()).isEqualTo("Reggiano Cheese");
+        assertThat(cheesePizza.getDough().getName()).isEqualTo("Thin Crust Dough");
+        assertThat(cheesePizza.getSauce().getName()).isEqualTo("Marinara Sauce");
+        assertThat(cheesePizza.getCheese().getName()).isEqualTo("Reggiano Cheese");
     }
 
     @Test
-    @DisplayName("Verify ChicagoPizzaStore creates deep dish pizzas with hardcoded Chicago ingredients")
-    void testChicagoPizzaStoreFactoryMethodBaseline() {
-        PizzaStore store = new ChicagoPizzaStore();
-        Pizza pizza = store.orderPizza("clam");
+    @DisplayName("Verify Chicago ingredient factory provides authentic Chicago product family")
+    void testChicagoIngredientFactory() {
+        PizzaIngredientFactory chicagoFactory = new ChicagoPizzaIngredientFactory();
+        ClamPizza clamPizza = new ClamPizza(chicagoFactory);
+        clamPizza.setName("Chicago Style Clam Pizza");
+        clamPizza.prepare();
+
+        assertThat(clamPizza.getDough().getName()).isEqualTo("Thick Deep Dish Crust Dough");
+        assertThat(clamPizza.getSauce().getName()).isEqualTo("Plum Tomato Sauce");
+        assertThat(clamPizza.getCheese().getName()).isEqualTo("Shredded Mozzarella Cheese");
+        assertThat(clamPizza.getClams().getName()).isEqualTo("Frozen Lake Michigan Clams");
+    }
+
+    @Test
+    @DisplayName("Verify NYPizzaStore creates NY pizzas using NYIngredientFactory family")
+    void testNYPizzaStoreIntegration() {
+        PizzaStore nyStore = new NYPizzaStore();
+        Pizza pizza = nyStore.orderPizza("cheese");
+
+        assertThat(pizza.getName()).isEqualTo("New York Style Cheese Pizza");
+        assertThat(pizza.getDough().getName()).isEqualTo("Thin Crust Dough");
+        assertThat(pizza.getSauce().getName()).isEqualTo("Marinara Sauce");
+        assertThat(pizza.getCheese().getName()).isEqualTo("Reggiano Cheese");
+        assertThat(pizza.getCutStyle()).isEqualTo("diagonal");
+    }
+
+    @Test
+    @DisplayName("Verify ChicagoPizzaStore creates deep dish pizzas using ChicagoIngredientFactory family")
+    void testChicagoPizzaStoreIntegration() {
+        PizzaStore chicagoStore = new ChicagoPizzaStore();
+        Pizza pizza = chicagoStore.orderPizza("clam");
 
         assertThat(pizza.getName()).isEqualTo("Chicago Style Deep Dish Clam Pizza");
         assertThat(pizza.getDough().getName()).isEqualTo("Thick Deep Dish Crust Dough");
         assertThat(pizza.getSauce().getName()).isEqualTo("Plum Tomato Sauce");
         assertThat(pizza.getCheese().getName()).isEqualTo("Shredded Mozzarella Cheese");
         assertThat(pizza.getClams().getName()).isEqualTo("Frozen Lake Michigan Clams");
+        assertThat(pizza.getCutStyle()).isEqualTo("square");
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Subclass explosion - adding a new region requires duplicating every pizza class")
-    void testSubclassExplosionLimitation() {
+    @DisplayName("Verify unknown pizza type is rejected cleanly")
+    void testUnknownPizzaType() {
         PizzaStore store = new NYPizzaStore();
-        // A California store or new pizza type cannot reuse CheesePizza because it's hardcoded to NY ingredients
-        assertThatThrownBy(() -> store.orderPizza("veggie"))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> store.orderPizza("hawaiian"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unknown pizza type");
     }
 }
