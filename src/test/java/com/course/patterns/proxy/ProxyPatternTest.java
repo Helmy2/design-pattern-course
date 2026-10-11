@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProxyPatternTest {
 
@@ -21,19 +22,47 @@ class ProxyPatternTest {
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Unprotected access allows user to tamper with own rating and strangers to vandalize profile")
-    void testUnprotectedAccessProblem() {
-        Person profile = new PersonImpl();
-        profile.setName("Alice");
-        profile.setInterests("Photography");
+    @DisplayName("Verify Owner Dynamic Proxy allows profile edits but blocks modifying own rating")
+    void testOwnerProxyPermissions() {
+        Person joe = new PersonImpl();
+        joe.setName("Joe Geek");
+        joe.setInterests("Cars, Computers");
 
-        // Security flaw: Alice directly inflates her own score without authorization!
-        profile.setGeekRating(10);
-        assertThat(profile.getGeekRating()).isEqualTo(10);
+        Person ownerProxy = PersonProxyFactory.getOwnerProxy(joe);
 
-        // Security flaw: Another user overwrites Alice's personal interests!
-        profile.setInterests("Hacked Profile");
-        assertThat(profile.getInterests()).isEqualTo("Hacked Profile");
+        // Owner can read
+        assertThat(ownerProxy.getName()).isEqualTo("Joe Geek");
+
+        // Owner can update personal interests
+        ownerProxy.setInterests("Cars, Computers, Kotlin");
+        assertThat(ownerProxy.getInterests()).isEqualTo("Cars, Computers, Kotlin");
+
+        // Owner CANNOT rate themselves! InvocationHandler throws IllegalAccessException
+        assertThatThrownBy(() -> ownerProxy.setGeekRating(10))
+                .hasRootCauseInstanceOf(IllegalAccessException.class)
+                .hasRootCauseMessage("Owners cannot modify their own rating score!");
+    }
+
+    @Test
+    @DisplayName("Verify Non-Owner Dynamic Proxy allows rating but blocks modifying another user's profile")
+    void testNonOwnerProxyPermissions() {
+        Person joe = new PersonImpl();
+        joe.setName("Joe Geek");
+        joe.setInterests("Cars, Computers");
+
+        Person nonOwnerProxy = PersonProxyFactory.getNonOwnerProxy(joe);
+
+        // Outside user can read
+        assertThat(nonOwnerProxy.getName()).isEqualTo("Joe Geek");
+
+        // Outside user CAN rate profile
+        nonOwnerProxy.setGeekRating(8);
+        assertThat(nonOwnerProxy.getGeekRating()).isEqualTo(8);
+
+        // Outside user CANNOT change personal interests!
+        assertThatThrownBy(() -> nonOwnerProxy.setInterests("Hacked Interests"))
+                .hasRootCauseInstanceOf(IllegalAccessException.class)
+                .hasRootCauseMessage("You cannot alter another user's personal profile!");
     }
 
     @Test
