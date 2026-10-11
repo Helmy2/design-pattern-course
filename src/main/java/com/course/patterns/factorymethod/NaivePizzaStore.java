@@ -1,8 +1,22 @@
 package com.course.patterns.factorymethod;
 
 /**
- * STARTER CODE:
- * Naive Pizza Store: Concrete coupling via 'new' directly inside orderPizza().
+ * STARTER PROBLEM CODE:
+ *
+ * Demonstrates the architectural problems BEFORE introducing the Factory Method pattern:
+ *
+ * 1. Tight Coupling via 'new':
+ *    orderPizza() hardcodes concrete 'new' instantiations for every pizza type.
+ *    Client code is directly bound to concrete product implementations.
+ *
+ * 2. Violation of the Open/Closed Principle (OCP):
+ *    Every time a new pizza type or regional variation is introduced,
+ *    NaivePizzaStore must be modified and recompiled.
+ *
+ * 3. Franchise Inconsistency & Lack of Regional Flexibility:
+ *    Opening regional franchises (NY, Chicago) requires either:
+ *    - Duplicating the entire preparation lifecycle (prepare, bake, cut, box), or
+ *    - Polluting orderPizza() with nested regional conditionals.
  */
 public class NaivePizzaStore {
 
@@ -30,7 +44,7 @@ public class NaivePizzaStore {
             return null;
         }
 
-        // Code that STAYS THE SAME:
+        // Code that STAYS THE SAME (preparation lifecycle):
         pizza.prepare();
         pizza.bake();
         pizza.cut();

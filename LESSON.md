@@ -16,23 +16,30 @@
 
 ## 🏗️ The Problem: Franchise Inconsistency
 Examine `src/main/java/com/course/patterns/factorymethod/`:
-- `NaivePizzaStore.java`: `orderPizza()` hardcodes concrete `new` instantiations for every pizza type. Adding regional franchises with custom styles would duplicate the preparation procedure (`prepare()`, `bake()`, `cut()`, `box()`) or break consistency.
-- `PizzaStore.java`: Abstract creator needs to be implemented with concrete regional creators `NYPizzaStore` and `ChicagoPizzaStore`.
+- `NaivePizzaStore.java`: `orderPizza()` hardcodes concrete `new` instantiations for every pizza type. Adding regional franchises with custom styles would either duplicate the preparation procedure (`prepare()`, `bake()`, `cut()`, `box()`) or require modifying `NaivePizzaStore` with messy nested conditionals.
+- `SimplePizzaFactory.java`: Encapsulates object creation into a helper class, but fails when regional stores want to take charge of their own style while retaining the franchisor's standardized order-and-bake process.
 
 ---
 
-## 📝 Refactoring Tasks
-1. Inspect `SimplePizzaFactory` as a warm-up.
-2. Implement `NYPizzaStore` and `ChicagoPizzaStore` extending abstract `PizzaStore`:
-   - Override `protected Pizza createPizza(String item)`
-   - In `NYPizzaStore`: Return `NYStyleCheesePizza` (thin crust, marinara, diagonal slices).
-   - In `ChicagoPizzaStore`: Return `ChicagoStyleCheesePizza` (extra thick deep dish crust, plum tomato sauce, square slices).
-3. Verify that `pizzaStore.orderPizza("cheese")` runs the complete preparation lifecycle decoupled from concrete pizza types!
+## 📝 Refactoring Tasks (Applying Factory Method)
+1. **Define the Creator Hierarchy**:
+   - Create an abstract class `PizzaStore`:
+     - Implement public template method `orderPizza(String type)`: calls `createPizza(type)`, validates non-null, then runs `prepare()`, `bake()`, `cut()`, `box()`, and returns the pizza.
+     - Declare protected abstract factory method `createPizza(String type)`.
+2. **Implement Concrete Creators**:
+   - Create `NYPizzaStore extends PizzaStore`: overrides `createPizza` to instantiate NY-style pizzas.
+   - Create `ChicagoPizzaStore extends PizzaStore`: overrides `createPizza` to instantiate Chicago-style deep-dish pizzas.
+3. **Define Regional Product Hierarchies**:
+   - Extend `Pizza` for regional varieties:
+     - `NYStyleCheesePizza`: thin crust, marinara, grated reggiano cheese, diagonal cut.
+     - `ChicagoStyleCheesePizza`: extra thick crust, plum tomato sauce, mozzarella cheese, square cut override.
+4. Verify that calling `nyStore.orderPizza("cheese")` and `chicagoStore.orderPizza("cheese")` executes the standardized preparation lifecycle decoupled from concrete pizza types!
 
 ---
 
 ## 🧪 Verification
-Run tests:
+Run tests on starter:
 ```bash
 ./gradlew test --tests "com.course.patterns.factorymethod.*"
 ```
+Switch to `07-pattern-factory-method-solution` to review the complete Factory Method architecture and test suite.
