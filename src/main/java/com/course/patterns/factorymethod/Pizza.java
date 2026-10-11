@@ -31,4 +31,16 @@ public abstract class Pizza {
     public String getSauce() { return sauce; }
     public List<String> getToppings() { return List.copyOf(toppings); }
     public String getCutStyle() { return cutStyle; }
+
+    public static class GenericCheesePizza extends Pizza {
+        public GenericCheesePizza() {
+            this.name = "Generic Cheese Pizza";
+        }
+    }
+
+    public static class GenericPepperoniPizza extends Pizza {
+        public GenericPepperoniPizza() {
+            this.name = "Generic Pepperoni Pizza";
+        }
+    }
 }

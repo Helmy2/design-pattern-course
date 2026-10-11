@@ -1,39 +1,31 @@
-# Lesson 07: Factory Method Pattern
+# Lesson 07: Factory Patterns (Simple Factory & Factory Method)
 
 > "Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses."
 
 ---
 
 ## 🎯 Learning Objectives
-1. **The Peril of `new`**: Instantiating concrete classes directly binds client code to implementations, violating the Open/Closed Principle.
-2. **Simple Factory (Idiom)**: Encapsulates instantiation in a standalone helper class. Good for basic consolidation, but lacks architectural flexibility for regional variation.
-3. **The Factory Method Framework**:
-   - **Creator Hierarchy**: `PizzaStore` (abstract creator) declares `protected abstract Pizza createPizza(String type)` and coordinates the standard procedure `orderPizza()`. Subclasses (`NYPizzaStore`, `ChicagoPizzaStore`) implement `createPizza()`.
-   - **Product Hierarchy**: `Pizza` (abstract product) and concrete products (`NYStyleCheesePizza`, `ChicagoStyleCheesePizza`).
-4. **Parallel Class Hierarchies**: Understand how creators and products evolve in lockstep without tight coupling.
+1. **The Peril of `new`**: Instantiating concrete classes directly inside business logic binds client code to implementations, violating the **Open/Closed Principle (OCP)** and **Dependency Inversion Principle (DIP)**.
+2. **Simple Factory (Programming Idiom)**: Encapsulate object creation in a dedicated factory object. Centralizes instantiation so multiple clients share it.
+3. **The Factory Method (GoF Design Pattern)**: When regional franchises need customization, Simple Factory falls short. Factory Method establishes an abstract creator with a template method and lets subclasses decide which concrete products to instantiate.
 
 ---
 
-## 🏗️ The Problem: Franchise Inconsistency
-Examine `src/main/java/com/course/patterns/factorymethod/`:
-- `NaivePizzaStore.java`: `orderPizza()` hardcodes concrete `new` instantiations for every pizza type. Adding regional franchises with custom styles would either duplicate the preparation procedure (`prepare()`, `bake()`, `cut()`, `box()`) or require modifying `NaivePizzaStore` with messy nested conditionals.
-- `SimplePizzaFactory.java`: Encapsulates object creation into a helper class, but fails when regional stores want to take charge of their own style while retaining the franchisor's standardized order-and-bake process.
+## 🏗️ The Problem: Monolithic Coupling in `PizzaStore`
+Examine `src/main/java/com/course/patterns/factorymethod/PizzaStore.java`:
+- `orderPizza()` mixes **code that varies** (concrete `new GenericCheesePizza()`, `new GenericPepperoniPizza()`) with **code that stays constant** (`prepare()`, `bake()`, `cut()`, `box()`).
+- Whenever a new pizza type is added or ingredients change, `PizzaStore` must be reopened and edited.
+- Franchisees cannot customize styles without modifying the core store or duplicating the entire order lifecycle.
 
 ---
 
-## 📝 Refactoring Tasks (Applying Factory Method)
-1. **Define the Creator Hierarchy**:
-   - Create an abstract class `PizzaStore`:
-     - Implement public template method `orderPizza(String type)`: calls `createPizza(type)`, validates non-null, then runs `prepare()`, `bake()`, `cut()`, `box()`, and returns the pizza.
-     - Declare protected abstract factory method `createPizza(String type)`.
-2. **Implement Concrete Creators**:
-   - Create `NYPizzaStore extends PizzaStore`: overrides `createPizza` to instantiate NY-style pizzas.
-   - Create `ChicagoPizzaStore extends PizzaStore`: overrides `createPizza` to instantiate Chicago-style deep-dish pizzas.
-3. **Define Regional Product Hierarchies**:
-   - Extend `Pizza` for regional varieties:
-     - `NYStyleCheesePizza`: thin crust, marinara, grated reggiano cheese, diagonal cut.
-     - `ChicagoStyleCheesePizza`: extra thick crust, plum tomato sauce, mozzarella cheese, square cut override.
-4. Verify that calling `nyStore.orderPizza("cheese")` and `chicagoStore.orderPizza("cheese")` executes the standardized preparation lifecycle decoupled from concrete pizza types!
+## 📝 The Multi-Stage Refactoring Journey
+1. **Stage 1 (Next Branch: `07-pattern-simple-factory-solution`)**:
+   - Extract the `new` logic out of `PizzaStore` into `SimplePizzaFactory`.
+   - Compose `PizzaStore` with `SimplePizzaFactory` via constructor injection.
+2. **Stage 2 (Final Branch: `07-pattern-factory-method-solution`)**:
+   - Evolve `PizzaStore` into an abstract creator.
+   - Defer pizza creation to regional franchise subclasses (`NYPizzaStore`, `ChicagoPizzaStore`) while keeping the `orderPizza()` preparation lifecycle immutable.
 
 ---
 
@@ -42,4 +34,4 @@ Run tests on starter:
 ```bash
 ./gradlew test --tests "com.course.patterns.factorymethod.*"
 ```
-Switch to `07-pattern-factory-method-solution` to review the complete Factory Method architecture and test suite.
+Switch to `07-pattern-simple-factory-solution` to see Stage 1!
