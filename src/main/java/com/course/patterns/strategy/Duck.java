@@ -1,32 +1,25 @@
 package com.course.patterns.strategy;
 
 /**
- * Strategy Client Context:
- * Holds strategy references via composition and delegates execution.
+ * STARTER ANTI-PATTERN: Rigid Superclass Inheritance
+ *
+ * Flaws:
+ * 1. Forcing all subclasses to inherit fly() and quack() causes non-flying ducks (e.g. RubberDuck)
+ *    to fly across the screen!
+ * 2. Overriding methods in subclasses to do nothing creates duplication and prevents dynamic runtime behavior swapping.
  */
 public abstract class Duck {
 
-    protected FlyBehavior flyBehavior;
-    protected QuackBehavior quackBehavior;
-
-    public String performFly() {
-        return flyBehavior != null ? flyBehavior.fly() : "No fly behavior";
-    }
-
-    public String performQuack() {
-        return quackBehavior != null ? quackBehavior.quack() : "No quack behavior";
+    public String quack() {
+        return "Quack";
     }
 
     public String swim() {
         return "All ducks float, even decoys!";
     }
 
-    public void setFlyBehavior(FlyBehavior flyBehavior) {
-        this.flyBehavior = flyBehavior;
-    }
-
-    public void setQuackBehavior(QuackBehavior quackBehavior) {
-        this.quackBehavior = quackBehavior;
+    public String fly() {
+        return "I'm flying!!";
     }
 
     public abstract String display();

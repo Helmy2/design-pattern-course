@@ -1,11 +1,9 @@
 package com.course.patterns.strategy;
 
-import com.course.patterns.strategy.spring.PaymentStrategyMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,51 +11,39 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class StrategyPatternTest {
 
     @Test
-    @DisplayName("Verify MallardDuck delegates to initial flying and quacking strategies")
-    void testMallardDuckStrategies() {
+    @DisplayName("Verify MallardDuck behaves naturally using superclass inheritance")
+    void testMallardDuck() {
         Duck mallard = new MallardDuck();
         assertThat(mallard.display()).isEqualTo("I'm a real Mallard duck");
-        assertThat(mallard.performQuack()).isEqualTo("Quack");
-        assertThat(mallard.performFly()).isEqualTo("I'm flying!!");
+        assertThat(mallard.quack()).isEqualTo("Quack");
+        assertThat(mallard.fly()).isEqualTo("I'm flying!!");
         assertThat(mallard.swim()).isEqualTo("All ducks float, even decoys!");
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Rigid inheritance causes RubberDuck to fly and OCP violation in payments")
-    void testInflexibleDuckInheritanceProblem() {
-        var flawedRubberDuck = new com.course.patterns.strategy.problem.InflexibleDuckInheritanceProblem.FlawedRubberDuck();
-        // The flaw: RubberDuck accidentally inherits fly() from superclass!
-        assertThat(flawedRubberDuck.fly()).isEqualTo("I'm flying!!");
+    @DisplayName("Problem Demonstration: RubberDuck erroneously inherits fly() behavior from Duck superclass")
+    void testRubberDuckInheritanceFlaw() {
+        Duck rubberDuck = new RubberDuck();
+        assertThat(rubberDuck.display()).isEqualTo("I'm a yellow rubber duckie");
+        assertThat(rubberDuck.quack()).isEqualTo("Squeak");
 
-        String result = com.course.patterns.strategy.problem.InflexibleDuckInheritanceProblem.NaivePaymentProcessor
-                .process("STRIPE", BigDecimal.valueOf(100));
-        assertThat(result).isEqualTo("Processed $100 via Stripe");
+        // The inheritance smell: rubber duck flies across the screen!
+        assertThat(rubberDuck.fly()).isEqualTo("I'm flying!!");
     }
 
     @Test
-    @DisplayName("Verify dynamic runtime behavior swapping on ModelDuck")
-    void testDynamicBehaviorSwapping() {
-        Duck model = new ModelDuck();
-        assertThat(model.performFly()).isEqualTo("I can't fly");
+    @DisplayName("Problem Demonstration: PaymentProcessor uses rigid if/else checks violating OCP")
+    void testPaymentProcessorOcpViolation() {
+        PaymentProcessor processor = new PaymentProcessor();
 
-        // Swap strategy dynamically at runtime!
-        model.setFlyBehavior(new FlyBehavior.FlyRocketPowered());
-        assertThat(model.performFly()).isEqualTo("I'm flying with a rocket!");
-    }
+        assertThat(processor.process("STRIPE", new BigDecimal("100.00")))
+                .isEqualTo("Processed $100.00 via Stripe");
+        assertThat(processor.process("PAYPAL", new BigDecimal("50.00")))
+                .isEqualTo("Processed $50.00 via PayPal");
 
-    @Test
-    @DisplayName("Verify Spring Boot Strategy Map pattern dynamically resolves payment providers without if/else")
-    void testSpringStrategyMap() {
-        List<PaymentStrategyMap.PaymentStrategy> strategies = List.of(
-                new PaymentStrategyMap.StripePaymentStrategy(),
-                new PaymentStrategyMap.PayPalPaymentStrategy()
-        );
-        PaymentStrategyMap.CheckoutService checkoutService = new PaymentStrategyMap.CheckoutService(strategies);
-
-        String stripeResult = checkoutService.checkout(PaymentStrategyMap.PaymentProvider.STRIPE, BigDecimal.valueOf(100));
-        assertThat(stripeResult).isEqualTo("Processed $100 via Stripe");
-
-        String payPalResult = checkoutService.checkout(PaymentStrategyMap.PaymentProvider.PAYPAL, BigDecimal.valueOf(250));
-        assertThat(payPalResult).isEqualTo("Processed $250 via PayPal");
+        // Fails for new providers without modifying PaymentProcessor code:
+        assertThatThrownBy(() -> processor.process("ADYEN", new BigDecimal("25.00")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unsupported payment provider: ADYEN");
     }
 }
