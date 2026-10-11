@@ -1,12 +1,25 @@
 package com.course.patterns.observer;
 
-public class ForecastDisplay {
+/**
+ * CLEAN CODE SOLUTION:
+ * Concrete Observer using the Pull model.
+ */
+public class ForecastDisplay implements Observer {
+
     private float currentPressure = 29.92f;
     private float lastPressure;
+    private final WeatherData weatherData;
 
-    public void update(float pressure) {
+    public ForecastDisplay(WeatherData weatherData) {
+        this.weatherData = weatherData;
+        weatherData.registerObserver(this);
+    }
+
+    @Override
+    public void update() {
+        // Pull model: observer pulls only pressure
         this.lastPressure = this.currentPressure;
-        this.currentPressure = pressure;
+        this.currentPressure = weatherData.getPressure();
     }
 
     public String display() {
