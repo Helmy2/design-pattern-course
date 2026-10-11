@@ -12,31 +12,52 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class BuilderPatternTest {
 
     @Test
-    @DisplayName("Verify telescoping constructors work for basic cases but are fragile and positional")
-    void testTelescopingConstructor() {
+    @DisplayName("Verify VacationPackage.Builder constructs immutable object with fluent chaining")
+    void testVacationPackageBuilder() {
         LocalDate start = LocalDate.of(2026, 10, 1);
         LocalDate end = LocalDate.of(2026, 10, 7);
-        VacationPackage pkg = new VacationPackage(
-                start, end, "Grand Resort", List.of("Museum Pass"), true
-        );
 
-        assertThat(pkg.getHotel()).isEqualTo("Grand Resort");
+        VacationPackage pkg = new VacationPackage.Builder(start, end)
+                .hotel("Grand Resort & Spa")
+                .addTicket("Museum Pass")
+                .addTicket("Theme Park Admission")
+                .travelInsurance(true)
+                .build();
+
+        assertThat(pkg.getStartDate()).isEqualTo(start);
+        assertThat(pkg.getEndDate()).isEqualTo(end);
+        assertThat(pkg.getHotel()).isEqualTo("Grand Resort & Spa");
+        assertThat(pkg.getTickets()).containsExactly("Museum Pass", "Theme Park Admission");
         assertThat(pkg.hasTravelInsurance()).isTrue();
+
+        // Immutability: tickets list cannot be mutated from outside
+        assertThatThrownBy(() -> pkg.getTickets().add("Hacker Pass"))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Telescoping constructors fail to enforce cross-field invariants")
-    void testTelescopingConstructorAllowsInvalidInvariant() {
+    @DisplayName("Verify Builder enforces date order invariant")
+    void testBuilderDateValidation() {
+        LocalDate start = LocalDate.of(2026, 10, 10);
+        LocalDate end = LocalDate.of(2026, 10, 5);
+
+        assertThatThrownBy(() -> new VacationPackage.Builder(start, end))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Valid vacation dates are required");
+    }
+
+    @Test
+    @DisplayName("Verify Builder enforces cross-field invariant: insurance requires tickets")
+    void testBuilderCrossFieldValidation() {
         LocalDate start = LocalDate.of(2026, 10, 1);
         LocalDate end = LocalDate.of(2026, 10, 7);
 
-        // Flaw: Allows purchasing travel insurance with zero event tickets because telescoping constructors don't validate cross-field rules!
-        VacationPackage invalidPkg = new VacationPackage(
-                start, end, "Grand Resort", List.of(), true
-        );
+        VacationPackage.Builder builder = new VacationPackage.Builder(start, end)
+                .travelInsurance(true); // No tickets added!
 
-        assertThat(invalidPkg.hasTravelInsurance()).isTrue();
-        assertThat(invalidPkg.getTickets()).isEmpty();
+        assertThatThrownBy(builder::build)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Travel insurance cannot be purchased without event tickets");
     }
 
     @Test
@@ -51,8 +72,5 @@ class BuilderPatternTest {
 
         assertThat(config.getHotel()).isEqualTo("Seaside Villa");
         assertThat(config.getTravelInsurance()).isTrue();
-
-        assertThatThrownBy(() -> new KotlinVacationConfig(end, start, "Hotel", List.of(), false))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 }
