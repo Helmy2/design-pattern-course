@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FacadePatternTest {
 
     @Test
-    @DisplayName("Verify individual subsystem devices can be tested directly")
+    @DisplayName("Verify individual subsystem devices can be tested directly (Non-exclusivity of Facade)")
     void testSubsystemDirectAccess() {
         Popper popper = new Popper();
         popper.on();
@@ -28,23 +28,61 @@ class FacadePatternTest {
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Client burdened by tightly coupling to 6 separate subsystem components")
-    void testComplexSubsystemProblem() {
+    @DisplayName("Verify HomeTheaterFacade coordinates entire subsystem on watchMovie and endMovie")
+    void testHomeTheaterFacadeExecution() {
         Amplifier amp = new Amplifier();
         StreamingPlayer player = new StreamingPlayer();
         Projector projector = new Projector();
-        TheaterLights lights = new TheaterLights();
         Screen screen = new Screen();
+        TheaterLights lights = new TheaterLights();
         Popper popper = new Popper();
 
-        HomeTheaterClient client = new HomeTheaterClient(amp, player, projector, screen, lights, popper);
-        client.watchMovie("Inception");
+        HomeTheaterFacade facade = new HomeTheaterFacade(amp, player, projector, screen, lights, popper);
+
+        // 1. Trigger complex startup workflow via facade
+        facade.watchMovie("Inception");
 
         assertThat(popper.isOn()).isTrue();
         assertThat(lights.getDimLevel()).isEqualTo(10);
         assertThat(screen.isDown()).isTrue();
         assertThat(projector.isOn()).isTrue();
+        assertThat(projector.getMode()).isEqualTo("16x9");
         assertThat(amp.isOn()).isTrue();
+        assertThat(amp.hasSurroundSound()).isTrue();
+        assertThat(amp.getVolume()).isEqualTo(5);
+        assertThat(player.isOn()).isTrue();
         assertThat(player.getCurrentMovie()).isEqualTo("Inception");
+
+        // 2. Trigger teardown workflow via facade
+        facade.endMovie();
+
+        assertThat(popper.isOn()).isFalse();
+        assertThat(lights.getDimLevel()).isEqualTo(100);
+        assertThat(screen.isDown()).isFalse();
+        assertThat(projector.isOn()).isFalse();
+        assertThat(amp.isOn()).isFalse();
+        assertThat(player.isOn()).isFalse();
+        assertThat(player.getCurrentMovie()).isNull();
+    }
+
+    @Test
+    @DisplayName("Verify decoupled HomeTheaterClient interacts strictly through HomeTheaterFacade")
+    void testDecoupledHomeTheaterClient() {
+        Amplifier amp = new Amplifier();
+        StreamingPlayer player = new StreamingPlayer();
+        Projector projector = new Projector();
+        Screen screen = new Screen();
+        TheaterLights lights = new TheaterLights();
+        Popper popper = new Popper();
+
+        HomeTheaterFacade facade = new HomeTheaterFacade(amp, player, projector, screen, lights, popper);
+        HomeTheaterClient client = new HomeTheaterClient(facade);
+
+        client.watchMovie("Interstellar");
+        assertThat(player.getCurrentMovie()).isEqualTo("Interstellar");
+        assertThat(amp.isOn()).isTrue();
+
+        client.endMovie();
+        assertThat(player.isOn()).isFalse();
     }
 }
