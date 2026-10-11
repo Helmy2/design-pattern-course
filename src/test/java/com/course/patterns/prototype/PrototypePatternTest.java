@@ -11,17 +11,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PrototypePatternTest {
 
     @Test
-    @DisplayName("Demonstrate shallow copy hazard: mutating clone corrupts the original")
-    void testShallowCopyBug() {
-        List<String> rules = new ArrayList<>(List.of("PORT_80", "PORT_443"));
-        ShallowSecurityProfile original = new ShallowSecurityProfile("DEFAULT", 100, rules);
+    @DisplayName("Verify standard NetworkSecurityProfile instantiation")
+    void testStandardProfileCreation() {
+        NetworkSecurityProfile profile = new NetworkSecurityProfile(
+                "STANDARD", 100, List.of("PORT_80", "PORT_443")
+        );
 
-        ShallowSecurityProfile clone = original.clone();
-        clone.addRule("PORT_8080");
+        assertThat(profile.getProfileName()).isEqualTo("STANDARD");
+        assertThat(profile.getMaxBandwidthMbps()).isEqualTo(100);
+        assertThat(profile.getFirewallRules()).containsExactly("PORT_80", "PORT_443");
+    }
 
-        // The bug: mutating the clone also mutated the original!
-        assertThat(original.getFirewallRules()).contains("PORT_8080");
-        assertThat(clone.getFirewallRules()).contains("PORT_8080");
+    @Test
+    @DisplayName("Problem Demonstration: Without Prototype, clients must manually copy fields via getters/setters")
+    void testManualCopyingCoupling() {
+        NetworkSecurityProfile baseTemplate = new NetworkSecurityProfile(
+                "BASE_PCI_DSS", 500, List.of("ENCRYPT_ALL", "PORT_443")
+        );
+
+        // Flaw: Client code must manually extract all properties and create a new instance,
+        // coupling client code to the concrete constructor and internal collection types
+        NetworkSecurityProfile tenantProfile = new NetworkSecurityProfile(
+                "TENANT_A",
+                baseTemplate.getMaxBandwidthMbps(),
+                new ArrayList<>(baseTemplate.getFirewallRules())
+        );
+        tenantProfile.addRule("PORT_8080");
+
+        assertThat(tenantProfile.getProfileName()).isEqualTo("TENANT_A");
+        assertThat(tenantProfile.getFirewallRules()).contains("PORT_8080");
+        assertThat(baseTemplate.getFirewallRules()).doesNotContain("PORT_8080");
     }
 
     @Test
