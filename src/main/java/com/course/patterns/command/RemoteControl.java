@@ -1,44 +1,41 @@
 package com.course.patterns.command;
 
+import com.course.patterns.command.receivers.Receivers.Light;
+import com.course.patterns.command.receivers.Receivers.Stereo;
+
 /**
- * Invoker:
- * The Remote Control with 7 customizable programmable slots,
- * ON/OFF buttons, and a global UNDO button.
+ * STARTER ANTI-PATTERN: Tightly Coupled Direct Remote Control
+ *
+ * Flaws:
+ * 1. Invoker Tightly Coupled to Concrete Receivers: References concrete Light and Stereo directly.
+ * 2. Violation of Open/Closed Principle: Adding a new appliance (e.g. CeilingFan) requires modifying this remote.
+ * 3. Inability to Support Undo or Macro Commands: Commands are not encapsulated as first-class objects.
  */
 public class RemoteControl {
 
-    private final Command[] onCommands;
-    private final Command[] offCommands;
-    private Command undoCommand;
+    private final Light livingRoomLight;
+    private final Stereo stereo;
 
-    public RemoteControl() {
-        onCommands = new Command[7];
-        offCommands = new Command[7];
-
-        Command noCommand = new NoCommand();
-        for (int i = 0; i < 7; i++) {
-            onCommands[i] = noCommand;
-            offCommands[i] = noCommand;
-        }
-        undoCommand = noCommand;
-    }
-
-    public void setCommand(int slot, Command onCommand, Command offCommand) {
-        onCommands[slot] = onCommand;
-        offCommands[slot] = offCommand;
+    public RemoteControl(Light livingRoomLight, Stereo stereo) {
+        this.livingRoomLight = livingRoomLight;
+        this.stereo = stereo;
     }
 
     public void onButtonWasPushed(int slot) {
-        onCommands[slot].execute();
-        undoCommand = onCommands[slot];
+        if (slot == 0) {
+            livingRoomLight.on();
+        } else if (slot == 1) {
+            stereo.on();
+            stereo.setCd();
+            stereo.setVolume(11);
+        }
     }
 
     public void offButtonWasPushed(int slot) {
-        offCommands[slot].execute();
-        undoCommand = offCommands[slot];
-    }
-
-    public void undoButtonWasPushed() {
-        undoCommand.undo();
+        if (slot == 0) {
+            livingRoomLight.off();
+        } else if (slot == 1) {
+            stereo.off();
+        }
     }
 }
