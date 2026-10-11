@@ -7,6 +7,6 @@ public class DarkRoast extends Beverage {
 
     @Override
     public double cost() {
-        return 0.99;
+        return 0.99 + super.cost();
     }
 }

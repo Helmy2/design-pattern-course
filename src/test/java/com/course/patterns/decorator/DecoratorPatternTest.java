@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class DecoratorPatternTest {
 
@@ -17,27 +18,27 @@ class DecoratorPatternTest {
     void testBaseBeverages() {
         Beverage espresso = new Espresso();
         assertThat(espresso.getDescription()).isEqualTo("Espresso");
-        assertThat(espresso.cost()).isEqualTo(1.99);
+        assertThat(espresso.cost()).isCloseTo(1.99, within(0.001));
 
         Beverage darkRoast = new DarkRoast();
         assertThat(darkRoast.getDescription()).isEqualTo("Most Excellent Dark Roast");
-        assertThat(darkRoast.cost()).isEqualTo(0.99);
+        assertThat(darkRoast.cost()).isCloseTo(0.99, within(0.001));
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Rigid boolean flags and subclass explosion")
-    void testBeverageInheritanceProblem() {
-        com.course.patterns.decorator.problem.BeverageInheritanceProblem.RigidBeverageWithFlags rigid =
-                new com.course.patterns.decorator.problem.BeverageInheritanceProblem.RigidBeverageWithFlags();
-        rigid.setMocha(true);
-        rigid.setWhip(true);
+    @DisplayName("Problem Demonstration: Rigid boolean flags cannot handle multiple portions (e.g. Double Mocha)")
+    void testBeverageBooleanFlagsProblem() {
+        DarkRoast coffee = new DarkRoast();
+        coffee.setMocha(true);
+        coffee.setWhip(true);
 
-        // Flaw: cannot order double mocha with boolean flag!
-        assertThat(rigid.cost()).isEqualTo(2.29);
+        // Single portions work: 0.99 + 0.20 + 0.10 = 1.29
+        assertThat(coffee.cost()).isCloseTo(1.29, within(0.001));
 
-        com.course.patterns.decorator.problem.BeverageInheritanceProblem.DarkRoastWithMochaAndWhip hardcoded =
-                new com.course.patterns.decorator.problem.BeverageInheritanceProblem.DarkRoastWithMochaAndWhip();
-        assertThat(hardcoded.cost()).isEqualTo(1.29);
+        // BUT: What if customer wants a Double Mocha?
+        // Setting mocha = true again has no effect - boolean cannot represent count!
+        coffee.setMocha(true);
+        assertThat(coffee.cost()).isCloseTo(1.29, within(0.001)); // Still 1.29 instead of 1.49!
     }
 
     @Test
