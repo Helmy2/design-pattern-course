@@ -12,25 +12,30 @@
 3. **Legacy API Adaptation**: Adapting legacy JDK `Enumeration` to modern `Iterator`.
 4. **Enterprise Scale — Hexagonal Architecture (Ports and Adapters)**:
    - **Driven Port**: Domain core defines abstract interfaces (e.g. `PaymentGatewayPort`).
-   - **Driven Adapter**: Infrastructure layer implements the port, wrapping third-party vendor SDKs (e.g. Stripe, PayPal, Fawry) so external vendor changes never pollute the domain core.
+   - **Driven Adapter**: Infrastructure layer implements the port, wrapping third-party vendor SDKs (e.g. `ThirdPartyStripeSdk`) so external vendor changes never pollute the domain core.
 
 ---
 
 ## 🏗️ The Problem: Incompatible Interfaces in Starter
-Examine `src/main/java/com/course/patterns/adapter/problem/IncompatibleInterfaceProblem.java`:
-- Client systems expecting `Duck` (`quack()`, `fly()`) cannot interact with third-party vendors supplying `Turkey` (`gobble()`, `fly()`).
-- In enterprise applications, domain ports like `PaymentGatewayPort` cannot bind directly to external third-party SDKs like Stripe without corrupting domain models with third-party types.
+- **Duck vs. Turkey**:
+  - `DuckSimulator` expects a `Duck` (`quack()`, `fly()`).
+  - Third-party vendor supplies `Turkey` (`gobble()`, `fly()` short distance).
+  - Passing a `Turkey` directly into `DuckSimulator` fails compilation because the interfaces are incompatible.
+- **Hexagonal Domain Port vs. Vendor SDK**:
+  - Domain core defines `PaymentGatewayPort` with `charge(String customerId, double amount)`.
+  - External vendor SDK `ThirdPartyStripeSdk` requires `createCharge(String customerId, long cents, String currency)` with amounts in cents.
+  - The domain cannot directly depend on proprietary vendor SDK structures without violating Clean Architecture and DIP.
 
-To resolve this, we implement the **Adapter Pattern**:
-- `TurkeyAdapter.java`: Translates `quack()` to `turkey.gobble()` and repeats short bursts of `fly()` to mimic a duck.
-- `hexagonal/StripePaymentAdapter.java`: Driven adapter wrapping `ThirdPartyStripeSdk` to satisfy `PaymentGatewayPort`.
+To resolve these incompatibilities, we implement the **Adapter Pattern**:
+- `TurkeyAdapter.java`: Implements `Duck` and composes `Turkey`. Translates `quack()` to `turkey.gobble()` and repeats short bursts of `fly()` 5 times.
+- `hexagonal/StripePaymentAdapter.java`: Implements `PaymentGatewayPort` and composes `ThirdPartyStripeSdk`.
 
 ---
 
 ## 📝 Refactoring Tasks
-1. Implement `TurkeyAdapter` implementing `Duck` and wrapping `Turkey`.
-2. Implement `EnumerationIterator` adapting legacy `java.util.Enumeration` to `java.util.Iterator`.
-3. Implement `StripePaymentAdapter` implementing `PaymentGatewayPort`.
+1. Create `TurkeyAdapter` implementing `Duck` and wrapping `Turkey`.
+2. Inspect `EnumerationIterator` adapting legacy `java.util.Enumeration` to `java.util.Iterator`.
+3. Create `StripePaymentAdapter` implementing `PaymentGatewayPort` and wrapping `ThirdPartyStripeSdk`.
 
 ---
 
