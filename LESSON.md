@@ -1,49 +1,42 @@
-# Lesson 15: Proxy Pattern & Demystifying Spring AOP
+# Lesson 15: Proxy Pattern & Spring AOP Self-Invocation Trap
 
-> "Provide a surrogate or placeholder for another object to control access to it."
+> "Provides a surrogate or placeholder for another object to control access to it."
 
 ---
 
 ## 🎯 Learning Objectives
-1. **The Three Classic Proxy Types**:
-   - **Remote Proxy**: Dispatches method calls across network addresses or RPC boundaries (RMI, gRPC stubs).
-   - **Virtual Proxy**: Controls access to resource-intensive objects, deferring creation until actual invocation (lazy loading).
-   - **Protection Proxy**: Controls access to real object methods based on caller permissions and access rights.
-2. **Java Dynamic Proxies (`java.lang.reflect.Proxy`)**:
-   - Both the Real Subject and Proxy implement the same `Subject` interface.
-   - The `InvocationHandler` intercepts all method calls, enforcing security rules before delegating to the real instance.
-3. **Comparing the Wrapping Patterns**:
-   - **Adapter**: Converts an incompatible interface.
-   - **Decorator**: Adds responsibilities dynamically without changing interface.
-   - **Facade**: Simplifies access across a whole subsystem via a new interface.
-   - **Proxy**: Controls access to an object using the *same* interface.
-4. **Demystifying "Spring Magic" (Spring AOP)**:
-   - Annotations like `@Transactional`, `@Async`, and `@Cacheable` contain no runtime code. Spring wraps beans in **Dynamic Proxies** (JDK dynamic proxy if interface exists, CGLIB/ByteBuddy subclassing if concrete class).
-   - **The Self-Invocation Trap**: Calling an annotated method from within the same class invokes `this`, bypassing the proxy wrapper completely!
+1. **Protection Proxy**: Control access to methods based on caller authorization and business rules.
+2. **JDK Dynamic Proxies (`java.lang.reflect.Proxy`)**:
+   - Create proxy instances dynamically at runtime without manually writing forwarding wrappers for every method.
+   - Implement `InvocationHandler` to intercept method calls.
+3. **The Proxy Pattern Family**:
+   - **Protection Proxy**: Access control (demonstrated with dating profile permissions).
+   - **Remote Proxy**: RMI / RPC stub for remote network objects.
+   - **Virtual Proxy**: Lazy loading of expensive resources (e.g. high-resolution images).
+   - **Caching Proxy**: Transparently cache return values.
+4. **Spring AOP & The Self-Invocation Trap**:
+   - Understand why `@Transactional` and `@Cacheable` fail when method A calls method B in the same class (bypassing the proxy wrapper).
 
 ---
 
-## 🏗️ The Problem: Unprotected Access & Authorization Tampering
-Examine `src/main/java/com/course/patterns/proxy/problem/UnprotectedAccessProblem.java`:
-- Directly exposing `PersonImpl` allows users to tamper with their own geek rating (self-rating bias).
-- Non-owners can vandalize personal profile details (`setInterests`) without any access barrier.
+## 🏗️ The Problem: Unprotected Domain Objects in Starter
+Examine `PersonImpl.java`:
+- Any client with a reference to a `Person` can invoke any method without restriction.
+- **Flaws**:
+  - A user can artificially inflate their own rating score via `setGeekRating(10)`.
+  - Outside users can overwrite another person's personal interests and profile details via `setInterests(...)`.
 
-To resolve this, we implement the **Protection Proxy Pattern**:
-- `PersonProxyFactory.java`: Instantiates JDK Dynamic Proxies using `java.lang.reflect.Proxy`.
-- `OwnerInvocationHandler.java`: Blocks owners from setting their own rating (`IllegalAccessException`), while permitting updates to personal interests.
-- `NonOwnerInvocationHandler.java`: Permits outside users to submit ratings, while blocking unauthorized edits to personal profile details.
+To resolve this, we introduce **Protection Proxies** via Java's dynamic proxy mechanism:
+- `OwnerInvocationHandler`: Allows getters and profile mutations (`setName`, `setInterests`), but blocks `setGeekRating` by throwing `IllegalAccessException`.
+- `NonOwnerInvocationHandler`: Allows getters and rating (`setGeekRating`), but blocks profile mutations (`set*`).
+- `PersonProxyFactory`: Creates dynamic proxies using `Proxy.newProxyInstance()`.
 
 ---
 
 ## 📝 Refactoring Tasks
-1. Implement `OwnerInvocationHandler.invoke()`:
-   - If method is `get*`, delegate to `method.invoke(person, args)`.
-   - If method is `setGeekRating`, throw `IllegalAccessException("Owners cannot modify their own rating score!")`.
-   - If method is `set*`, delegate.
-2. Implement `NonOwnerInvocationHandler.invoke()`:
-   - If method is `get*` or `setGeekRating`, delegate.
-   - If method is `set*` (excluding rating), throw `IllegalAccessException("You cannot alter another user's personal profile!")`.
-3. In `PersonProxyFactory`: Build dynamic proxies via `Proxy.newProxyInstance(...)`.
+1. Create `OwnerInvocationHandler` implementing `InvocationHandler`.
+2. Create `NonOwnerInvocationHandler` implementing `InvocationHandler`.
+3. Create `PersonProxyFactory` creating dynamic proxies for owners and non-owners.
 
 ---
 
