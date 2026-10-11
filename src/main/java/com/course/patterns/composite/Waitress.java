@@ -1,25 +1,22 @@
 package com.course.patterns.composite;
 
-import java.util.List;
-
 /**
- * Starter Client:
- * Must explicitly manage a collection of flat Menu instances.
- * Cannot treat a menu and a menu item uniformly, and cannot handle arbitrary sub-menu nesting.
+ * CLEAN CODE SOLUTION:
+ * The Client:
+ * Interacts only with the root MenuComponent abstraction.
+ * Completely unaware of whether an item is a leaf or a composite.
  */
 public class Waitress {
 
-    private final List<Menu> menus;
+    private final MenuComponent allMenus;
 
-    public Waitress(List<Menu> menus) {
-        this.menus = menus;
+    public Waitress(MenuComponent allMenus) {
+        this.allMenus = allMenus;
     }
 
     public String printMenu() {
         StringBuilder out = new StringBuilder();
-        for (Menu menu : menus) {
-            menu.print(out);
-        }
+        allMenus.print(out);
         return out.toString();
     }
 }

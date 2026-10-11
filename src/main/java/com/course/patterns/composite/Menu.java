@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * STARTER ANTI-PATTERN: Flat Menu Container
- *
- * Flaws:
- * 1. Lack of Uniformity: Can only hold leaf MenuItem instances, not sub-menus.
- * 2. Inflexible Hierarchy: Cannot support arbitrary tree nesting (e.g. Dessert sub-menu inside Diner menu).
+ * CLEAN CODE SOLUTION:
+ * Composite Node in GoF Composite Pattern:
+ * - Implements child-management operations (add, remove, getChild).
+ * - Implements polymorphic recursion in print(): traverses every child component seamlessly,
+ *   regardless of whether the child is a Leaf (MenuItem) or another Composite (Sub-menu).
  */
-public class Menu {
+public class Menu extends MenuComponent {
 
-    private final List<MenuItem> menuItems = new ArrayList<>();
+    private final List<MenuComponent> menuComponents = new ArrayList<>();
     private final String name;
     private final String description;
 
@@ -21,31 +21,38 @@ public class Menu {
         this.description = description;
     }
 
-    public void add(MenuItem menuItem) {
-        menuItems.add(menuItem);
+    @Override
+    public void add(MenuComponent menuComponent) {
+        menuComponents.add(menuComponent);
     }
 
-    public void remove(MenuItem menuItem) {
-        menuItems.remove(menuItem);
+    @Override
+    public void remove(MenuComponent menuComponent) {
+        menuComponents.remove(menuComponent);
     }
 
-    public List<MenuItem> getMenuItems() {
-        return menuItems;
+    @Override
+    public MenuComponent getChild(int i) {
+        return menuComponents.get(i);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void print(StringBuilder out) {
         out.append("\n").append(getName()).append(", ").append(getDescription()).append("\n");
         out.append("---------------------\n");
-        for (MenuItem item : menuItems) {
-            item.print(out);
+
+        for (MenuComponent component : menuComponents) {
+            component.print(out);
         }
     }
 }

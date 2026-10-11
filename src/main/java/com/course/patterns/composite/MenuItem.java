@@ -1,9 +1,12 @@
 package com.course.patterns.composite;
 
 /**
- * Leaf item representing an individual menu dish.
+ * CLEAN CODE SOLUTION:
+ * Leaf Node in GoF Composite Pattern:
+ * Represents an individual menu item with no children.
+ * Inherits default UnsupportedOperationException for child-management methods.
  */
-public class MenuItem {
+public class MenuItem extends MenuComponent {
 
     private final String name;
     private final String description;
@@ -17,22 +20,27 @@ public class MenuItem {
         this.price = price;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public double getPrice() {
         return price;
     }
 
+    @Override
     public boolean isVegetarian() {
         return vegetarian;
     }
 
+    @Override
     public void print(StringBuilder out) {
         out.append("  ").append(getName());
         if (isVegetarian()) {
