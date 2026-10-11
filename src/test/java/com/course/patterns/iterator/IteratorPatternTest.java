@@ -10,40 +10,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IteratorPatternTest {
 
     @Test
-    @DisplayName("Verify DinerMenuIterator traverses array correctly without null pointers")
-    void testDinerMenuIterator() {
-        DinerMenu dinerMenu = new DinerMenu();
-        var iterator = dinerMenu.createIterator();
-
-        assertThat(iterator.hasNext()).isTrue();
-        assertThat(iterator.next().name()).isEqualTo("Vegetarian BLT");
-        assertThat(iterator.next().name()).isEqualTo("BLT");
-        assertThat(iterator.next().name()).isEqualTo("Soup of the day");
-        assertThat(iterator.hasNext()).isFalse();
+    @DisplayName("Verify PancakeHouseMenu stores items in a List")
+    void testPancakeHouseMenuList() {
+        PancakeHouseMenu menu = new PancakeHouseMenu();
+        assertThat(menu.getMenuItems()).hasSize(3);
+        assertThat(menu.getMenuItems().get(0).name()).isEqualTo("K&B's Pancake Breakfast");
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Client forced to write distinct incompatible traversal loops for Array vs List")
+    @DisplayName("Verify DinerMenu stores items in a fixed-size array with null slots")
+    void testDinerMenuArray() {
+        DinerMenu menu = new DinerMenu();
+        MenuItem[] items = menu.getMenuItems();
+        assertThat(items).hasSize(6);
+        assertThat(items[0].name()).isEqualTo("Vegetarian BLT");
+        assertThat(items[3]).isNull(); // Unfilled slots
+    }
+
+    @Test
+    @DisplayName("Problem Demonstration: Waitress forced to handle disparate collections with bespoke loops")
     void testHeterogeneousCollectionProblem() {
-        var pancake = new com.course.patterns.iterator.problem.HeterogeneousCollectionProblem.NaivePancakeHouse();
-        var diner = new com.course.patterns.iterator.problem.HeterogeneousCollectionProblem.NaiveDiner();
-
-        List<String> items = com.course.patterns.iterator.problem.HeterogeneousCollectionProblem.NaiveWaitress
-                .getAllItemsNaive(pancake, diner);
-
-        assertThat(items).containsExactly("Pancakes", "Waffles", "Burger", "Soup");
-    }
-
-    @Test
-    @DisplayName("Verify Waitress iterates over both ArrayList and Array menus uniformly")
-    void testWaitressUniformTraversal() {
-        Menu pancakeMenu = new PancakeHouseMenu();
-        Menu dinerMenu = new DinerMenu();
+        PancakeHouseMenu pancakeMenu = new PancakeHouseMenu();
+        DinerMenu dinerMenu = new DinerMenu();
 
         Waitress waitress = new Waitress(pancakeMenu, dinerMenu);
-        List<String> allItems = waitress.getAllItemNames();
+        List<String> names = waitress.getAllItemNames();
 
-        assertThat(allItems).containsExactly(
+        assertThat(names).containsExactly(
                 "K&B's Pancake Breakfast",
                 "Regular Pancake Breakfast",
                 "Blueberry Pancakes",
