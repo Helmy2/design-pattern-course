@@ -9,45 +9,37 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FactoryMethodTest {
 
     @Test
-    @DisplayName("Verify SimplePizzaFactory creates generic pizzas directly")
-    void testSimplePizzaFactory() {
-        SimplePizzaFactory factory = new SimplePizzaFactory();
-        Pizza pizza = factory.createPizza("cheese");
+    @DisplayName("Verify NYPizzaStore creates NY-style thin crust pizzas with diagonal cuts")
+    void testNYPizzaStore() {
+        PizzaStore nyStore = new NYPizzaStore();
+        Pizza pizza = nyStore.orderPizza("cheese");
 
-        assertThat(pizza).isNotNull();
-        assertThat(pizza.getName()).isEqualTo("Generic Cheese Pizza");
+        assertThat(pizza.getName()).isEqualTo("NY Style Sauce and Cheese Pizza");
+        assertThat(pizza.getDough()).isEqualTo("Thin Crust Dough");
+        assertThat(pizza.getSauce()).isEqualTo("Marinara Sauce");
+        assertThat(pizza.getCutStyle()).isEqualTo("diagonal");
+        assertThat(pizza.getToppings()).contains("Grated Reggiano Cheese");
     }
 
     @Test
-    @DisplayName("Verify PizzaStore delegates creation to SimplePizzaFactory and executes lifecycle")
-    void testPizzaStoreWithSimpleFactory() {
-        SimplePizzaFactory factory = new SimplePizzaFactory();
-        PizzaStore store = new PizzaStore(factory);
+    @DisplayName("Verify ChicagoPizzaStore creates deep dish pizzas with square cut override")
+    void testChicagoPizzaStore() {
+        PizzaStore chicagoStore = new ChicagoPizzaStore();
+        Pizza pizza = chicagoStore.orderPizza("cheese");
 
-        Pizza pizza = store.orderPizza("pepperoni");
-        assertThat(pizza).isNotNull();
-        assertThat(pizza.getName()).isEqualTo("Generic Pepperoni Pizza");
+        assertThat(pizza.getName()).isEqualTo("Chicago Style Deep Dish Cheese Pizza");
+        assertThat(pizza.getDough()).isEqualTo("Extra Thick Crust Dough");
+        assertThat(pizza.getSauce()).isEqualTo("Plum Tomato Sauce");
+        assertThat(pizza.getCutStyle()).isEqualTo("square");
+        assertThat(pizza.getToppings()).contains("Shredded Mozzarella Cheese");
     }
 
     @Test
-    @DisplayName("Verify PizzaStore throws IllegalArgumentException on unknown pizza type")
+    @DisplayName("Verify orderPizza template method rejects unknown pizza items cleanly")
     void testUnknownPizzaType() {
-        SimplePizzaFactory factory = new SimplePizzaFactory();
-        PizzaStore store = new PizzaStore(factory);
-
-        assertThatThrownBy(() -> store.orderPizza("hawaiian"))
+        PizzaStore store = new NYPizzaStore();
+        assertThatThrownBy(() -> store.orderPizza("pineapple"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Unknown pizza type");
-    }
-
-    @Test
-    @DisplayName("Limitation of Simple Factory: Cannot accommodate regional franchises without duplicating factories or losing franchisor control")
-    void testSimpleFactoryLimitation() {
-        SimplePizzaFactory factory = new SimplePizzaFactory();
-        PizzaStore store = new PizzaStore(factory);
-
-        // A single SimplePizzaFactory cannot satisfy regional New York or Chicago specialities
-        assertThatThrownBy(() -> store.orderPizza("ny-cheese"))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 }

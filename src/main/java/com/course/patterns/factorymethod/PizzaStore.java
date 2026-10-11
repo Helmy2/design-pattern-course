@@ -2,21 +2,17 @@ package com.course.patterns.factorymethod;
 
 /**
  * CLEAN CODE SOLUTION:
- * Simple Factory Idiom:
+ * The Factory Method Pattern
  *
- * PizzaStore delegates concrete instantiation to SimplePizzaFactory via composition (HAS-A).
- * The store now focuses purely on orchestrating the order lifecycle (prepare, bake, cut, box).
+ * Abstract Creator declaring the factory method.
+ * The orderPizza() template method coordinates the preparation lifecycle,
+ * deferring the decision of which concrete pizza class to instantiate to regional subclasses.
  */
-public class PizzaStore {
+public abstract class PizzaStore {
 
-    private final SimplePizzaFactory factory;
-
-    public PizzaStore(SimplePizzaFactory factory) {
-        this.factory = factory;
-    }
-
+    // Template method: orchestrates the immutable preparation procedure
     public Pizza orderPizza(String type) {
-        Pizza pizza = factory.createPizza(type);
+        Pizza pizza = createPizza(type);
         if (pizza == null) {
             throw new IllegalArgumentException("Unknown pizza type: " + type);
         }
@@ -28,4 +24,7 @@ public class PizzaStore {
 
         return pizza;
     }
+
+    // The Factory Method: deferred to regional creator subclasses
+    protected abstract Pizza createPizza(String type);
 }
