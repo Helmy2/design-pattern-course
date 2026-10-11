@@ -5,7 +5,7 @@
 ---
 
 ## 🎯 Learning Objectives
-1. **The Telescoping Constructor Anti-Pattern**: Overloaded constructors with 4+ permutations lead to positional bugs at the call site.
+1. **The Telescoping Constructor Anti-Pattern**: Overloaded constructors with 4+ permutations lead to positional bugs at the call site and resist cross-field invariant enforcement.
 2. **The JavaBeans Anti-Pattern**: Instantiating an empty object and invoking setters sequentially allows objects to escape in an inconsistent, half-initialized state and prevents field immutability (`final`).
 3. **The Gang of Four Builder Pattern**:
    - Private constructor in product to prevent direct instantiation via `new`.
@@ -17,24 +17,33 @@
 
 ---
 
-## 🏗️ The Problem: Telescoping & Mutable Inconsistency
-Examine `src/main/java/com/course/patterns/builder/`:
-- `TelescopingVacationPackage.java`: 5 overloaded constructors where swapping parameters causes silent runtime bugs.
-- `VacationPackage.java`: Needs a fluent static inner `Builder` class that validates date ordering and ensures travel insurance cannot be purchased without event tickets.
+## 🏗️ The Problem: Telescoping Constructors in `VacationPackage`
+Examine `VacationPackage.java`:
+- 4 overloaded constructors where swapping parameters causes silent runtime bugs.
+- No central place to enforce invariants: e.g., "start date must be before end date" or "travel insurance requires at least one event ticket".
+- Telescoping constructors scale poorly as optional parameters increase.
 
 ---
 
-## 📝 Refactoring Tasks
-1. Implement static inner `Builder` inside `VacationPackage`:
-   - Mandatory constructor: `Builder(LocalDate startDate, LocalDate endDate)`. Validate `startDate <= endDate`.
-   - Fluent setters: `.hotel(String hotel)`, `.addTicket(String ticket)`, `.travelInsurance(boolean insured)`.
-   - Terminal `.build()`: Assert that if `travelInsurance` is true, `tickets` cannot be empty.
-2. Inspect `KotlinVacationConfig.kt` to observe how Kotlin achieves fluent named configuration natively.
+## 📝 Refactoring Tasks (Applying Builder In-Place)
+1. **Refactor `VacationPackage` In-Place**:
+   - Make the constructor `private VacationPackage(Builder builder)`.
+   - Guarantee immutability by wrapping `tickets` with `Collections.unmodifiableList(new ArrayList<>(builder.tickets))`.
+2. **Implement Static Inner `Builder`**:
+   - Mandatory constructor: `Builder(LocalDate startDate, LocalDate endDate)`. Validate `startDate != null`, `endDate != null`, and `!startDate.isAfter(endDate)`.
+   - Fluent setters:
+     - `.hotel(String hotel)`
+     - `.addTicket(String ticket)`
+     - `.travelInsurance(boolean insured)`
+   - Terminal `.build()`: Assert that if `travelInsurance` is true, `tickets` cannot be empty!
+3. **Inspect Kotlin Alternative**:
+   - Check `KotlinVacationConfig.kt` to observe how modern Kotlin solves this natively with default values and named arguments.
 
 ---
 
 ## 🧪 Verification
-Run tests:
+Run tests on starter:
 ```bash
 ./gradlew test --tests "com.course.patterns.builder.*"
 ```
+Switch to `09-pattern-builder-solution` to review the refactored Builder solution!
