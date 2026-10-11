@@ -52,10 +52,11 @@ This document indexes all 40 concept branches (20 starter/solution pairs) in the
 - **Key Files:** `com.course.patterns.singleton.*`
 - **Tests:** `SingletonConcurrencyTest`
 
-### Concept 07: Factory Method Pattern
+### Concept 07: Factory Method & Simple Factory Pattern
 - **Starter Branch:** `07-pattern-factory-method-starter`
-- **Solution Branch:** `07-pattern-factory-method-solution`
-- **Focus:** Simple Factory idiom vs GoF Factory Method framework. Creator hierarchy (`PizzaStore`, `NYPizzaStore`, `ChicagoPizzaStore`) and Product hierarchy (`Pizza`, `NYStyleCheesePizza`, `ChicagoStyleCheesePizza`).
+- **Simple Factory Solution Branch:** `07-pattern-simple-factory-solution`
+- **Factory Method Solution Branch:** `07-pattern-factory-method-solution`
+- **Focus:** 3-step linear progression: (1) Monolithic PizzaStore with inline instantiation anti-pattern; (2) Simple Factory extraction idiom; (3) GoF Factory Method framework with Creator hierarchy (`PizzaStore`, `NYPizzaStore`, `ChicagoPizzaStore`) and Product hierarchy (`Pizza`, `NYStyleCheesePizza`, `ChicagoStyleCheesePizza`).
 - **Key Files:** `com.course.patterns.factorymethod.*`
 - **Tests:** `FactoryMethodTest`
 
