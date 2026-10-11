@@ -1,29 +1,50 @@
-# Lesson 07: Factory Method Pattern
+# Lesson 08: Abstract Factory Pattern
 
-> "Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses."
+> "Provide an interface for creating families of related or dependent objects without specifying their concrete classes."
 
 ---
 
 ## 🎯 Learning Objectives
-1. **The Peril of `new`**: Instantiating concrete classes directly binds client code to implementations, violating the Open/Closed Principle.
-2. **Simple Factory (Idiom)**: Encapsulates instantiation in a standalone helper class. Good for basic consolidation, but lacks architectural flexibility for regional variation.
-3. **The Factory Method Framework**:
-   - **Creator Hierarchy**: `PizzaStore` (abstract creator) declares `protected abstract Pizza createPizza(String type)` and coordinates the standard procedure `orderPizza()`. Subclasses (`NYPizzaStore`, `ChicagoPizzaStore`) implement `createPizza()`.
-   - **Product Hierarchy**: `Pizza` (abstract product) and concrete products (`NYStyleCheesePizza`, `ChicagoStyleCheesePizza`).
-4. **Parallel Class Hierarchies**: Understand how creators and products evolve in lockstep without tight coupling.
+1. **Building on Factory Method (Lesson 07)**:
+   - In Lesson 07, we created `PizzaStore`, `NYPizzaStore`, and `ChicagoPizzaStore`.
+   - But notice the new architectural flaw: each store creates subclasses (`NYStyleCheesePizza`, `ChicagoStyleCheesePizza`) where **ingredients are hardcoded directly in each pizza class**.
+2. **Subclass Explosion**:
+   - For $N$ regional styles and $M$ pizza varieties, we are forced to maintain $N \times M$ concrete pizza subclasses (`NYStyleCheesePizza`, `NYStyleClamPizza`, `ChicagoStyleCheesePizza`, `ChicagoStyleClamPizza`, ...).
+3. **The Abstract Factory Solution**:
+   - Instead of regional pizza subclasses, we create a single generic `CheesePizza` and `ClamPizza`.
+   - Each pizza **composes** a `PizzaIngredientFactory` (`NYPizzaIngredientFactory`, `ChicagoPizzaIngredientFactory`) to dynamically produce authentic regional ingredients.
+4. **Factory Method vs. Abstract Factory**:
+   - Factory Method uses **inheritance** (`PizzaStore.createPizza()`).
+   - Abstract Factory uses **object composition** (`pizza.ingredientFactory.createDough()`).
 
 ---
 
-## 🏗️ Architectural Evolution
-1. **Stage 1 (`07-pattern-factory-method-starter`)**: Monolithic `PizzaStore` with inline `new` statements.
-2. **Stage 2 (`07-pattern-simple-factory-solution`)**: Standalone `SimplePizzaFactory` composed inside `PizzaStore`.
-3. **Stage 3 (`07-pattern-factory-method-solution`)**: Full GoF Factory Method framework with regional creators.
+## 🏗️ The Problem: Franchise Ingredient Inconsistency
+Examine `NYPizzaStore.java` and `ChicagoPizzaStore.java`:
+- Every regional pizza hardcodes its own concrete ingredients (`new ThinCrustDough()`, `new MarinaraSauce()`).
+- High-level pizza classes directly depend on low-level concretes (violating DIP).
+- Franchisees can swap or omit ingredients because there is no factory contract enforcing a coherent product family.
+
+---
+
+## 📝 Refactoring Tasks
+1. **Define the Abstract Factory**:
+   - Create `PizzaIngredientFactory` declaring `createDough()`, `createSauce()`, `createCheese()`, `createClams()`.
+2. **Implement Regional Factories**:
+   - `NYPizzaIngredientFactory`: returns authentic NY ingredients (`ThinCrustDough`, `MarinaraSauce`, `ReggianoCheese`, `FreshClams`).
+   - `ChicagoPizzaIngredientFactory`: returns authentic Chicago ingredients (`ThickCrustDough`, `PlumTomatoSauce`, `MozzarellaCheese`, `FrozenClams`).
+3. **Refactor Pizza Classes In-Place via Composition**:
+   - Replace regional pizza subclasses with generic `CheesePizza` and `ClamPizza`.
+   - Pass `PizzaIngredientFactory` into their constructors.
+   - In `prepare()`, dynamically assemble ingredients from the factory.
+4. **Update `NYPizzaStore` and `ChicagoPizzaStore`**:
+   - Pass their respective regional factory into `new CheesePizza(ingredientFactory)`.
 
 ---
 
 ## 🧪 Verification
-Run tests to verify the solution:
+Run tests on starter:
 ```bash
-./gradlew test --tests "com.course.patterns.factorymethod.*"
+./gradlew test --tests "com.course.patterns.abstractfactory.*"
 ```
-All assertions pass green!
+Switch to `08-pattern-abstract-factory-solution` to review the complete Abstract Factory solution!
