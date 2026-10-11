@@ -1,33 +1,29 @@
-# Lesson 07A: Simple Factory (The Programming Idiom)
+# Lesson 07: Factory Method Pattern
 
-> "Encapsulate what varies. If object creation varies across changes, move instantiation into an object whose only job is to create products."
+> "Define an interface for creating an object, but let subclasses decide which class to instantiate. Factory Method lets a class defer instantiation to subclasses."
 
 ---
 
 ## 🎯 Learning Objectives
-1. **The Role of Simple Factory**: Centralize instantiation into a dedicated object (`SimplePizzaFactory`).
-2. **Decoupling Client Logic**: `PizzaStore` depends on the factory rather than directly invoking `new` on concrete pizza classes.
-3. **Recognizing the Limit**: Simple Factory solves code duplication, but cannot support regional franchises while enforcing franchisor standards.
+1. **The Peril of `new`**: Instantiating concrete classes directly binds client code to implementations, violating the Open/Closed Principle.
+2. **Simple Factory (Idiom)**: Encapsulates instantiation in a standalone helper class. Good for basic consolidation, but lacks architectural flexibility for regional variation.
+3. **The Factory Method Framework**:
+   - **Creator Hierarchy**: `PizzaStore` (abstract creator) declares `protected abstract Pizza createPizza(String type)` and coordinates the standard procedure `orderPizza()`. Subclasses (`NYPizzaStore`, `ChicagoPizzaStore`) implement `createPizza()`.
+   - **Product Hierarchy**: `Pizza` (abstract product) and concrete products (`NYStyleCheesePizza`, `ChicagoStyleCheesePizza`).
+4. **Parallel Class Hierarchies**: Understand how creators and products evolve in lockstep without tight coupling.
 
 ---
 
-## 🏗️ Refactoring Summary (Starter ➔ Simple Factory)
-- `SimplePizzaFactory.java`: Contains the `createPizza(String type)` factory method.
-- `PizzaStore.java`: Injected with `SimplePizzaFactory` in its constructor. `orderPizza()` delegates to `factory.createPizza(type)`.
-
----
-
-## 🚀 The Next Challenge: Regional Franchising
-In the next stage (`07-pattern-factory-method-solution`), we need regional franchises:
-- `NYPizzaStore`: makes New York style pizzas (thin crust, marinara, diagonal slices).
-- `ChicagoPizzaStore`: makes Chicago style deep-dish pizzas (thick crust, plum tomato sauce, square slices).
-- The corporate franchisor must guarantee that every store strictly follows the `orderPizza()` template (`prepare()`, `bake()`, `cut()`, `box()`), without rogue deviations.
+## 🏗️ Architectural Evolution
+1. **Stage 1 (`07-pattern-factory-method-starter`)**: Monolithic `PizzaStore` with inline `new` statements.
+2. **Stage 2 (`07-pattern-simple-factory-solution`)**: Standalone `SimplePizzaFactory` composed inside `PizzaStore`.
+3. **Stage 3 (`07-pattern-factory-method-solution`)**: Full GoF Factory Method framework with regional creators.
 
 ---
 
 ## 🧪 Verification
-Run tests on this branch:
+Run tests to verify the solution:
 ```bash
 ./gradlew test --tests "com.course.patterns.factorymethod.*"
 ```
-Switch to `07-pattern-factory-method-solution` to see how GoF Factory Method solves the regional franchise challenge!
+All assertions pass green!
