@@ -1,38 +1,41 @@
 # Lesson 13: Composite Pattern
 
-> "Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly."
+> "Composes objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly."
 
 ---
 
 ## 🎯 Learning Objectives
-1. **Part-Whole Hierarchies**: Model recursive nested structures (like a Dessert sub-menu nested inside a Dinner menu, or directories holding subdirectories and files).
-2. **Uniform Treatment**: Client code does not branch with `if (item instanceof SubMenu)` or maintain separate loops. It calls `print()` on any `MenuComponent` uniformly.
-3. **Polymorphic Recursion**: In container nodes (`Menu`), operations iterate over children and delegate polymorphically down the tree branch.
-4. **Transparency vs. Safety Trade-Off**:
-   - **Transparency (chosen here)**: Placing child-management methods (`add`, `remove`, `getChild`) in the abstract base class `MenuComponent` makes leaves and composites interchangeable to clients, but leaves throw `UnsupportedOperationException` if called.
-   - **Safety**: Defining child management exclusively in `Menu` avoids runtime errors on leaves, but loses uniformity and forces clients to typecast.
+1. **Part-Whole Hierarchies**: Model recursive tree structures containing both individual elements (Leaves) and containers (Composites).
+2. **Uniformity of Client Code**: The client interacts exclusively with the abstract `Component` type, eliminating boilerplate type checks (`instanceof`) and disparate loops.
+3. **Transparency vs. Safety Trade-Off**:
+   - **Transparency**: Component declares child management methods (`add()`, `remove()`, `getChild()`). Leaves throw `UnsupportedOperationException`. Client treats all nodes identically.
+   - **Safety**: Only Composite declares child management methods. Leaves do not have invalid methods, but client loses uniformity and must cast.
+4. **Polymorphic Recursion**: Composite delegates operations down to all its children, automatically traversing arbitrary tree depth.
 
 ---
 
-## 🏗️ The Problem: Inflexible Tree Hierarchies in Starter
-Examine `src/main/java/com/course/patterns/composite/problem/InflexibleMenuHierarchyProblem.java`:
-- Individual items (`FlatMenuItem`) and sub-menus (`NestedSubMenu`) have incompatible types.
-- Client printers are burdened with separate loops and cannot handle arbitrary nesting depth (e.g., dessert sub-menus inside diner menus).
+## 🏗️ The Problem: Inflexible Flat Hierarchies in Starter
+Examine `Menu.java` and `Waitress.java`:
+- `Menu` holds a flat `List<MenuItem>`. It can only add leaf items (`add(MenuItem)`), not sub-menus.
+- Attempting to add a dessert sub-menu into the diner menu fails compilation:
+  ```java
+  dinerMenu.add(dessertMenu); // Compilation error! Menu only accepts MenuItem.
+  ```
+- The client (`Waitress`) is forced to manage a flat `List<Menu>` rather than a unified tree root.
 
-To resolve this, we implement the **Composite Pattern**:
-- `MenuComponent.java`: Unified abstract base class for both leaves and composites.
-- `MenuItem.java`: Leaf node representing individual dishes.
-- `Menu.java`: Composite node containing `List<MenuComponent>`, delegating `print()` recursively.
-- `Waitress.java`: Client that triggers menu printing with a single polymorphic call.
+To resolve this, we introduce the **Composite Pattern**:
+- Create `MenuComponent.java` as the abstract component.
+- Refactor `MenuItem` and `Menu` to extend `MenuComponent`.
+- Refactor `Waitress` to hold a single root `MenuComponent`.
 
 ---
 
 ## 📝 Refactoring Tasks
-1. Implement `Menu`:
-   - Store child components in `List<MenuComponent>`.
-   - Implement `add(MenuComponent)` and `remove(MenuComponent)`.
-   - Implement `print()`: Print menu name & description, then loop through all child components and call `child.print()` recursively!
-2. In `Waitress`: Verify uniform traversal across root menus, sub-menus, and leaf items.
+1. Create `MenuComponent.java` with default `UnsupportedOperationException` methods.
+2. Refactor `MenuItem.java` to extend `MenuComponent`.
+3. Refactor `Menu.java` to extend `MenuComponent` and manage `List<MenuComponent>`.
+4. Implement polymorphic recursion in `Menu.print(StringBuilder out)`.
+5. Refactor `Waitress.java` to accept a root `MenuComponent`.
 
 ---
 

@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * STARTER CODE:
- * Composite Node:
- * Holds children (leaves and sub-menus) and delegates operations down the tree branch.
+ * STARTER ANTI-PATTERN: Flat Menu Container
+ *
+ * Flaws:
+ * 1. Lack of Uniformity: Can only hold leaf MenuItem instances, not sub-menus.
+ * 2. Inflexible Hierarchy: Cannot support arbitrary tree nesting (e.g. Dessert sub-menu inside Diner menu).
  */
-public class Menu extends MenuComponent {
+public class Menu {
 
-    private final List<MenuComponent> menuComponents = new ArrayList<>();
+    private final List<MenuItem> menuItems = new ArrayList<>();
     private final String name;
     private final String description;
 
@@ -19,35 +21,31 @@ public class Menu extends MenuComponent {
         this.description = description;
     }
 
-    @Override
-    public void add(MenuComponent menuComponent) {
-        // TODO: Step 1 - Add to child list
+    public void add(MenuItem menuItem) {
+        menuItems.add(menuItem);
     }
 
-    @Override
-    public void remove(MenuComponent menuComponent) {
-        // TODO: Step 2 - Remove from child list
+    public void remove(MenuItem menuItem) {
+        menuItems.remove(menuItem);
     }
 
-    @Override
-    public MenuComponent getChild(int i) {
-        return menuComponents.get(i);
+    public List<MenuItem> getMenuItems() {
+        return menuItems;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public void print(StringBuilder out) {
-        // TODO: Step 3 - Print menu header, then polymorphically iterate and call child.print(out)
         out.append("\n").append(getName()).append(", ").append(getDescription()).append("\n");
         out.append("---------------------\n");
+        for (MenuItem item : menuItems) {
+            item.print(out);
+        }
     }
 }
