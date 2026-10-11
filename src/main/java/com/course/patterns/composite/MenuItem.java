@@ -1,9 +1,9 @@
 package com.course.patterns.composite;
 
 /**
- * Leaf Node: Represents an individual menu item with no children.
+ * Leaf item representing an individual menu dish.
  */
-public class MenuItem extends MenuComponent {
+public class MenuItem {
 
     private final String name;
     private final String description;
@@ -17,27 +17,22 @@ public class MenuItem extends MenuComponent {
         this.price = price;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    @Override
     public double getPrice() {
         return price;
     }
 
-    @Override
     public boolean isVegetarian() {
         return vegetarian;
     }
 
-    @Override
     public void print(StringBuilder out) {
         out.append("  ").append(getName());
         if (isVegetarian()) {
