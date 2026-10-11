@@ -10,30 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IteratorPatternTest {
 
     @Test
-    @DisplayName("Verify PancakeHouseMenu stores items in a List")
-    void testPancakeHouseMenuList() {
-        PancakeHouseMenu menu = new PancakeHouseMenu();
-        assertThat(menu.getMenuItems()).hasSize(3);
-        assertThat(menu.getMenuItems().get(0).name()).isEqualTo("K&B's Pancake Breakfast");
-    }
+    @DisplayName("Verify Waitress polymorphically traverses heterogeneous collections via Iterator")
+    void testWaitressUnifiedIteration() {
+        Menu pancakeHouseMenu = new PancakeHouseMenu();
+        Menu dinerMenu = new DinerMenu();
 
-    @Test
-    @DisplayName("Verify DinerMenu stores items in a fixed-size array with null slots")
-    void testDinerMenuArray() {
-        DinerMenu menu = new DinerMenu();
-        MenuItem[] items = menu.getMenuItems();
-        assertThat(items).hasSize(6);
-        assertThat(items[0].name()).isEqualTo("Vegetarian BLT");
-        assertThat(items[3]).isNull(); // Unfilled slots
-    }
-
-    @Test
-    @DisplayName("Problem Demonstration: Waitress forced to handle disparate collections with bespoke loops")
-    void testHeterogeneousCollectionProblem() {
-        PancakeHouseMenu pancakeMenu = new PancakeHouseMenu();
-        DinerMenu dinerMenu = new DinerMenu();
-
-        Waitress waitress = new Waitress(pancakeMenu, dinerMenu);
+        Waitress waitress = new Waitress(pancakeHouseMenu, dinerMenu);
         List<String> names = waitress.getAllItemNames();
 
         assertThat(names).containsExactly(
@@ -44,5 +26,37 @@ class IteratorPatternTest {
                 "BLT",
                 "Soup of the day"
         );
+    }
+
+    @Test
+    @DisplayName("Verify DinerMenuIterator stops cleanly before null array slots")
+    void testDinerMenuIteratorBounds() {
+        DinerMenu dinerMenu = new DinerMenu();
+        var it = dinerMenu.createIterator();
+
+        int count = 0;
+        while (it.hasNext()) {
+            MenuItem item = it.next();
+            assertThat(item).isNotNull();
+            count++;
+        }
+        assertThat(count).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("Verify modern Java internal iteration via Streams filter")
+    void testJavaStreamsEvolution() {
+        List<MenuItem> items = List.of(
+                new MenuItem("Pancake", "Fresh", true, 2.99),
+                new MenuItem("Bacon", "Crispy", false, 3.99),
+                new MenuItem("Salad", "Greens", true, 4.50)
+        );
+
+        List<String> vegetarianNames = items.stream()
+                .filter(MenuItem::vegetarian)
+                .map(MenuItem::name)
+                .toList();
+
+        assertThat(vegetarianNames).containsExactly("Pancake", "Salad");
     }
 }

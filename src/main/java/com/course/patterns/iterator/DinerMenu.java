@@ -1,6 +1,8 @@
 package com.course.patterns.iterator;
 
-public class DinerMenu {
+import java.util.Iterator;
+
+public class DinerMenu implements Menu {
     private static final int MAX_ITEMS = 6;
     private int numberOfItems = 0;
     private final MenuItem[] menuItems;
@@ -19,7 +21,8 @@ public class DinerMenu {
         }
     }
 
-    public MenuItem[] getMenuItems() {
-        return menuItems;
+    @Override
+    public Iterator<MenuItem> createIterator() {
+        return new DinerMenuIterator(menuItems);
     }
 }
