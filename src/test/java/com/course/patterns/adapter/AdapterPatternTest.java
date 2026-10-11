@@ -1,6 +1,7 @@
 package com.course.patterns.adapter;
 
 import com.course.patterns.adapter.hexagonal.PaymentGatewayPort;
+import com.course.patterns.adapter.hexagonal.StripePaymentAdapter;
 import com.course.patterns.adapter.hexagonal.ThirdPartyStripeSdk;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,23 +33,18 @@ class AdapterPatternTest {
     }
 
     @Test
-    @DisplayName("Demonstrate interface incompatibility: Turkey cannot be passed directly to DuckSimulator")
-    void testIncompatibleInterfaceProblem() {
+    @DisplayName("Verify TurkeyAdapter allows DuckSimulator to treat Turkey polymorphically as a Duck")
+    void testTurkeyAdapter() {
         Turkey turkey = new WildTurkey();
-        // A Turkey has gobble(), not quack(); cannot be passed to methods expecting Duck:
-        // DuckSimulator simulator = new DuckSimulator();
-        // simulator.simulate(turkey); // Compilation error! Turkey does not implement Duck.
-        assertThat(turkey.gobble()).isEqualTo("Gobble gobble");
-    }
+        Duck adaptedTurkey = new TurkeyAdapter(turkey);
+        DuckSimulator simulator = new DuckSimulator();
 
-    @Test
-    @DisplayName("Demonstrate hexagonal port incompatibility: ThirdPartyStripeSdk does not implement PaymentGatewayPort")
-    void testHexagonalIncompatibility() {
-        ThirdPartyStripeSdk sdk = new ThirdPartyStripeSdk();
-        // Domain requires PaymentGatewayPort:
-        // PaymentGatewayPort port = sdk; // Compilation error! SDK does not implement PaymentGatewayPort.
-        ThirdPartyStripeSdk.VendorChargeResponse response = sdk.createCharge("cust_123", 4999, "usd");
-        assertThat(response.paid()).isTrue();
+        assertThat(adaptedTurkey.quack()).isEqualTo("Gobble gobble");
+        assertThat(adaptedTurkey.fly()).contains("I'm flying a short distance");
+        assertThat(adaptedTurkey.fly().split("\n")).hasSize(5);
+
+        String simulationResult = simulator.simulate(adaptedTurkey);
+        assertThat(simulationResult).startsWith("Gobble gobble | I'm flying a short distance");
     }
 
     @Test
@@ -66,5 +62,17 @@ class AdapterPatternTest {
 
         assertThatThrownBy(iterator::remove)
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    @DisplayName("Verify Hexagonal Driven Adapter StripePaymentAdapter maps domain types cleanly")
+    void testStripePaymentAdapter() {
+        ThirdPartyStripeSdk sdk = new ThirdPartyStripeSdk();
+        PaymentGatewayPort port = new StripePaymentAdapter(sdk);
+
+        PaymentGatewayPort.PaymentConfirmation confirmation = port.charge("cust_123", 49.99);
+        assertThat(confirmation.successful()).isTrue();
+        assertThat(confirmation.amount()).isEqualTo(49.99);
+        assertThat(confirmation.transactionId()).startsWith("ch_");
     }
 }
