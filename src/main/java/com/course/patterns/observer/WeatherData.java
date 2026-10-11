@@ -1,45 +1,36 @@
 package com.course.patterns.observer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * STARTER CODE:
- * Concrete Subject:
- * Manages observer registrations and broadcasts notifications upon state changes.
+ * STARTER ANTI-PATTERN: Tightly Coupled Weather Publisher
+ *
+ * Flaws:
+ * 1. Tight Coupling to Concrete Classes: Directly references specific display instances.
+ * 2. Violates Open/Closed Principle: Adding a new display requires modifying WeatherData.
+ * 3. Cannot Dynamically Subscribe/Unsubscribe: Displays cannot be attached or detached at runtime.
  */
-public class WeatherData implements Subject {
-
-    private final List<Observer> observers = new ArrayList<>();
+public class WeatherData {
     private float temperature;
     private float humidity;
     private float pressure;
 
-    @Override
-    public void registerObserver(Observer o) {
-        // TODO: Step 1 - Add observer to list
-        observers.add(o);
+    private final CurrentConditionsDisplay currentDisplay;
+    private final ForecastDisplay forecastDisplay;
+
+    public WeatherData(CurrentConditionsDisplay currentDisplay, ForecastDisplay forecastDisplay) {
+        this.currentDisplay = currentDisplay;
+        this.forecastDisplay = forecastDisplay;
     }
 
-    @Override
-    public void removeObserver(Observer o) {
-        // TODO: Step 2 - Remove observer from list
-        observers.remove(o);
-    }
-
-    @Override
-    public void notifyObservers() {
-        // TODO: Step 3 - Iterate through observers and call observer.update()
-        for (Observer observer : observers) {
-            observer.update();
-        }
+    public void measurementsChanged() {
+        currentDisplay.update(temperature, humidity);
+        forecastDisplay.update(pressure);
     }
 
     public void setMeasurements(float temperature, float humidity, float pressure) {
         this.temperature = temperature;
         this.humidity = humidity;
         this.pressure = pressure;
-        notifyObservers();
+        measurementsChanged();
     }
 
     public float getTemperature() { return temperature; }
