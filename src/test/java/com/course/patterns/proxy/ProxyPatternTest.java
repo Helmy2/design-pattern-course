@@ -23,8 +23,9 @@ class ProxyPatternTest {
     @Test
     @DisplayName("Problem Demonstration: Unprotected access allows user to tamper with own rating and strangers to vandalize profile")
     void testUnprotectedAccessProblem() {
-        Person profile = com.course.patterns.proxy.problem.UnprotectedAccessProblem
-                .createVulnerableProfile("Alice", "Photography");
+        Person profile = new PersonImpl();
+        profile.setName("Alice");
+        profile.setInterests("Photography");
 
         // Security flaw: Alice directly inflates her own score without authorization!
         profile.setGeekRating(10);
