@@ -5,23 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * STARTER PROBLEM CODE:
- *
- * NetworkSecurityProfile before applying the Prototype Pattern:
- *
- * 1. Heavy Configuration & Concrete Coupling:
- *    To instantiate or duplicate profiles for different tenants, client code is forced
- *    to directly invoke 'new NetworkSecurityProfile(...)'.
- *
- * 2. Manual Property Copying:
- *    Without a standardized clone() contract, clients must manually extract every property
- *    via getters and construct a duplicate from outside, violating encapsulation.
- *
- * 3. Cannot Duplicate via Abstractions:
- *    If client code only holds a high-level reference to a profile, it cannot create a copy
- *    without coupling to concrete classes and performing awkward type checks.
+ * CLEAN CODE SOLUTION:
+ * Typed Prototype Pattern with Deep Copying:
+ * - Avoids Java's flawed Cloneable interface.
+ * - Deep copy constructor allocates a distinct ArrayList on heap for collections,
+ *   preventing shared mutable state bugs between prototypes and clones.
  */
-public class NetworkSecurityProfile {
+public class NetworkSecurityProfile implements Prototype<NetworkSecurityProfile> {
 
     private String profileName;
     private int maxBandwidthMbps;
@@ -31,6 +21,21 @@ public class NetworkSecurityProfile {
         this.profileName = profileName;
         this.maxBandwidthMbps = maxBandwidthMbps;
         this.firewallRules = new ArrayList<>(firewallRules);
+    }
+
+    // Deep Copy Constructor
+    public NetworkSecurityProfile(NetworkSecurityProfile target) {
+        if (target != null) {
+            this.profileName = target.profileName;
+            this.maxBandwidthMbps = target.maxBandwidthMbps;
+            // Complete memory isolation (Deep Copy)
+            this.firewallRules = new ArrayList<>(target.firewallRules);
+        }
+    }
+
+    @Override
+    public NetworkSecurityProfile clone() {
+        return new NetworkSecurityProfile(this);
     }
 
     public void addRule(String rule) {
