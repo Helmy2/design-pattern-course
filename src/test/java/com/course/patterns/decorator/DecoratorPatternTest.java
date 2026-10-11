@@ -26,19 +26,28 @@ class DecoratorPatternTest {
     }
 
     @Test
-    @DisplayName("Problem Demonstration: Rigid boolean flags cannot handle multiple portions (e.g. Double Mocha)")
-    void testBeverageBooleanFlagsProblem() {
-        DarkRoast coffee = new DarkRoast();
-        coffee.setMocha(true);
-        coffee.setWhip(true);
+    @DisplayName("Verify Dark Roast with Double Mocha and Whip computes layered cost and description")
+    void testDarkRoastWithDoubleMochaAndWhip() {
+        Beverage beverage = new DarkRoast(); // 0.99
+        beverage = new Mocha(beverage);      // +0.20 -> 1.19
+        beverage = new Mocha(beverage);      // +0.20 -> 1.39
+        beverage = new Whip(beverage);       // +0.10 -> 1.49
 
-        // Single portions work: 0.99 + 0.20 + 0.10 = 1.29
-        assertThat(coffee.cost()).isCloseTo(1.29, within(0.001));
+        assertThat(beverage.getDescription())
+                .isEqualTo("Most Excellent Dark Roast, Mocha, Mocha, Whip");
+        assertThat(beverage.cost()).isCloseTo(1.49, within(0.001));
+    }
 
-        // BUT: What if customer wants a Double Mocha?
-        // Setting mocha = true again has no effect - boolean cannot represent count!
-        coffee.setMocha(true);
-        assertThat(coffee.cost()).isCloseTo(1.29, within(0.001)); // Still 1.29 instead of 1.49!
+    @Test
+    @DisplayName("Verify Espresso with Soy and Whip")
+    void testEspressoWithSoyAndWhip() {
+        Beverage beverage = new Espresso();  // 1.99
+        beverage = new Soy(beverage);        // +0.15 -> 2.14
+        beverage = new Whip(beverage);       // +0.10 -> 2.24
+
+        assertThat(beverage.getDescription())
+                .isEqualTo("Espresso, Soy, Whip");
+        assertThat(beverage.cost()).isCloseTo(2.24, within(0.001));
     }
 
     @Test
