@@ -4,14 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * STARTER CODE:
- * Polyadic method with 8 parameters - fragile and error prone at call site.
+ * STARTER ANTI-PATTERN: Polyadic Method & Primitive Obsession
+ * searchProducts takes 8 positional arguments, causing high cognitive load
+ * and fragile call sites where arguments can easily be transposed.
  */
 public class ProductCatalogService {
 
     public record Product(String id, String name, double price, LocalDate dateAdded, boolean inStock) {}
 
-    // TODO: Step 1 - Introduce Parameter Object: PriceRange, DateRange, and ProductSearchCriteria
     public List<Product> searchProducts(
             String query,
             Double minPrice,

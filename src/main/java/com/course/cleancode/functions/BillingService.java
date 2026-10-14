@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * STARTER CODE:
- * Flag argument smell: boolean argument controls two completely different business branches.
+ * STARTER ANTI-PATTERN: Flag Argument Smell
+ * A boolean argument controls two completely different execution paths,
+ * forcing the function to do more than one thing.
  */
 public class BillingService {
 
@@ -13,7 +14,6 @@ public class BillingService {
 
     private final List<String> auditLogs = new ArrayList<>();
 
-    // TODO: Step 2 - Eliminate flag argument: split into processUrgentInvoice and processStandardInvoice
     public void processInvoice(Invoice invoice, boolean isUrgent) {
         if (isUrgent) {
             auditLogs.add("CHARGED_IMMEDIATE:" + invoice.amount());
