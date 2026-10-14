@@ -1,11 +1,10 @@
 package com.course.cleancode.naming;
 
 /**
- * STARTER CODE:
- * Redundant 'addr*' prefixes inside Address class context.
+ * STARTER ANTI-PATTERN: Redundant Context Prefixes
+ * Field and getter names repeat the enclosing class context ('addrStreet', 'addrCity', 'addrZipCode').
  */
 public class Address {
-    // TODO: Step 6 - Eliminate redundant prefixes ('street', 'city', 'zipCode')
     private String addrStreet;
     private String addrCity;
     private String addrZipCode;

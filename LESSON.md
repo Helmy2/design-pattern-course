@@ -23,11 +23,11 @@ In this starter branch, examine `src/main/java/com/course/cleancode/naming/`:
 
 ---
 
-## 📝 Refactoring Tasks (Follow TODOs)
-1. In `DtaRcrd102.java`: Rename class to `CustomerRecord`, fields to `generationTimestamp`, `modificationTimestamp`, `recordId`. Replace magic numbers with named constants `ROLE_ADMIN = 7` and `SECONDS_IN_A_DAY = 86400`.
-2. In `ProcessOrder.java`: Rename class to `OrderProcessor`, `transaction()` to `processPayment()`, `flag()` to `hasExpired()`.
-3. In `Address.java`: Remove redundant `addr` prefixes.
-4. In `LegacyQueryServices.java`: Standardize query methods across all services to `findById(String id)`.
+## 📝 Refactoring Tasks
+1. Refactor `DtaRcrd102.java` to `CustomerRecord.java`: Rename fields to `generationTimestamp`, `modificationTimestamp`, `recordId`. Replace magic numbers with named constants `ROLE_ADMIN = 7` and `SECONDS_IN_A_DAY = 86400`.
+2. Refactor `ProcessOrder.java` to `OrderProcessor.java`: Rename `transaction()` to `processPayment()`, `flag()` to `hasExpired()`.
+3. Refactor `Address.java`: Remove redundant `addr` prefixes.
+4. Refactor `LegacyQueryServices.java` to `StandardQueryServices.java`: Standardize query methods across all services to `findById(String id)`.
 
 ---
 
@@ -36,4 +36,4 @@ Run tests using:
 ```bash
 ./gradlew test --tests "com.course.cleancode.naming.*"
 ```
-Initially, tests fail due to unfulfilled naming contracts and TODOs. Refactor until all tests pass!
+All assertions pass to verify starter behavior!
