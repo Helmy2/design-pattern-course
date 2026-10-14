@@ -11,8 +11,6 @@ public class TransactionService {
 
     public record Transaction(String id, LocalDate date, double amount) {}
 
-    // TODO: Step 3 - Introduce Parameter Object & Preserve Whole Object:
-    // Accept DateRange directly instead of separate start and end dates
     public int countTransactionsWithinRange(List<Transaction> transactions, LocalDate start, LocalDate end) {
         int count = 0;
         for (Transaction tx : transactions) {

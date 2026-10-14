@@ -13,7 +13,6 @@ public class PricingCalculator {
         this.itemPrice = itemPrice;
     }
 
-    // TODO: Step 2 - Replace Temp with Query: extract basePrice() and discountFactor()
     public double getPrice() {
         double basePrice = quantity * itemPrice;
         double discountFactor;

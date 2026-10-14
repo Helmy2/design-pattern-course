@@ -10,8 +10,6 @@ public class EmployeeCompensation {
         ENGINEER, MANAGER, EXECUTIVE
     }
 
-    // TODO: Step 4 - Replace Conditional with Polymorphism:
-    // Create abstract Employee class and subclasses: Engineer, Manager, Executive
     public static class Employee {
         private final EmployeeType type;
         private final double salary;

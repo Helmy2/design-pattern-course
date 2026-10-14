@@ -8,8 +8,6 @@ public class InvoicePrinter {
 
     public record Invoice(String customerName, int quantity, double itemPrice) {}
 
-    // TODO: Step 1 - Extract Method and Extract Variable:
-    // Extract calculateTotal(Invoice), printBanner(), printDetails(name, total)
     public String printInvoice(Invoice invoice) {
         StringBuilder output = new StringBuilder();
 
