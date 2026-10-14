@@ -1,7 +1,10 @@
-package com.course.architecture.packagebylayer.controllers;
+package com.course.architecture.packagebyfeature.order;
 
-import com.course.architecture.packagebylayer.services.OrderService;
-
+/**
+ * CLEAN CODE SOLUTION:
+ * Controller within the 'order' feature package.
+ * Interacts only with OrderService and never accesses OrderRepository directly.
+ */
 public class OrderController {
     private final OrderService orderService;
 

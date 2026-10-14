@@ -22,8 +22,8 @@ class ArchitectureArchUnitTest {
     @Test
     @DisplayName("ArchUnit: Controllers must never access Repositories directly")
     void controllersShouldNotAccessRepositories() {
-        ArchRule rule = noClasses().that().resideInAPackage("..controllers..")
-                .should().dependOnClassesThat().resideInAPackage("..repositories..");
+        ArchRule rule = noClasses().that().haveSimpleNameEndingWith("Controller")
+                .should().dependOnClassesThat().haveSimpleNameEndingWith("Repository");
 
         rule.check(classes);
     }
