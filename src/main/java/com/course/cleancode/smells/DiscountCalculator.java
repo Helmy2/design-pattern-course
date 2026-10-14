@@ -11,7 +11,6 @@ public class DiscountCalculator {
         REGULAR, PREMIUM, VIP
     }
 
-    // TODO: Step 2 - Replace conditional with polymorphism using DiscountPolicy interface
     public double applyDiscount(CustomerType type, double amount) {
         return switch (type) {
             case REGULAR -> amount;

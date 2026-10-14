@@ -7,8 +7,6 @@ package com.course.cleancode.smells;
  */
 public class UserRegistrationService {
 
-    // TODO: Step 1 - Extract Email and PhoneNumber into domain value objects (records)
-    // with self-validating compact constructors
     public boolean registerUser(String email, String phoneNumber) {
         if (email == null || !email.contains("@")) {
             throw new IllegalArgumentException("Invalid email format");

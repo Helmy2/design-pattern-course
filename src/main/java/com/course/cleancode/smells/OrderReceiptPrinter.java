@@ -30,7 +30,6 @@ public class OrderReceiptPrinter {
         public Customer getCustomer() { return customer; }
     }
 
-    // TODO: Step 4 - Fix Feature Envy: Move calculation to Order (Tell, Don't Ask)
     public double calculateTotalWithTax(Order order) {
         double subtotal = 0.0;
         for (OrderItem item : order.getItems()) {
@@ -39,7 +38,6 @@ public class OrderReceiptPrinter {
         return subtotal + (subtotal * order.getCustomer().taxRate());
     }
 
-    // TODO: Step 5 - Fix Demeter Violation: delegate to order.getDeliveryCountryCode()
     public String getCustomerCountryCode(Order order) {
         return order.getCustomer().address().country().code();
     }

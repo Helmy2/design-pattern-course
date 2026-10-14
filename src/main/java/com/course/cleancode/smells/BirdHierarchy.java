@@ -24,7 +24,6 @@ public class BirdHierarchy {
         }
     }
 
-    // TODO: Step 3 - Refactor into Bird and FlyingBird interfaces so Penguin is not forced to fly
     public static class Penguin extends Bird {
         @Override
         public String eat() {
