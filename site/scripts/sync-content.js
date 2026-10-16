@@ -112,3 +112,28 @@ This interactive index cross-references object-oriented design principles, commo
 `;
 fs.writeFileSync(path.join(refDir, 'master-index.mdx'), masterIndexMdx, 'utf-8');
 console.log('Generated reference/master-index.mdx');
+
+// Reference: Pattern Trade-offs Guide
+const patternWizardMdx = `---
+title: "Pattern Trade-offs: Pros & Cons Guide"
+description: "Comprehensive architectural breakdown of GoF design patterns with tangible pros, drawbacks, over-engineering warnings, and simpler alternatives."
+---
+
+import PatternWizard from '../../../components/PatternWizard.astro';
+
+When designing software systems, every design pattern is a deliberate trade-off: you gain decoupling, extensibility, or runtime flexibility in exchange for indirection, boilerplate, or added complexity.
+
+Browse the architectural guide below to evaluate the **pros, cons, over-engineering risks, and simpler alternatives** for every pattern in the curriculum.
+
+<PatternWizard />
+
+---
+
+### Architectural Principles Behind Pattern Selection
+
+1. **Encapsulate What Varies:** Isolate the aspects of your application that change from the aspects that stay static.
+2. **Favor Composition Over Inheritance:** Build dynamic runtime object graphs rather than rigid compile-time inheritance hierarchies.
+3. **YAGNI (You Aren't Gonna Need It):** Never introduce a pattern based on speculative future requirements. Wait until the second or third concrete variation appears before extracting a Strategy, Factory, or Abstract Factory.
+`;
+fs.writeFileSync(path.join(refDir, 'pattern-wizard.mdx'), patternWizardMdx, 'utf-8');
+console.log('Generated reference/pattern-wizard.mdx');

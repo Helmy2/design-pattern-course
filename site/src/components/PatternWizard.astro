@@ -1,0 +1,966 @@
+---
+// Pattern Catalog: Comprehensive Pros, Cons & Trade-offs Guide
+const patterns = [
+	// CREATIONAL PATTERNS
+	{
+		id: "singleton",
+		conceptId: "06",
+		name: "Singleton Pattern",
+		category: "Creational",
+		intent: "Ensures a class has only one instance and provides a global, thread-safe access point to it.",
+		whenToUse: "When managing a single shared hardware/system resource (connection pool, configuration registry, printer spooler) where multiple instances would corrupt state or waste memory.",
+		pros: [
+			"Guarantees strictly one instance across the entire JVM/application lifecycle.",
+			"Supports lazy initialization (instance is only created on first demand).",
+			"Double-Checked Locking with volatile prevents thread-safety race conditions without continuous synchronization overhead.",
+			"Holder Idiom leverages JVM classloader locks for zero-synchronization thread safety."
+		],
+		cons: [
+			"Violates Single Responsibility Principle by managing its own creation and business lifecycle.",
+			"Acts as a hidden global variable, making unit testing difficult (mocking static getInstance() requires bytecode manipulation).",
+			"Tightly couples callers to the concrete class rather than an interface.",
+			"Can cause concurrency bottlenecks under massive multi-threaded access."
+		],
+		simplerAlternative: "Use Dependency Injection (Spring `@Service` / `@Component` or Guice `@Singleton`) to manage lifecycle as an IoC bean rather than hardcoding static singletons.",
+		starterBranch: "06-pattern-singleton-starter",
+		solutionBranch: "06-pattern-singleton-solution",
+		handbookUrl: "/design-pattern-course/creational-patterns/#singleton-pattern",
+		slidesUrl: "/design-pattern-course/slides/creational-patterns/#1"
+	},
+	{
+		id: "factory-method",
+		conceptId: "07",
+		name: "Factory Method Pattern",
+		category: "Creational",
+		intent: "Defines an interface for creating an object, but lets subclasses decide which class to instantiate.",
+		whenToUse: "When a framework or library needs to provide high-level workflows but delegates instantiation of specific product types to subclass implementations.",
+		pros: [
+			"Eliminates direct coupling between creator workflows and concrete product implementations.",
+			"Adheres to the Open/Closed Principle: new products can be introduced without modifying existing client routines.",
+			"Adheres to the Single Responsibility Principle by moving instantiation logic to dedicated creator subclasses."
+		],
+		cons: [
+			"Requires creating an additional subclass hierarchy for each new concrete product type.",
+			"Can lead to an explosion of small classes if product variations are simple and static."
+		],
+		simplerAlternative: "If you do not have a framework inheritance hierarchy, extract a Simple Factory method or use a parameterized lambda map.",
+		starterBranch: "07-pattern-factory-method-starter",
+		solutionBranch: "07-pattern-factory-method-solution",
+		handbookUrl: "/design-pattern-course/creational-patterns/#factory-method-pattern",
+		slidesUrl: "/design-pattern-course/slides/creational-patterns/#15"
+	},
+	{
+		id: "abstract-factory",
+		conceptId: "08",
+		name: "Abstract Factory Pattern",
+		category: "Creational",
+		intent: "Provides an interface for creating families of related or dependent objects without specifying their concrete classes.",
+		whenToUse: "When an application needs to support coordinated suites of products (e.g. cross-platform UI components, multi-cloud storage/DB connectors) and must prevent incompatible mixes.",
+		pros: [
+			"Guarantees that products created together are 100% compatible with each other.",
+			"Isolates client code completely from concrete implementation classes.",
+			"Makes swapping an entire product family (e.g., switching AWS to GCP, or Light Theme to Dark Theme) as simple as passing a different factory instance."
+		],
+		cons: [
+			"High ceremonial complexity: requires abstract factory interfaces, concrete factory classes, and abstract/concrete product hierarchies.",
+			"Extending the factory to support a new product type requires modifying the abstract factory interface and every concrete factory implementation."
+		],
+		simplerAlternative: "Use Factory Method or a configuration object with dependency injection if you only need to swap individual components rather than entire coordinated families.",
+		starterBranch: "08-pattern-abstract-factory-starter",
+		solutionBranch: "08-pattern-abstract-factory-solution",
+		handbookUrl: "/design-pattern-course/creational-patterns/#abstract-factory-pattern",
+		slidesUrl: "/design-pattern-course/slides/creational-patterns/#30"
+	},
+	{
+		id: "builder",
+		conceptId: "09",
+		name: "Builder Pattern",
+		category: "Creational",
+		intent: "Separates the construction of a complex object from its representation, allowing the same construction process to create various representations.",
+		whenToUse: "When an object has more than 4-5 constructor parameters, multiple optional fields, or complex invariants that must be validated before instantiation (telescoping constructor smell).",
+		pros: [
+			"Eliminates telescoping constructors and unreadable boolean/integer positional arguments.",
+			"Produces strictly immutable objects by validating all invariants inside build() before constructing the instance.",
+			"Provides a fluent, self-documenting API that guides client developers step-by-step."
+		],
+		cons: [
+			"Requires writing duplicate fields and setter methods inside a separate static nested Builder class.",
+			"Adds runtime object allocation overhead (the builder instance is created and discarded)."
+		],
+		simplerAlternative: "For straightforward value objects without complex validation logic, use Kotlin data classes with named/default arguments or modern Java records.",
+		starterBranch: "09-pattern-builder-starter",
+		solutionBranch: "09-pattern-builder-solution",
+		handbookUrl: "/design-pattern-course/creational-patterns/#builder-pattern",
+		slidesUrl: "/design-pattern-course/slides/creational-patterns/#45"
+	},
+	{
+		id: "prototype",
+		conceptId: "10",
+		name: "Prototype Pattern",
+		category: "Creational",
+		intent: "Specifies the kinds of objects to create using a prototypical instance, and creates new objects by copying this prototype.",
+		whenToUse: "When creating an object from scratch is computationally expensive (heavy DB lookups, complex network profile parsing) and cloning an existing in-memory instance is significantly faster.",
+		pros: [
+			"Bypasses costly constructor initialization logic, file I/O, and remote database queries.",
+			"Allows dynamic addition and removal of prototype instances at runtime through a prototype registry.",
+			"Reduces subclassing required for object initialization."
+		],
+		cons: [
+			"Deep copying complex object graphs with circular references or file/socket handles is notoriously difficult and bug-prone.",
+			"Java's native `clone()` mechanism is flawed (bypasses constructor, throws `CloneNotSupportedException`); copy constructors or serialization is preferred."
+		],
+		simplerAlternative: "Use a clean Copy Constructor (`new Person(existingPerson)`) or Kotlin's native `.copy()` method on data classes.",
+		starterBranch: "10-pattern-prototype-starter",
+		solutionBranch: "10-pattern-prototype-solution",
+		handbookUrl: "/design-pattern-course/creational-patterns/#prototype-pattern",
+		slidesUrl: "/design-pattern-course/slides/creational-patterns/#55"
+	},
+
+	// STRUCTURAL PATTERNS
+	{
+		id: "adapter",
+		conceptId: "11",
+		name: "Adapter Pattern",
+		category: "Structural",
+		intent: "Converts the interface of a class into another interface clients expect, allowing classes with incompatible interfaces to work together.",
+		whenToUse: "When integrating legacy components, third-party libraries, or external payment gateways (e.g. Stripe, PayPal) into your domain without modifying their source code.",
+		pros: [
+			"Single Responsibility: separates interface data translation and conversion from core business logic.",
+			"Open/Closed: introduces new adapter implementations without modifying existing client code or legacy libraries.",
+			"Object Adapter favors composition (HAS-A) over class inheritance (IS-A), maintaining flexibility."
+		],
+		cons: [
+			"Increases overall codebase complexity by introducing an extra layer of indirection and wrapper classes.",
+			"Can cause slight performance overhead from method forwarding in high-throughput loops."
+		],
+		simplerAlternative: "If you own and control both source classes, refactor the class directly to conform to the required interface instead of adding a wrapper.",
+		starterBranch: "11-pattern-adapter-starter",
+		solutionBranch: "11-pattern-adapter-solution",
+		handbookUrl: "/design-pattern-course/structural-patterns/#adapter-pattern",
+		slidesUrl: "/design-pattern-course/slides/structural-patterns/#1"
+	},
+	{
+		id: "decorator",
+		conceptId: "12",
+		name: "Decorator Pattern",
+		category: "Structural",
+		intent: "Attaches additional responsibilities to an object dynamically at runtime without subclassing.",
+		whenToUse: "When you need to dynamically stack cross-cutting behaviors (Logging, Caching, Encryption, Compression, Metrics) onto objects in arbitrary combinations.",
+		pros: [
+			"Extends object behavior dynamically at runtime without creating a combinatorial explosion of subclasses.",
+			"Adheres strictly to Single Responsibility: each decorator class focuses on exactly one concern.",
+			"Preserves the exact component interface, meaning callers cannot tell whether they hold a base object or a decorated chain."
+		],
+		cons: [
+			"The ordering of decorators in the chain matters (e.g., Encrypt-then-Compress vs Compress-then-Encrypt).",
+			"Removing an individual decorator from the middle of a deeply nested chain is difficult.",
+			"Can make debugging challenging because stack traces contain multiple recursive wrapper hops."
+		],
+		simplerAlternative: "Use Spring AOP / Aspect-Oriented interceptors if applying uniform cross-cutting concerns (logging, transactions) across hundreds of methods.",
+		starterBranch: "12-pattern-decorator-starter",
+		solutionBranch: "12-pattern-decorator-solution",
+		handbookUrl: "/design-pattern-course/structural-patterns/#decorator-pattern",
+		slidesUrl: "/design-pattern-course/slides/structural-patterns/#15"
+	},
+	{
+		id: "composite",
+		conceptId: "13",
+		name: "Composite Pattern",
+		category: "Structural",
+		intent: "Composes objects into tree structures to represent part-whole hierarchies, letting clients treat individual objects and compositions uniformly.",
+		whenToUse: "When building nested tree structures (file systems, nested menus, organization hierarchies, graphic drawing primitives) where clients should not care whether an element is a leaf or a branch.",
+		pros: [
+			"Clients interact with complex tree graphs using uniform method calls without writing tedious type checks or `instanceof` casts.",
+			"Simplifies client code by leveraging recursive tree traversal automatically.",
+			"Easily accommodates new component types without modifying existing traversal routines."
+		],
+		cons: [
+			"Weakens static type safety: leaf nodes and container nodes share the same interface, meaning leaves must implement dummy or throwing methods (`add()`, `remove()`).",
+			"Can make it difficult to restrict which components can be added as children of specific containers."
+		],
+		simplerAlternative: "If your hierarchy is flat or leaves and containers have fundamentally different operations, use separate interfaces rather than forcing a unified abstraction.",
+		starterBranch: "13-pattern-composite-starter",
+		solutionBranch: "13-pattern-composite-solution",
+		handbookUrl: "/design-pattern-course/structural-patterns/#composite-pattern",
+		slidesUrl: "/design-pattern-course/slides/structural-patterns/#30"
+	},
+	{
+		id: "facade",
+		conceptId: "14",
+		name: "Facade Pattern",
+		category: "Structural",
+		intent: "Provides a unified, simplified interface to a complex subsystem of classes.",
+		whenToUse: "When a multi-step subsystem (e.g. Home Theater with Projector, Soundbar, Streaming player; or Order Checkout with Inventory, Payment, Shipping) exposes too much internal complexity to consumers.",
+		pros: [
+			"Enforces the Law of Demeter (Principle of Least Knowledge): clients only talk to their immediate collaborator.",
+			"Shields client code from the convoluted internal workings and cascading changes of complex subsystems.",
+			"Simplifies onboarding: provides a clear 'happy path' entry point for 95% of common user operations."
+		],
+		cons: [
+			"High risk of becoming a God Object if business logic is placed inside the facade rather than simply delegating to subsystem components.",
+			"Can prevent advanced clients from accessing lower-level configuration options unless an escape hatch is provided."
+		],
+		simplerAlternative: "Keep subsystems small, cohesive, and decoupled so that an overarching coordinating facade is not required.",
+		starterBranch: "14-pattern-facade-starter",
+		solutionBranch: "14-pattern-facade-solution",
+		handbookUrl: "/design-pattern-course/structural-patterns/#facade-pattern",
+		slidesUrl: "/design-pattern-course/slides/structural-patterns/#45"
+	},
+	{
+		id: "proxy",
+		conceptId: "15",
+		name: "Proxy Pattern",
+		category: "Structural",
+		intent: "Provides a surrogate or placeholder for another object to control, intercept, or defer access to it.",
+		whenToUse: "When you need Virtual Proxy (lazy loading expensive resources), Protection Proxy (role-based access control), or Dynamic Proxy (intercepting invocations at runtime).",
+		pros: [
+			"Enables on-demand lazy initialization without changing any client caller code.",
+			"Enforces security authorization rules before forwarding calls to high-privilege business objects.",
+			"Allows transparent remote RPC handling or caching without modifying the core subject."
+		],
+		cons: [
+			"Introduces an extra layer of indirection that can slightly degrade response latency.",
+			"Remote proxies can obscure network failures if callers mistakenly believe they are invoking cheap local in-memory methods."
+		],
+		simplerAlternative: "Use language-native lazy delegates (e.g. Kotlin's `by lazy` or Java `Supplier<T>`) for simple lazy initialization without building dedicated proxy classes.",
+		starterBranch: "15-pattern-proxy-starter",
+		solutionBranch: "15-pattern-proxy-solution",
+		handbookUrl: "/design-pattern-course/structural-patterns/#proxy-pattern",
+		slidesUrl: "/design-pattern-course/slides/structural-patterns/#55"
+	},
+
+	// BEHAVIORAL PATTERNS
+	{
+		id: "strategy",
+		conceptId: "16",
+		name: "Strategy Pattern",
+		category: "Behavioral",
+		intent: "Defines a family of algorithms, encapsulates each one, and makes them interchangeable at runtime.",
+		whenToUse: "When business rules or algorithms (e.g. Payment processing, Tax calculation, Shipping rate calculators) vary and are currently tangled inside sprawling switch/if-else statements.",
+		pros: [
+			"Completely eliminates fragile, cascading switch or if/else ladders.",
+			"Adheres strictly to the Open/Closed Principle: new algorithm variants are added as separate classes without touching existing routines.",
+			"Allows algorithms to be swapped dynamically at runtime depending on execution context."
+		],
+		cons: [
+			"Clients must be aware of the different strategy implementations to select the appropriate one.",
+			"Increases the number of small classes in the project."
+		],
+		simplerAlternative: "For 2-3 static algorithm variations that rarely change, pass Java 8+ lambdas/`Function<T, R>` or use an Enum Strategy rather than full separate classes.",
+		starterBranch: "16-pattern-strategy-starter",
+		solutionBranch: "16-pattern-strategy-solution",
+		handbookUrl: "/design-pattern-course/behavioral-patterns/#strategy-pattern",
+		slidesUrl: "/design-pattern-course/slides/behavioral-patterns/#1"
+	},
+	{
+		id: "observer",
+		conceptId: "17",
+		name: "Observer Pattern",
+		category: "Behavioral",
+		intent: "Defines a 1-to-many dependency between objects so that when one object changes state, all its dependents are notified automatically.",
+		whenToUse: "When changes in a core domain object (e.g. WeatherStation, StockTicker, OrderStatus) must trigger actions in multiple independent listeners without tight coupling.",
+		pros: [
+			"Establishes clean loose coupling between publishers and subscribers; neither requires knowledge of the other's concrete type.",
+			"Listeners can be dynamically registered and unregistered at runtime.",
+			"Enforces Open/Closed: new subscriber types are created without altering publisher code."
+		],
+		cons: [
+			"Can cause memory leaks (the 'Lapsed Listener' problem) if subscribers are not explicitly unregistered before garbage collection.",
+			"Notification order is non-deterministic; cascading events can trigger difficult-to-trace update cycles."
+		],
+		simplerAlternative: "Use Spring ApplicationEventPublisher, RxJava, Project Reactor, or Kotlin Flow for enterprise event streams with built-in lifecycle and backpressure handling.",
+		starterBranch: "17-pattern-observer-starter",
+		solutionBranch: "17-pattern-observer-solution",
+		handbookUrl: "/design-pattern-course/behavioral-patterns/#observer-pattern",
+		slidesUrl: "/design-pattern-course/slides/behavioral-patterns/#15"
+	},
+	{
+		id: "command",
+		conceptId: "18",
+		name: "Command Pattern",
+		category: "Behavioral",
+		intent: "Encapsulates a request as an object, parameterizing clients with different requests, queueing or logging requests, and supporting undoable operations.",
+		whenToUse: "When building undo/redo history stacks, transaction queues, macro recording, or decoupling UI buttons from business domain receivers.",
+		pros: [
+			"Single Responsibility: decouples the invoker (UI button, queue worker) from the receiver that performs the actual operation.",
+			"Supports undo/redo stacks by maintaining execution history and reversing actions via `undo()`.",
+			"Commands can be serialized, persisted, queued in background executors, or bundled into composite macros."
+		],
+		cons: [
+			"Generates a large number of concrete command classes, increasing codebase size and navigation complexity.",
+			"Managing complex undo states across multi-entity transactions requires careful state snapshots."
+		],
+		simplerAlternative: "If you only need deferred execution without undo/redo or serialization, use a simple `Runnable` lambda or method reference.",
+		starterBranch: "18-pattern-command-starter",
+		solutionBranch: "18-pattern-command-solution",
+		handbookUrl: "/design-pattern-course/behavioral-patterns/#command-pattern",
+		slidesUrl: "/design-pattern-course/slides/behavioral-patterns/#30"
+	},
+	{
+		id: "iterator",
+		conceptId: "19",
+		name: "Iterator Pattern",
+		category: "Behavioral",
+		intent: "Provides a way to access elements of an aggregate object sequentially without exposing its underlying internal representation.",
+		whenToUse: "When building custom aggregate collections (e.g. composite trees, cyclic ring buffers, linked graphs) and clients need uniform, safe sequential traversal.",
+		pros: [
+			"Single Responsibility: separates the traversal algorithm from the internal storage and indexing structure.",
+			"Multiple independent iterators can traverse the same collection concurrently without interference.",
+			"Hides internal data structures (arrays, hash tables, linked nodes) from client code."
+		],
+		cons: [
+			"Overkill if simple linear array or standard list access is all that is required.",
+			"Navigating complex trees back and forth can require maintaining auxiliary stack state inside the iterator."
+		],
+		simplerAlternative: "Modern Java `java.lang.Iterable` / Stream API and Kotlin collection operations already provide built-in iterators for 99% of collection needs.",
+		starterBranch: "19-pattern-iterator-starter",
+		solutionBranch: "19-pattern-iterator-solution",
+		handbookUrl: "/design-pattern-course/behavioral-patterns/#iterator-pattern",
+		slidesUrl: "/design-pattern-course/slides/behavioral-patterns/#45"
+	},
+	{
+		id: "clean-architecture",
+		conceptId: "20",
+		name: "Clean Architecture Capstone",
+		category: "Architecture",
+		intent: "Enforces the Inward Dependency Rule: business domain entities and use cases remain completely isolated from database ORMs, HTTP controllers, and external frameworks.",
+		whenToUse: "In enterprise backend applications with rich, long-lived business logic that must survive framework deprecations, database migrations, and external API changes.",
+		pros: [
+			"Core business logic is 100% testable in pure Java/Kotlin without spinning up Spring contexts, test databases, or HTTP servers.",
+			"Database technologies, ORMs, and web frameworks can be swapped with zero impact on domain entities.",
+			"ArchUnit automated tests continuously enforce layer boundaries in CI/CD pipelines."
+		],
+		cons: [
+			"High ceremonial overhead: requires defining separate Domain Entities, Use Cases, Driven/Driving Ports, and Infrastructure Adapters.",
+			"Significant DTO mapping boilerplate between external schemas and internal domain records."
+		],
+		simplerAlternative: "For trivial CRUD microservices with no complex business calculations, a simple vertical slice or 3-tier layered architecture avoids unnecessary mapping layers.",
+		starterBranch: "20-capstone-clean-architecture-starter",
+		solutionBranch: "20-capstone-clean-architecture-solution",
+		handbookUrl: "/design-pattern-course/behavioral-patterns/#clean-architecture-capstone",
+		slidesUrl: "/design-pattern-course/slides/behavioral-patterns/#55"
+	}
+];
+---
+
+<div class="tradeoffs-guide-root not-content">
+	<!-- Control Bar with Filter Pills and Search -->
+	<div class="guide-control-bar">
+		<div class="guide-filters">
+			<button class="filter-pill active" data-filter="all">All ({patterns.length})</button>
+			<button class="filter-pill" data-filter="Creational">Creational (5)</button>
+			<button class="filter-pill" data-filter="Structural">Structural (5)</button>
+			<button class="filter-pill" data-filter="Behavioral">Behavioral (4)</button>
+			<button class="filter-pill" data-filter="Architecture">Architecture (1)</button>
+		</div>
+		<div class="guide-search-wrap">
+			<input 
+				type="text" 
+				id="pattern-search-input" 
+				placeholder="Filter by pattern, pro, con, or keyword..." 
+				class="guide-search-input"
+			/>
+		</div>
+	</div>
+
+	<!-- Pattern Cards List -->
+	<div class="pattern-cards-list" id="pattern-cards-container">
+		{patterns.map((p) => (
+			<div 
+				class="pattern-card" 
+				data-category={p.category}
+				data-search={`${p.name} ${p.category} ${p.intent} ${p.whenToUse} ${p.pros.join(' ')} ${p.cons.join(' ')} ${p.simplerAlternative}`.toLowerCase()}
+			>
+				<!-- Card Header -->
+				<div class="card-header">
+					<div class="card-title-group">
+						<div class="card-meta-tags">
+							<span class={`cat-tag cat-${p.category.toLowerCase()}`}>{p.category.toUpperCase()}</span>
+							<span class="concept-id-tag">CONCEPT {p.conceptId}</span>
+						</div>
+						<h3 class="pattern-name">{p.name}</h3>
+					</div>
+					<div class="card-links">
+						<a href={p.handbookUrl} class="doc-link handbook-link">Handbook</a>
+						<span class="link-sep">·</span>
+						<a href={p.slidesUrl} target="_blank" rel="noopener noreferrer" class="doc-link slides-link">Slides</a>
+					</div>
+				</div>
+
+				<!-- Intent & When to use -->
+				<div class="card-section intent-section">
+					<p class="intent-text"><strong>Intent:</strong> {p.intent}</p>
+					<p class="when-text"><strong>When to Use:</strong> {p.whenToUse}</p>
+				</div>
+
+				<!-- Pros & Cons Grid -->
+				<div class="pros-cons-grid">
+					<!-- Pros Column -->
+					<div class="pane pros-pane">
+						<div class="pane-header pros-header">
+							<span class="pane-icon">✓</span>
+							<span class="pane-title">ARCHITECTURAL PROS & BENEFITS</span>
+						</div>
+						<ul class="points-list pros-list">
+							{p.pros.map((pro) => (
+								<li>{pro}</li>
+							))}
+						</ul>
+					</div>
+
+					<!-- Cons Column -->
+					<div class="pane cons-pane">
+						<div class="pane-header cons-header">
+							<span class="pane-icon">✕</span>
+							<span class="pane-title">DRAWBACKS & OVER-ENGINEERING RISKS</span>
+						</div>
+						<ul class="points-list cons-list">
+							{p.cons.map((con) => (
+								<li>{con}</li>
+							))}
+						</ul>
+					</div>
+				</div>
+
+				<!-- Simpler Alternative Callout -->
+				<div class="alternative-box">
+					<span class="alt-kicker">SIMPLER ALTERNATIVE (YAGNI):</span>
+					<span class="alt-text">{p.simplerAlternative}</span>
+				</div>
+
+				<!-- Branch Switch Action Footer -->
+				<div class="card-footer">
+					<span class="footer-label">PRACTICE IN IDE:</span>
+					<div class="branch-btns">
+						<button class="branch-btn starter-btn" data-copy={`git switch ${p.starterBranch}`} title="Copy starter checkout command">
+							<span class="branch-dot starter-dot"></span>
+							<span class="branch-prefix">Starter:</span>
+							<code>{p.starterBranch}</code>
+							<span class="copy-icon">📋</span>
+						</button>
+						<button class="branch-btn solution-btn" data-copy={`git switch ${p.solutionBranch}`} title="Copy solution checkout command">
+							<span class="branch-dot solution-dot"></span>
+							<span class="branch-prefix">Solution:</span>
+							<code>{p.solutionBranch}</code>
+							<span class="copy-icon">📋</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		))}
+	</div>
+
+	<!-- Toast Notification -->
+	<div id="guide-toast" class="guide-toast">Command copied to clipboard</div>
+</div>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const searchInput = document.getElementById('pattern-search-input');
+		const filterPills = document.querySelectorAll('.filter-pill');
+		const cards = document.querySelectorAll('.pattern-card');
+		const toast = document.getElementById('guide-toast');
+
+		let activeFilter = 'all';
+		let activeQuery = '';
+
+		function showToast(msg) {
+			toast.textContent = msg;
+			toast.classList.add('visible');
+			setTimeout(() => toast.classList.remove('visible'), 2200);
+		}
+
+		function filterCards() {
+			cards.forEach((card) => {
+				const category = card.getAttribute('data-category');
+				const searchText = card.getAttribute('data-search') || '';
+
+				const matchesCategory = activeFilter === 'all' || category === activeFilter;
+				const matchesSearch = !activeQuery || searchText.includes(activeQuery);
+
+				if (matchesCategory && matchesSearch) {
+					card.style.display = 'block';
+				} else {
+					card.style.display = 'none';
+				}
+			});
+		}
+
+		filterPills.forEach((pill) => {
+			pill.addEventListener('click', () => {
+				filterPills.forEach((p) => p.classList.remove('active'));
+				pill.classList.add('active');
+				activeFilter = pill.getAttribute('data-filter');
+				filterCards();
+			});
+		});
+
+		if (searchInput) {
+			searchInput.addEventListener('input', (e) => {
+				activeQuery = e.target.value.toLowerCase().trim();
+				filterCards();
+			});
+		}
+
+		// Branch copy buttons
+		document.querySelectorAll('.branch-btn').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const cmd = btn.getAttribute('data-copy');
+				if (cmd) {
+					navigator.clipboard.writeText(cmd);
+					showToast(`Copied: ${cmd}`);
+				}
+			});
+		});
+	});
+</script>
+
+<style>
+	.tradeoffs-guide-root {
+		margin: 2rem 0;
+		font-family: var(--sl-font-system-sans);
+		color: var(--arch-ink-primary, #f1f5f9);
+	}
+
+	/* Control Bar */
+	.guide-control-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1.25rem;
+		margin-bottom: 2rem;
+		flex-wrap: wrap;
+		background: var(--arch-surface, #111726);
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 6px;
+	}
+
+	.guide-filters {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.filter-pill {
+		background: var(--arch-surface-raised, #182032);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		color: var(--arch-ink-secondary, #94a3b8);
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.4rem 0.85rem;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.filter-pill:hover {
+		color: var(--arch-ink-primary, #f1f5f9);
+		border-color: var(--arch-cyan, #38bdf8);
+	}
+
+	.filter-pill.active {
+		background: #0284c7;
+		color: #ffffff;
+		border-color: #0284c7;
+	}
+
+	.guide-search-wrap {
+		flex: 1;
+		min-width: 260px;
+	}
+
+	.guide-search-input {
+		width: 100%;
+		padding: 0.45rem 0.85rem;
+		background: var(--arch-canvas, #0a0e17);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 4px;
+		color: var(--arch-ink-primary, #f1f5f9);
+		font-family: var(--sl-font-system-sans);
+		font-size: 0.88rem;
+		outline: none;
+		transition: border-color 0.15s ease;
+	}
+
+	.guide-search-input:focus {
+		border-color: var(--arch-cyan, #38bdf8);
+	}
+
+	/* Pattern Cards List */
+	.pattern-cards-list {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.pattern-card {
+		background: var(--arch-surface, #111726);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+		transition: border-color 0.2s ease;
+	}
+
+	.pattern-card:hover {
+		border-color: rgba(56, 189, 248, 0.4);
+	}
+
+	/* Card Header */
+	.card-header {
+		padding: 1.25rem 1.75rem;
+		background: var(--arch-surface-raised, #182032);
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.card-title-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.card-meta-tags {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.cat-tag {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.68rem;
+		font-weight: 700;
+		padding: 0.15rem 0.5rem;
+		border-radius: 3px;
+		letter-spacing: 0.05em;
+	}
+
+	.cat-creational {
+		background: rgba(56, 189, 248, 0.12);
+		color: #38bdf8;
+		border: 1px solid rgba(56, 189, 248, 0.3);
+	}
+
+	.cat-structural {
+		background: rgba(168, 85, 247, 0.12);
+		color: #c084fc;
+		border: 1px solid rgba(168, 85, 247, 0.3);
+	}
+
+	.cat-behavioral {
+		background: rgba(245, 158, 11, 0.12);
+		color: #fbbf24;
+		border: 1px solid rgba(245, 158, 11, 0.3);
+	}
+
+	.cat-architecture {
+		background: rgba(16, 185, 129, 0.12);
+		color: #34d399;
+		border: 1px solid rgba(16, 185, 129, 0.3);
+	}
+
+	.concept-id-tag {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.68rem;
+		font-weight: 700;
+		padding: 0.15rem 0.5rem;
+		border-radius: 3px;
+		background: var(--arch-canvas, #0a0e17);
+		color: var(--arch-ink-muted, #64748b);
+		border: 1px solid var(--arch-border, #1f2a3f);
+	}
+
+	.pattern-name {
+		font-size: 1.35rem;
+		font-weight: 800;
+		color: var(--arch-ink-primary, #f1f5f9);
+		margin: 0 !important;
+		letter-spacing: -0.02em;
+	}
+
+	.card-links {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.8rem;
+	}
+
+	.doc-link {
+		color: var(--arch-cyan, #38bdf8);
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.doc-link:hover {
+		text-decoration: underline;
+	}
+
+	.link-sep {
+		color: var(--arch-ink-muted, #64748b);
+	}
+
+	/* Intent & When to use */
+	.intent-section {
+		padding: 1.25rem 1.75rem 0.75rem 1.75rem;
+		font-size: 0.92rem;
+		line-height: 1.6;
+	}
+
+	.intent-text {
+		color: var(--arch-ink-primary, #f1f5f9);
+		margin: 0 0 0.5rem 0 !important;
+	}
+
+	.intent-text strong,
+	.when-text strong {
+		color: var(--arch-cyan, #38bdf8);
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.82rem;
+		letter-spacing: 0.04em;
+	}
+
+	.when-text {
+		color: var(--arch-ink-secondary, #94a3b8);
+		margin: 0 !important;
+	}
+
+	/* Pros & Cons Grid */
+	.pros-cons-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: stretch;
+		border-top: 1px solid var(--arch-border, #1f2a3f);
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		margin: 0 !important;
+	}
+
+	.pane {
+		padding: 1.5rem 1.75rem !important;
+		margin: 0 !important;
+		box-sizing: border-box;
+	}
+
+	.pros-pane {
+		border-right: 1px solid var(--arch-border, #1f2a3f);
+		background: rgba(16, 185, 129, 0.02);
+		margin-top: 0 !important;
+	}
+
+	.cons-pane {
+		background: rgba(244, 63, 94, 0.02);
+		margin-top: 0 !important;
+	}
+
+	.pane-header {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		line-height: 1.2;
+		margin: 0 0 0.85rem 0 !important;
+		padding: 0 !important;
+	}
+
+	.pros-header {
+		color: var(--arch-emerald, #10b981);
+	}
+
+	.cons-header {
+		color: #f43f5e;
+	}
+
+	.pane-icon {
+		font-weight: 800;
+		line-height: 1;
+		display: inline-block;
+	}
+
+	.pane-title {
+		line-height: 1.2;
+		display: inline-block;
+	}
+
+	.points-list {
+		margin: 0 0 0 1.2rem !important;
+		padding: 0 !important;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.points-list li {
+		font-size: 0.875rem;
+		line-height: 1.55;
+		color: var(--arch-ink-secondary, #94a3b8);
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	.pros-list li::marker {
+		color: var(--arch-emerald, #10b981);
+	}
+
+	.cons-list li::marker {
+		color: #f43f5e;
+	}
+
+	/* Simpler Alternative */
+	.alternative-box {
+		padding: 0.9rem 1.75rem;
+		background: rgba(245, 158, 11, 0.05);
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		font-size: 0.875rem;
+		line-height: 1.55;
+		color: var(--arch-ink-secondary, #94a3b8);
+	}
+
+	.alt-kicker {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: var(--arch-amber, #f59e0b);
+		letter-spacing: 0.05em;
+		display: inline-block;
+		margin-right: 0.4rem;
+	}
+
+	/* Card Footer */
+	.card-footer {
+		padding: 0.85rem 1.75rem;
+		background: var(--arch-surface-raised, #182032);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.footer-label {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.7rem;
+		font-weight: 700;
+		color: var(--arch-ink-muted, #64748b);
+		letter-spacing: 0.05em;
+	}
+
+	.branch-btns {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.branch-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.3rem 0.65rem;
+		background: var(--arch-canvas, #0a0e17);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 4px;
+		cursor: pointer;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.75rem;
+		transition: all 0.15s ease;
+	}
+
+	.branch-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+	}
+
+	.starter-dot {
+		background: var(--arch-amber, #f59e0b);
+	}
+
+	.solution-dot {
+		background: var(--arch-emerald, #10b981);
+	}
+
+	.branch-prefix {
+		color: var(--arch-ink-muted, #64748b);
+	}
+
+	.branch-btn code {
+		color: var(--arch-ink-primary, #f1f5f9);
+		font-size: 0.75rem;
+		background: transparent !important;
+		border: none !important;
+		padding: 0 !important;
+	}
+
+	.copy-icon {
+		font-size: 0.75rem;
+		opacity: 0.6;
+	}
+
+	.starter-btn:hover {
+		border-color: var(--arch-amber, #f59e0b);
+	}
+
+	.solution-btn:hover {
+		border-color: var(--arch-emerald, #10b981);
+	}
+
+	/* Toast */
+	.guide-toast {
+		position: fixed;
+		bottom: 2rem;
+		right: 2rem;
+		background: #0284c7;
+		color: #ffffff;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.8rem;
+		font-weight: 600;
+		padding: 0.6rem 1.2rem;
+		border-radius: 6px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		transform: translateY(100px);
+		opacity: 0;
+		pointer-events: none;
+		transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+		z-index: 999;
+	}
+
+	.guide-toast.visible {
+		transform: translateY(0);
+		opacity: 1;
+	}
+
+	@media (max-width: 860px) {
+		.pros-cons-grid {
+			grid-template-columns: 1fr;
+		}
+		.pros-pane {
+			border-right: none;
+			border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		}
+		.card-header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.card-footer {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.branch-btns {
+			width: 100%;
+			flex-direction: column;
+		}
+		.branch-btn {
+			width: 100%;
+			justify-content: flex-start;
+		}
+	}
+</style>

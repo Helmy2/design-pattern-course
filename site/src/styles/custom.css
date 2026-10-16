@@ -46,11 +46,170 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-/* Constrain line lengths for reading comfort */
+/* Constrain line lengths for reading comfort on standard prose */
 .sl-markdown-content {
 	max-width: 76ch;
 	font-size: 1.05rem;
 	line-height: 1.75;
+}
+
+/* Allow interactive reference tools, tables, and matrices to span full container width */
+.sl-markdown-content:has(.matrix-wrapper),
+.sl-markdown-content:has(.tradeoffs-guide-root),
+.sl-markdown-content:has(.branch-catalog-root),
+.sl-markdown-content:has(.not-content) {
+	max-width: 100% !important;
+}
+
+/* Preserve comfortable reading width for prose elements even inside expanded containers */
+.sl-markdown-content:has(.matrix-wrapper) > p,
+.sl-markdown-content:has(.tradeoffs-guide-root) > p,
+.sl-markdown-content:has(.branch-catalog-root) > p {
+	max-width: 76ch;
+}
+
+/* ==========================================================================
+   Panel Visibility & Focus Mode Engine
+   ========================================================================== */
+
+/* Fix Starlight container constraints for wide tools & matrices */
+.content-panel:has(.matrix-wrapper),
+.content-panel:has(.tradeoffs-guide-root),
+.content-panel:has(.branch-catalog-root) {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+.content-panel:has(.matrix-wrapper) .sl-container,
+.content-panel:has(.tradeoffs-guide-root) .sl-container,
+.content-panel:has(.branch-catalog-root) .sl-container {
+	max-width: 100% !important;
+	width: 100% !important;
+	margin-inline: 0 !important;
+	--sl-content-margin-inline: 0 !important;
+}
+
+/* 1. Left Sidebar Hidden */
+html[data-sidebar-hidden="true"] {
+	--sl-content-inline-start: 0rem !important;
+	--sl-content-margin-inline: auto !important;
+}
+
+html[data-sidebar-hidden="true"] .sidebar,
+html[data-sidebar-hidden="true"] .sidebar-pane,
+html[data-sidebar-hidden="true"] sl-sidebar-pane,
+html[data-sidebar-hidden="true"] #starlight__sidebar {
+	display: none !important;
+	width: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+html[data-sidebar-hidden="true"] .main-frame {
+	padding-inline-start: 0rem !important;
+}
+
+html[data-sidebar-hidden="true"] .header {
+	--__sidebar-width: 0rem !important;
+}
+
+html[data-sidebar-hidden="true"] .sl-container {
+	--sl-content-margin-inline: auto !important;
+	margin-inline: auto !important;
+}
+
+/* 2. Right TOC Hidden */
+html[data-toc-hidden="true"] .right-sidebar-container,
+html[data-toc-hidden="true"] aside.right-sidebar-container,
+html[data-toc-hidden="true"] .right-sidebar {
+	display: none !important;
+	width: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+html[data-toc-hidden="true"] .main-pane,
+html[data-toc-hidden="true"] :where([data-has-sidebar][data-has-toc]) .main-pane {
+	width: 100% !important;
+	max-width: 100% !important;
+	--sl-content-margin-inline: auto !important;
+}
+
+html[data-toc-hidden="true"] .sl-container {
+	--sl-content-margin-inline: auto !important;
+	margin-inline: auto !important;
+}
+
+/* 3. Focus / Zen Mode (Both panels closed, centered/full width, NO right shift) */
+html[data-focus-mode="true"] {
+	--sl-content-inline-start: 0rem !important;
+	--sl-content-width: 100% !important;
+	--sl-content-margin-inline: 0 !important;
+}
+
+html[data-focus-mode="true"] .sidebar,
+html[data-focus-mode="true"] .sidebar-pane,
+html[data-focus-mode="true"] sl-sidebar-pane,
+html[data-focus-mode="true"] #starlight__sidebar,
+html[data-focus-mode="true"] nav.sidebar,
+html[data-focus-mode="true"] .right-sidebar-container,
+html[data-focus-mode="true"] aside.right-sidebar-container,
+html[data-focus-mode="true"] .right-sidebar {
+	display: none !important;
+	width: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+html[data-focus-mode="true"] .main-frame {
+	padding-inline-start: 0rem !important;
+}
+
+html[data-focus-mode="true"] .main-pane,
+html[data-focus-mode="true"] :where([data-has-sidebar][data-has-toc]) .main-pane {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+	order: unset !important;
+}
+
+html[data-focus-mode="true"] .content-panel {
+	width: 100% !important;
+	max-width: 100% !important;
+	padding-inline: clamp(1.25rem, 3vw, 2.5rem) !important;
+}
+
+html[data-focus-mode="true"] .sl-container {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin-inline: 0 !important;
+	--sl-content-margin-inline: 0 !important;
+}
+
+html[data-focus-mode="true"] .sl-markdown-content {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+/* Explicit wide desktop override to prevent Starlight's 72rem+ right-shifting */
+@media (min-width: 72rem) {
+	html[data-focus-mode="true"] .sl-container,
+	html[data-sidebar-hidden="true"] .sl-container,
+	.content-panel:has(.matrix-wrapper) .sl-container,
+	.content-panel:has(.tradeoffs-guide-root) .sl-container,
+	.content-panel:has(.branch-catalog-root) .sl-container {
+		margin-inline: 0 !important;
+		max-width: 100% !important;
+	}
+
+	html[data-focus-mode="true"] .main-pane,
+	html[data-focus-mode="true"] :is([data-has-sidebar][data-has-toc]) .main-pane,
+	html[data-sidebar-hidden="true"] .main-pane,
+	html[data-sidebar-hidden="true"] :is([data-has-sidebar][data-has-toc]) .main-pane {
+		--sl-content-margin-inline: 0 !important;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
 }
 
 .sl-markdown-content h1 {
@@ -152,5 +311,94 @@ body {
 	.slide-launch-action {
 		width: 100%;
 		justify-content: center;
+	}
+}
+
+/* Instructor Profile Card */
+.instructor-card {
+	background: var(--arch-surface);
+	border: 1px solid var(--arch-border);
+	border-left: 4px solid var(--arch-cyan);
+	border-radius: 6px;
+	padding: 1.75rem;
+	margin: 2rem 0;
+	display: flex;
+	gap: 1.5rem;
+	align-items: flex-start;
+}
+
+.instructor-card-badge {
+	width: 52px;
+	height: 52px;
+	min-width: 52px;
+	border-radius: 6px;
+	background: var(--arch-surface-raised);
+	border: 1px solid var(--arch-border);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: var(--sl-font-system-mono);
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: var(--arch-cyan);
+}
+
+.instructor-card-body {
+	flex: 1;
+}
+
+.instructor-card-kicker {
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: var(--arch-cyan);
+	letter-spacing: 0.05em;
+	margin-bottom: 0.25rem;
+}
+
+.instructor-card-name {
+	font-size: 1.35rem;
+	font-weight: 800;
+	color: var(--arch-ink-primary);
+	margin-bottom: 0.5rem;
+}
+
+.instructor-card-desc {
+	font-size: 0.95rem;
+	color: var(--arch-ink-secondary);
+	line-height: 1.6;
+	margin-bottom: 1.25rem;
+}
+
+.instructor-card-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.instructor-pill-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.4rem 0.85rem;
+	background: var(--arch-surface-raised);
+	border: 1px solid var(--arch-border);
+	border-radius: 4px;
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.8rem;
+	color: var(--arch-ink-primary) !important;
+	text-decoration: none !important;
+	transition: all 0.15s ease;
+}
+
+.instructor-pill-link:hover {
+	border-color: var(--arch-cyan);
+	color: var(--arch-cyan) !important;
+}
+
+@media (max-width: 640px) {
+	.instructor-card {
+		flex-direction: column;
 	}
 }

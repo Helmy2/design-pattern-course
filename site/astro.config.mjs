@@ -14,7 +14,9 @@ export default defineConfig({
 			],
 			customCss: ['./src/styles/custom.css'],
 			components: {
+				Header: './src/components/CustomHeader.astro',
 				PageTitle: './src/components/CustomPageTitle.astro',
+				Footer: './src/components/CustomFooter.astro',
 			},
 			sidebar: [
 				{
@@ -35,6 +37,7 @@ export default defineConfig({
 				{
 					label: 'Reference & Hands-on',
 					items: [
+						{ label: 'Pattern Trade-offs (Pros & Cons)', slug: 'reference/pattern-wizard' },
 						{ label: 'Branch Catalog (40 Branches)', slug: 'reference/branches' },
 						{ label: 'Principles Master Index', slug: 'reference/master-index' },
 					],

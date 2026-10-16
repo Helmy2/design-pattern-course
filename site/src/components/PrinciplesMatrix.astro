@@ -4,243 +4,561 @@ const principles = [
 		type: "SOLID",
 		name: "Single Responsibility (SRP)",
 		meaning: "A module should have one, and only one, reason to change.",
-		smell: "God objects, mixing domain logic with serialization, logging, or presentation.",
-		solution: "Iterator (separating traversal from storage), Command, Hexagonal Ports."
+		smell: "God objects, mixing domain logic with serialization, logging, presentation, or persistence.",
+		patterns: ["Iterator", "Command", "Hexagonal Ports"],
+		solutionNote: "Separates traversal from storage and isolates orchestration triggers from domain invariants."
 	},
 	{
 		type: "SOLID",
 		name: "Open/Closed (OCP)",
 		meaning: "Software entities should be open for extension, but closed for modification.",
-		smell: "Modifying cascading switch or if/else ladders on every release to support new types.",
-		solution: "Decorator, Strategy, Factory Method."
+		smell: "Modifying cascading switch or if/else ladders across multiple files on every release to support new types.",
+		patterns: ["Decorator", "Strategy", "Factory Method"],
+		solutionNote: "Enables adding behaviors or types dynamically at runtime without modifying tested source code."
 	},
 	{
 		type: "SOLID",
 		name: "Liskov Substitution (LSP)",
-		meaning: "Subtypes must be substitutable for their base types without altering correctness.",
-		smell: "Refused Bequest: overriding base methods to throw UnsupportedOperationException.",
-		solution: "Favor composition over inheritance, Interface Segregation."
+		meaning: "Subtypes must be substitutable for their base types without altering system correctness.",
+		smell: "Refused Bequest: overriding base methods to throw UnsupportedOperationException or return dummy nulls.",
+		patterns: ["Composition over Inheritance", "Interface Segregation"],
+		solutionNote: "Prevents broken behavioral contracts and avoids unexpected runtime exceptions in polymorphic calls."
 	},
 	{
 		type: "SOLID",
 		name: "Interface Segregation (ISP)",
 		meaning: "Clients should not be forced to depend on methods they do not use.",
-		smell: "Fat interfaces requiring consumers to implement dummy or no-op methods.",
-		solution: "Role interfaces, Adapter pattern."
+		smell: "Fat interfaces requiring consumers to implement 10+ methods with empty no-op bodies or null stubs.",
+		patterns: ["Role Interfaces", "Adapter"],
+		solutionNote: "Breaks monolithic interfaces into lean, client-specific role contracts."
 	},
 	{
 		type: "SOLID",
 		name: "Dependency Inversion (DIP)",
 		meaning: "High-level modules and low-level modules must both depend on abstractions.",
-		smell: "Direct inline instantiation (new ConcreteRepository()) inside core domain entities.",
-		solution: "Factory Method, Abstract Factory, Dependency Injection containers."
+		smell: "Direct inline instantiation (new ConcreteRepository()) inside core business entity methods.",
+		patterns: ["Factory Method", "Abstract Factory", "Dependency Injection"],
+		solutionNote: "Decouples business orchestration from concrete database, network, or vendor implementations."
 	},
 	{
 		type: "Foundational",
 		name: "Encapsulate What Varies",
 		meaning: "Identify aspects of your application that change and isolate them from what stays constant.",
-		smell: "Scattered changes across multiple classes whenever business rules evolve.",
-		solution: "Strategy, Factory Method, Iterator."
+		smell: "Scattered changes across 5+ classes whenever a pricing policy or discount rule evolves.",
+		patterns: ["Strategy", "Factory Method", "Iterator"],
+		solutionNote: "Isolates volatile policies behind stable interfaces so changes remain localized."
 	},
 	{
 		type: "Foundational",
 		name: "Program to Interfaces, Not Implementations",
 		meaning: "Declare references using abstract contracts so clients remain decoupled from concrete classes.",
-		smell: "Coupling client routines to concrete vendor or driver implementations.",
-		solution: "Strategy, Abstract Factory, Adapter, Proxy."
+		smell: "Coupling client routines directly to concrete vendor drivers or third-party SDK classes.",
+		patterns: ["Strategy", "Abstract Factory", "Adapter", "Proxy"],
+		solutionNote: "Allows swapping providers, mock test harnesses, or algorithms without modifying callers."
 	},
 	{
 		type: "Foundational",
 		name: "Favor Composition Over Inheritance",
 		meaning: "Assemble behavior dynamically at runtime (HAS-A) rather than static hierarchies (IS-A).",
-		smell: "Brittle, deep inheritance trees that force behavior onto subclasses.",
-		solution: "Strategy, Decorator, Adapter, Composite."
+		smell: "Brittle, deep inheritance trees that force unwanted or unneeded behavior onto derived subclasses.",
+		patterns: ["Strategy", "Decorator", "Adapter", "Composite"],
+		solutionNote: "Provides flexible runtime assembly without rigid compile-time class lock-in."
 	},
 	{
 		type: "Foundational",
 		name: "Principle of Least Knowledge (Law of Demeter)",
 		meaning: "Talk only to your immediate collaborators. Avoid chaining calls across object boundaries.",
-		smell: "Long method chains (order.getCustomer().getAddress().getCity().getPostalCode()).",
-		solution: "Facade, Delegator methods."
+		smell: "Long method chains (e.g. order.getCustomer().getAddress().getCity().getPostalCode()).",
+		patterns: ["Facade", "Delegator Methods"],
+		solutionNote: "Hides complex sub-system wiring behind simple, intentional entry point operations."
 	},
 	{
 		type: "Foundational",
 		name: "The Hollywood Principle",
 		meaning: "\"Don't call us, we'll call you.\" High-level frameworks invoke low-level hooks.",
-		smell: "Subclasses attempting to manage high-level orchestration control flow.",
-		solution: "Template Method, Factory Method, IoC containers."
+		smell: "Subclasses attempting to manage high-level orchestration, thread coordination, or control loops.",
+		patterns: ["Template Method", "Factory Method", "IoC Containers"],
+		solutionNote: "Inverts execution flow: framework coordinates the lifecycle, passing control only for specific steps."
 	}
 ];
 ---
 
-<div class="matrix-wrapper">
-	<div class="matrix-header-bar">
-		<input 
-			type="text" 
-			id="matrix-search" 
-			placeholder="Filter principles, smells, or patterns..." 
-			class="matrix-search-box"
-		/>
-		<div class="filter-group">
-			<button class="filter-tab active" data-type="all">All</button>
-			<button class="filter-tab" data-type="SOLID">SOLID</button>
-			<button class="filter-tab" data-type="Foundational">Foundational</button>
+<div class="matrix-wrapper not-content">
+	<!-- Top Filter & Search Controls -->
+	<div class="matrix-controls-bar">
+		<div class="search-input-wrapper">
+			<svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+				<circle cx="11" cy="11" r="8" />
+				<line x1="21" y1="21" x2="16.65" y2="16.65" />
+			</svg>
+			<input 
+				type="text" 
+				id="matrix-search" 
+				placeholder="Filter by principle, smell (e.g. 'God object'), or pattern (e.g. 'Strategy')..." 
+				class="matrix-search-box"
+			/>
+			<button id="matrix-clear-search" class="clear-search-btn" type="button" title="Clear filter" style="display: none;">✕</button>
+		</div>
+
+		<div class="filter-and-stats">
+			<div class="filter-group">
+				<button class="filter-tab active" data-type="all">All (10)</button>
+				<button class="filter-tab" data-type="SOLID">SOLID (5)</button>
+				<button class="filter-tab" data-type="Foundational">Foundational (5)</button>
+			</div>
+			<div class="results-counter" id="matrix-counter">Showing 10 of 10</div>
 		</div>
 	</div>
 
+	<!-- Scroll / Full Width Hint -->
+	<div class="matrix-hint-banner">
+		<span class="hint-icon">💡</span>
+		<span class="hint-text">
+			<strong>Tip:</strong> Click <strong>Focus Mode</strong> (⛶) in the top navigation bar to close side panels and expand this table to the full screen.
+		</span>
+	</div>
+
+	<!-- Table Scroll Frame -->
 	<div class="table-frame">
 		<table class="arch-table">
+			<colgroup>
+				<col class="col-principle-width" style="width: 22%;" />
+				<col class="col-intent-width" style="width: 26%;" />
+				<col class="col-smell-width" style="width: 26%;" />
+				<col class="col-solution-width" style="width: 26%;" />
+			</colgroup>
 			<thead>
 				<tr>
 					<th>Principle</th>
 					<th>Core Intent</th>
-					<th>Common Smell</th>
+					<th>Common Smell / Anti-Pattern</th>
 					<th>Pattern Resolution</th>
 				</tr>
 			</thead>
 			<tbody id="matrix-body">
 				{principles.map((p) => (
-					<tr data-category={p.type} data-search={`${p.name} ${p.meaning} ${p.smell} ${p.solution}`.toLowerCase()}>
-						<td class="col-name">
-							<span class="type-tag">{p.type}</span>
-							<strong>{p.name}</strong>
+					<tr 
+						data-category={p.type} 
+						data-search={`${p.name} ${p.meaning} ${p.smell} ${p.patterns.join(' ')} ${p.solutionNote}`.toLowerCase()}
+					>
+						<!-- Column 1: Principle -->
+						<td class="col-principle">
+							<span class={`type-badge ${p.type.toLowerCase()}-badge`}>{p.type}</span>
+							<strong class="principle-name">{p.name}</strong>
 						</td>
-						<td class="col-meaning">{p.meaning}</td>
-						<td class="col-smell">{p.smell}</td>
-						<td class="col-solution">{p.solution}</td>
+
+						<!-- Column 2: Intent -->
+						<td class="col-intent">
+							<p class="intent-text">{p.meaning}</p>
+						</td>
+
+						<!-- Column 3: Smell -->
+						<td class="col-smell">
+							<div class="smell-card">
+								<div class="smell-badge">
+									<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+										<line x1="12" y1="9" x2="12" y2="13" />
+										<line x1="12" y1="17" x2="12.01" y2="17" />
+									</svg>
+									Anti-Pattern
+								</div>
+								<div class="smell-desc">{p.smell}</div>
+							</div>
+						</td>
+
+						<!-- Column 4: Pattern Resolution -->
+						<td class="col-solution">
+							<div class="solution-container">
+								<div class="pattern-chips">
+									{p.patterns.map((pat) => (
+										<span class="pattern-chip">{pat}</span>
+									))}
+								</div>
+								<div class="solution-note">{p.solutionNote}</div>
+							</div>
+						</td>
 					</tr>
 				))}
 			</tbody>
 		</table>
+
+		<!-- Empty Search State -->
+		<div id="matrix-empty" class="empty-results-state" style="display: none;">
+			<div class="empty-icon">🔍</div>
+			<h4>No matching principles or patterns found</h4>
+			<p>Try searching for terms like <code>Strategy</code>, <code>God object</code>, <code>Coupling</code>, or <code>Factory</code>.</p>
+		</div>
 	</div>
 </div>
 
 <style>
 	.matrix-wrapper {
-		margin: 2rem 0;
+		margin: 2rem 0 3rem 0;
+		width: 100%;
+		max-width: 100%;
 	}
-	.matrix-header-bar {
+
+	/* Top Controls Bar */
+	.matrix-controls-bar {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 1.5rem;
+		margin-bottom: 0.85rem;
 	}
-	.matrix-search-box {
+
+	.search-input-wrapper {
+		position: relative;
 		flex: 1;
-		min-width: 260px;
-		padding: 0.65rem 1rem;
-		border-radius: 4px;
+		min-width: 280px;
+		display: flex;
+		align-items: center;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 0.85rem;
+		color: var(--arch-ink-muted, #64748b);
+		pointer-events: none;
+	}
+
+	.matrix-search-box {
+		width: 100%;
+		padding: 0.7rem 2.2rem 0.7rem 2.4rem;
+		border-radius: 6px;
 		border: 1px solid var(--arch-border, #1f2a3f);
 		background: var(--arch-surface, #111726);
 		color: var(--arch-ink-primary, #f1f5f9);
-		font-family: var(--sl-font-system-mono, monospace);
-		font-size: 0.88rem;
+		font-family: var(--sl-font-system-sans, sans-serif);
+		font-size: 0.9rem;
 		outline: none;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
 	}
+
 	.matrix-search-box:focus {
 		border-color: var(--arch-cyan, #38bdf8);
+		box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
 	}
+
+	.clear-search-btn {
+		position: absolute;
+		right: 0.75rem;
+		background: transparent;
+		border: none;
+		color: var(--arch-ink-muted, #64748b);
+		cursor: pointer;
+		font-size: 0.85rem;
+		padding: 0.2rem;
+	}
+
+	.clear-search-btn:hover {
+		color: var(--arch-ink-primary, #f1f5f9);
+	}
+
+	.filter-and-stats {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
 	.filter-group {
 		display: flex;
 		gap: 0.35rem;
 	}
+
 	.filter-tab {
 		background: var(--arch-surface, #111726);
 		color: var(--arch-ink-secondary, #94a3b8);
 		border: 1px solid var(--arch-border, #1f2a3f);
-		padding: 0.45rem 0.85rem;
-		border-radius: 4px;
+		padding: 0.48rem 0.95rem;
+		border-radius: 5px;
 		font-family: var(--sl-font-system-mono, monospace);
-		font-size: 0.78rem;
+		font-size: 0.8rem;
+		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.15s ease;
 	}
+
 	.filter-tab.active, .filter-tab:hover {
 		color: var(--arch-ink-primary, #f1f5f9);
 		border-color: var(--arch-cyan, #38bdf8);
 		background: var(--arch-surface-raised, #182032);
 	}
-	.table-frame {
-		overflow-x: auto;
-		border: 1px solid var(--arch-border, #1f2a3f);
-		border-radius: 6px;
-		background: var(--arch-surface, #111726);
+
+	.results-counter {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.78rem;
+		color: var(--arch-ink-muted, #64748b);
 	}
+
+	/* Hint banner */
+	.matrix-hint-banner {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		background: rgba(56, 189, 248, 0.05);
+		border: 1px dashed rgba(56, 189, 248, 0.22);
+		border-radius: 6px;
+		padding: 0.6rem 0.95rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.82rem;
+		color: var(--arch-ink-secondary, #94a3b8);
+	}
+
+	.hint-icon {
+		font-size: 1rem;
+	}
+
+	.matrix-hint-banner strong {
+		color: var(--arch-cyan, #38bdf8);
+	}
+
+	/* Table Frame with custom scrollbar */
+	.table-frame {
+		width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 8px;
+		background: var(--arch-surface, #111726);
+		box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
+	}
+
+	.table-frame::-webkit-scrollbar {
+		height: 8px;
+	}
+	.table-frame::-webkit-scrollbar-track {
+		background: var(--arch-canvas, #0a0e17);
+	}
+	.table-frame::-webkit-scrollbar-thumb {
+		background: var(--arch-border, #1f2a3f);
+		border-radius: 4px;
+	}
+	.table-frame::-webkit-scrollbar-thumb:hover {
+		background: var(--arch-cyan, #38bdf8);
+	}
+
 	.arch-table {
 		width: 100%;
-		border-collapse: collapse;
+		min-width: 980px;
+		table-layout: fixed;
+		border-collapse: separate;
+		border-spacing: 0;
 		font-size: 0.92rem;
 		text-align: left;
 	}
+
 	.arch-table th {
 		background: var(--arch-canvas, #0a0e17);
-		padding: 0.85rem 1rem;
+		padding: 1rem 1.25rem;
 		font-family: var(--sl-font-system-mono, monospace);
 		font-size: 0.78rem;
-		font-weight: 600;
+		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.05em;
 		color: var(--arch-cyan, #38bdf8);
-		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		border-bottom: 2px solid var(--arch-border, #1f2a3f);
+		position: sticky;
+		top: 0;
+		z-index: 2;
 	}
+
 	.arch-table td {
-		padding: 1rem;
+		padding: 1.2rem 1.25rem;
 		border-bottom: 1px solid var(--arch-border, #1f2a3f);
 		vertical-align: top;
 		line-height: 1.6;
+		word-break: normal;
+		overflow-wrap: break-word;
+		white-space: normal;
 	}
+
+	.arch-table tr:hover td {
+		background: rgba(56, 189, 248, 0.02);
+	}
+
 	.arch-table tr:last-child td {
 		border-bottom: none;
 	}
-	.col-name {
-		width: 220px;
+
+	/* Column 1: Principle */
+	.type-badge {
+		display: inline-block;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		padding: 0.18rem 0.5rem;
+		border-radius: 4px;
+		margin-bottom: 0.4rem;
 	}
-	.col-name strong {
+
+	.solid-badge {
+		background: rgba(56, 189, 248, 0.12);
+		color: #38bdf8;
+		border: 1px solid rgba(56, 189, 248, 0.25);
+	}
+
+	.foundational-badge {
+		background: rgba(168, 85, 247, 0.12);
+		color: #c084fc;
+		border: 1px solid rgba(168, 85, 247, 0.25);
+	}
+
+	.principle-name {
 		display: block;
 		color: var(--arch-ink-primary, #f1f5f9);
 		font-size: 0.98rem;
-		margin-top: 0.25rem;
+		font-weight: 700;
+		line-height: 1.35;
 	}
-	.type-tag {
+
+	/* Column 2: Intent */
+	.intent-text {
+		color: var(--arch-ink-secondary, #94a3b8);
+		font-size: 0.91rem;
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	/* Column 3: Common Smell */
+	.smell-card {
+		background: rgba(239, 68, 68, 0.06);
+		border: 1px solid rgba(239, 68, 68, 0.18);
+		border-radius: 6px;
+		padding: 0.7rem 0.85rem;
+	}
+
+	.smell-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
 		font-family: var(--sl-font-system-mono, monospace);
-		font-size: 0.68rem;
-		color: var(--arch-ink-muted, #64748b);
+		font-size: 0.7rem;
+		font-weight: 700;
 		text-transform: uppercase;
+		color: #f87171;
+		margin-bottom: 0.35rem;
+		letter-spacing: 0.03em;
 	}
-	.col-smell {
+
+	.smell-desc {
 		color: #fca5a5;
 		font-size: 0.88rem;
+		line-height: 1.55;
 	}
-	.col-solution {
-		color: var(--arch-emerald, #10b981);
-		font-size: 0.88rem;
-		font-weight: 500;
+
+	/* Column 4: Pattern Resolution */
+	.solution-container {
+		display: flex;
+		flex-direction: column;
+		gap: 0.55rem;
+	}
+
+	.pattern-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.pattern-chip {
+		background: rgba(16, 185, 129, 0.12);
+		border: 1px solid rgba(16, 185, 129, 0.28);
+		color: #34d399;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.8rem;
+		font-weight: 600;
+		padding: 0.22rem 0.55rem;
+		border-radius: 4px;
+		line-height: 1.25;
+		white-space: nowrap;
+	}
+
+	.solution-note {
+		color: var(--arch-ink-muted, #94a3b8);
+		font-size: 0.84rem;
+		line-height: 1.5;
+	}
+
+	/* Empty Search Results */
+	.empty-results-state {
+		padding: 3rem 1.5rem;
+		text-align: center;
+		color: var(--arch-ink-secondary, #94a3b8);
+	}
+
+	.empty-icon {
+		font-size: 2.2rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.empty-results-state h4 {
+		color: var(--arch-ink-primary, #f1f5f9);
+		font-size: 1.1rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.empty-results-state code {
+		color: var(--arch-cyan, #38bdf8);
+		background: var(--arch-surface-raised, #182032);
+		padding: 0.2rem 0.4rem;
+		border-radius: 4px;
 	}
 </style>
 
 <script is:inline>
 	document.addEventListener('DOMContentLoaded', () => {
 		const search = document.getElementById('matrix-search');
+		const clearBtn = document.getElementById('matrix-clear-search');
 		const tabs = document.querySelectorAll('.filter-tab');
 		const rows = document.querySelectorAll('#matrix-body tr');
+		const counter = document.getElementById('matrix-counter');
+		const emptyState = document.getElementById('matrix-empty');
+		const totalRows = rows.length;
 		let activeFilter = 'all';
 
 		function filter() {
 			const q = search ? search.value.toLowerCase().trim() : '';
+			if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+			let visibleCount = 0;
+
 			rows.forEach((row) => {
 				const cat = row.getAttribute('data-category');
 				const text = row.getAttribute('data-search') || '';
 				const matchesCat = activeFilter === 'all' || cat === activeFilter;
 				const matchesSearch = !q || text.includes(q);
 
-				if (matchesCat && matchesSearch) row.style.display = '';
-				else row.style.display = 'none';
+				if (matchesCat && matchesSearch) {
+					row.style.display = '';
+					visibleCount++;
+				} else {
+					row.style.display = 'none';
+				}
 			});
+
+			if (counter) {
+				counter.textContent = `Showing ${visibleCount} of ${totalRows}`;
+			}
+
+			if (emptyState) {
+				emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+			}
 		}
 
 		if (search) search.addEventListener('input', filter);
+
+		if (clearBtn) {
+			clearBtn.addEventListener('click', () => {
+				search.value = '';
+				filter();
+				search.focus();
+			});
+		}
 
 		tabs.forEach((tab) => {
 			tab.addEventListener('click', () => {

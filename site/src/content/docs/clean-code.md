@@ -1193,7 +1193,7 @@ public class UserService {
 3. **Optimize for Deletion and Readability:**
     - Simple, direct code is easy to refactor or delete when requirements change. Heavily layered, speculative abstractions resist deletion because multiple layers couple to the generic boilerplate.
 ---
-## Part 9: AI as a Reviewer — Accelerant vs. Authority
+# Part 9: AI as a Reviewer — Accelerant vs. Authority
 
 > "AI won't replace software engineers, but software engineers who blindly trust AI output will quickly produce legacy codebases."
 
