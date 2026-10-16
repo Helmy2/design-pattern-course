@@ -1,0 +1,39 @@
+---
+// Client enhancer component that transforms Mermaid code blocks into rich interactive diagrams
+---
+
+<script>
+	import { enhanceMermaidInContainer, setupMermaid, getIsLightTheme } from '../utils/diagram-engine';
+
+	async function initDiagrams() {
+		const contentRoot = document.querySelector<HTMLElement>('.sl-markdown-content') || document.querySelector<HTMLElement>('main') || document.body;
+		if (!contentRoot) return;
+		await enhanceMermaidInContainer(contentRoot);
+	}
+
+	// Run on initial load
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initDiagrams);
+	} else {
+		initDiagrams();
+	}
+
+	// Re-run on Astro page transitions
+	document.addEventListener('astro:page-load', initDiagrams);
+
+	// Observe theme changes (dark <-> light mode)
+	const observer = new MutationObserver((mutations) => {
+		for (const mutation of mutations) {
+			if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+				const isLight = getIsLightTheme();
+				setupMermaid(isLight);
+				initDiagrams();
+			}
+		}
+	});
+
+	observer.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['data-theme'],
+	});
+</script>

@@ -57,6 +57,7 @@ body {
 .sl-markdown-content:has(.matrix-wrapper),
 .sl-markdown-content:has(.tradeoffs-guide-root),
 .sl-markdown-content:has(.branch-catalog-root),
+.sl-markdown-content:has(.interactive-diagram-container),
 .sl-markdown-content:has(.not-content) {
 	max-width: 100% !important;
 }
@@ -402,3 +403,245 @@ html[data-focus-mode="true"] .sl-markdown-content {
 		flex-direction: column;
 	}
 }
+
+/* ==========================================================================
+   Interactive Architectural & UML Diagram Engine
+   ========================================================================== */
+
+.interactive-diagram-container {
+	margin: 2.25rem 0;
+	background: var(--arch-surface);
+	border: 1px solid var(--arch-border);
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+	font-family: var(--sl-font-system-sans);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	position: relative;
+}
+
+.interactive-diagram-container:hover {
+	border-color: var(--arch-border-active);
+}
+
+/* Header & Controls Toolbar */
+.diag-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.65rem 1rem;
+	background: var(--arch-surface-raised);
+	border-bottom: 1px solid var(--arch-border);
+	gap: 1rem;
+	flex-wrap: wrap;
+	user-select: none;
+}
+
+.diag-header-left {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.diag-title-area {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.diag-badge-icon {
+	font-size: 1rem;
+}
+
+.diag-group-title {
+	font-size: 0.88rem;
+	font-weight: 700;
+	color: var(--arch-ink-primary);
+	font-family: var(--sl-font-system-sans);
+	letter-spacing: -0.01em;
+}
+
+/* Diagram Tabs (Class vs Sequence) */
+.diag-tabs {
+	display: inline-flex;
+	background: var(--arch-surface);
+	border: 1px solid var(--arch-border);
+	border-radius: 6px;
+	padding: 2px;
+	gap: 2px;
+}
+
+.diag-tab-btn {
+	background: transparent;
+	border: none;
+	padding: 0.3rem 0.75rem;
+	border-radius: 4px;
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.76rem;
+	font-weight: 600;
+	color: var(--arch-ink-muted);
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.diag-tab-btn:hover {
+	color: var(--arch-ink-primary);
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.diag-tab-btn.active {
+	background: var(--arch-surface-raised);
+	color: var(--arch-cyan);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	border: 1px solid var(--arch-border-active);
+}
+
+/* Toolbar Controls */
+.diag-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+	flex-wrap: wrap;
+}
+
+.diag-zoom-group,
+.diag-action-group {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	background: var(--arch-surface);
+	border: 1px solid var(--arch-border);
+	border-radius: 6px;
+	padding: 2px 4px;
+}
+
+.diag-tool-btn {
+	background: transparent;
+	border: none;
+	color: var(--arch-ink-secondary);
+	padding: 0.35rem 0.55rem;
+	border-radius: 4px;
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	transition: all 0.15s ease;
+}
+
+.diag-tool-btn:hover {
+	color: var(--arch-ink-primary);
+	background: var(--arch-surface-raised);
+}
+
+.diag-zoom-level {
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: var(--arch-cyan);
+	min-width: 42px;
+	text-align: center;
+	cursor: pointer;
+	padding: 0 0.2rem;
+}
+
+/* Stage & Viewport */
+.diag-stage {
+	position: relative;
+	width: 100%;
+	height: 480px;
+	background: var(--arch-canvas);
+	background-image: 
+		radial-gradient(var(--arch-border) 1px, transparent 1px);
+	background-size: 20px 20px;
+	overflow: hidden;
+	cursor: grab;
+	outline: none;
+}
+
+.diag-stage.is-panning {
+	cursor: grabbing;
+}
+
+.diag-viewport {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
+.diag-panzoom-target {
+	transform-origin: center center;
+	transition: transform 0.05s linear;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	will-change: transform;
+}
+
+.diag-panzoom-target svg {
+	max-width: none !important;
+	height: auto;
+	pointer-events: auto;
+	filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+.diag-stage-hint {
+	position: absolute;
+	bottom: 0.5rem;
+	right: 0.75rem;
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.68rem;
+	color: var(--arch-ink-muted);
+	pointer-events: none;
+	opacity: 0.8;
+}
+
+.diag-stage-hint kbd {
+	background: var(--arch-surface-raised);
+	border: 1px solid var(--arch-border);
+	border-radius: 3px;
+	padding: 0.1rem 0.3rem;
+	color: var(--arch-ink-primary);
+}
+
+/* Fullscreen Lightbox Mode */
+.interactive-diagram-container.is-fullscreen {
+	position: fixed !important;
+	inset: 0 !important;
+	width: 100vw !important;
+	height: 100vh !important;
+	z-index: 99999 !important;
+	border-radius: 0 !important;
+	margin: 0 !important;
+	border: none !important;
+	display: flex !important;
+	flex-direction: column !important;
+	background: var(--arch-canvas) !important;
+}
+
+.interactive-diagram-container.is-fullscreen .diag-stage {
+	flex: 1 !important;
+	height: auto !important;
+}
+
+.interactive-diagram-container.is-fullscreen .diag-header {
+	padding: 0.75rem 1.5rem;
+}
+
+.diagram-error {
+	padding: 1.5rem;
+	color: #ef4444;
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.85rem;
+	background: rgba(239, 68, 68, 0.1);
+	border: 1px solid rgba(239, 68, 68, 0.3);
+	border-radius: 6px;
+	margin: 1rem;
+}
+

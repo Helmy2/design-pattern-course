@@ -557,6 +557,114 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				padding: 0.1rem 0.35rem;
 				border-radius: 3px;
 			}
+
+			/* Diagram presentation styling inside slides */
+			.slide-board .interactive-diagram-container {
+				margin: 0.5rem 0 1rem 0;
+				background: rgba(13, 19, 34, 0.6);
+				border: 1px solid var(--border-subtle);
+				border-radius: 8px;
+				overflow: hidden;
+				position: relative;
+			}
+
+			/* Completely hide the diagram controller / header in presentation mode */
+			.slide-board .diag-header {
+				display: none !important;
+			}
+
+			.slide-board .diag-stage {
+				position: relative;
+				width: 100%;
+				height: 56vh;
+				min-height: 380px;
+				background: var(--bg-canvas);
+				background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
+				background-size: 20px 20px;
+				overflow: hidden;
+				cursor: grab;
+				outline: none;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.slide-board .diag-stage.is-panning {
+				cursor: grabbing;
+			}
+
+			.slide-board .diag-viewport {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				pointer-events: none;
+			}
+
+			.slide-board .diag-panzoom-target {
+				transform-origin: center center;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				will-change: transform;
+			}
+
+			.slide-board .diag-panzoom-target svg {
+				max-width: 95% !important;
+				max-height: 95% !important;
+				height: auto;
+				pointer-events: auto;
+				filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4));
+			}
+
+			.slide-board .diag-stage-hint {
+				position: absolute;
+				bottom: 0.4rem;
+				right: 0.6rem;
+				font-family: 'JetBrains Mono', monospace;
+				font-size: 0.65rem;
+				color: var(--text-meta);
+				background: rgba(7, 10, 18, 0.75);
+				padding: 0.15rem 0.45rem;
+				border-radius: 3px;
+				pointer-events: none;
+				user-select: none;
+				border: 1px solid var(--border-subtle);
+			}
+
+			.slide-board .diag-stage-hint kbd {
+				background: var(--bg-panel);
+				border: 1px solid var(--border-subtle);
+				border-radius: 2px;
+				padding: 0.05rem 0.25rem;
+				color: var(--accent-cyan);
+				font-family: inherit;
+				font-size: 0.62rem;
+			}
+
+			/* Mini preview tag for thumbnail cards */
+			.thumbnail-card .slide-mermaid-raw {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0.5rem;
+				background: var(--bg-canvas);
+				border: 1px dashed var(--border-subtle);
+				border-radius: 4px;
+				margin: 0.4rem 0;
+				font-family: 'JetBrains Mono', monospace;
+				font-size: 0.68rem;
+				color: var(--accent-cyan);
+			}
+
+			.thumbnail-card .slide-mermaid-raw pre {
+				display: none;
+			}
+
+			.thumbnail-card .slide-mermaid-raw::before {
+				content: "📐 UML Architectural Diagram";
+			}
 		</style>
 	</head>
 	<body>
@@ -626,36 +734,47 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			</div>
 		</div>
 
-		<!-- Slide Presenter Script with Auto-Fit Engine -->
-		<script is:inline define:vars={{ slidesHtml }}>
+		<!-- Slide Deck Data Payload -->
+		<script id="slide-data" type="application/json" set:html={JSON.stringify(slidesHtml)} />
+
+		<!-- Slide Presenter Script with Auto-Fit & Interactive Diagram Engine -->
+		<script>
+			import { enhanceMermaidInContainer } from '../utils/diagram-engine';
+
+			const dataEl = document.getElementById('slide-data');
+			const slidesHtml: string[] = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
 			const total = slidesHtml.length;
 			let current = 0;
 
 			const hash = window.location.hash.replace('#', '');
-			if (hash && !isNaN(parseInt(hash))) {
-				const req = parseInt(hash) - 1;
+			if (hash && !isNaN(parseInt(hash, 10))) {
+				const req = parseInt(hash, 10) - 1;
 				if (req >= 0 && req < total) current = req;
 			}
 
-			const board = document.getElementById('slide-board');
-			const contentEl = document.getElementById('slide-content');
-			const counterDock = document.getElementById('counter-dock');
-			const titleblockNum = document.getElementById('titleblock-num');
-			const progressLine = document.getElementById('progress-line');
-			const btnPrev = document.getElementById('btn-prev');
-			const btnNext = document.getElementById('btn-next');
-			const modal = document.getElementById('index-modal');
-			const btnToggleIndex = document.getElementById('toggle-index-btn');
-			const btnCloseModal = document.getElementById('close-modal-btn');
-			const btnToggleScreen = document.getElementById('toggle-screen-btn');
+			const board = document.getElementById('slide-board') as HTMLElement;
+			const contentEl = document.getElementById('slide-content') as HTMLElement;
+			const counterDock = document.getElementById('counter-dock') as HTMLElement;
+			const titleblockNum = document.getElementById('titleblock-num') as HTMLElement;
+			const progressLine = document.getElementById('progress-line') as HTMLElement;
+			const btnPrev = document.getElementById('btn-prev') as HTMLButtonElement;
+			const btnNext = document.getElementById('btn-next') as HTMLButtonElement;
+			const modal = document.getElementById('index-modal') as HTMLElement;
+			const btnToggleIndex = document.getElementById('toggle-index-btn') as HTMLElement;
+			const btnCloseModal = document.getElementById('close-modal-btn') as HTMLElement;
+			const btnToggleScreen = document.getElementById('toggle-screen-btn') as HTMLElement;
 
-			// Dynamic Auto-fit engine: scales slide content so it never overflows or requires scrolling
+			// Dynamic Auto-fit engine: scales slide content so it never overflows
 			function autoFit() {
-				// Reset scale first to measure natural content dimensions
+				if (!contentEl || !board) return;
 				contentEl.style.transform = 'none';
 				contentEl.style.width = '100%';
 
-				// Calculate available height inside the slide board (minus titleblock and padding)
+				// If there's an active interactive diagram, don't over-scale
+				if (contentEl.querySelector('.interactive-diagram-container')) {
+					return;
+				}
+
 				const availableHeight = board.clientHeight - 70;
 				const naturalHeight = contentEl.scrollHeight;
 
@@ -663,28 +782,30 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 					const scale = Math.max(0.68, availableHeight / naturalHeight);
 					contentEl.style.transform = `scale(${scale})`;
 					contentEl.style.transformOrigin = 'center center';
-					contentEl.style.width = `${(100 / scale)}%`;
+					contentEl.style.width = `${100 / scale}%`;
 				}
 			}
 
-			function showSlide(idx) {
+			async function showSlide(idx: number) {
 				if (idx < 0 || idx >= total) return;
 				current = idx;
 
 				contentEl.innerHTML = slidesHtml[current];
 				board.scrollTop = 0;
 
-				// Recalculate auto-fit after DOM paint
+				// Enhance any Mermaid diagrams in the active slide
+				await enhanceMermaidInContainer(contentEl);
+
 				requestAnimationFrame(() => {
 					autoFit();
 				});
 
-				counterDock.textContent = `${current + 1} / ${total}`;
-				titleblockNum.textContent = `${String(current + 1).padStart(2, '0')} / ${total}`;
-				progressLine.style.width = `${((current + 1) / total) * 100}%`;
+				if (counterDock) counterDock.textContent = `${current + 1} / ${total}`;
+				if (titleblockNum) titleblockNum.textContent = `${String(current + 1).padStart(2, '0')} / ${total}`;
+				if (progressLine) progressLine.style.width = `${((current + 1) / total) * 100}%`;
 
-				btnPrev.disabled = current === 0;
-				btnNext.disabled = current === total - 1;
+				if (btnPrev) btnPrev.disabled = current === 0;
+				if (btnNext) btnNext.disabled = current === total - 1;
 
 				window.location.hash = `${current + 1}`;
 
@@ -702,11 +823,11 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				if (current > 0) showSlide(current - 1);
 			}
 
-			btnPrev.addEventListener('click', prev);
-			btnNext.addEventListener('click', next);
-			btnToggleIndex.addEventListener('click', () => modal.classList.toggle('active'));
-			btnCloseModal.addEventListener('click', () => modal.classList.remove('active'));
-			btnToggleScreen.addEventListener('click', () => {
+			btnPrev?.addEventListener('click', prev);
+			btnNext?.addEventListener('click', next);
+			btnToggleIndex?.addEventListener('click', () => modal?.classList.toggle('active'));
+			btnCloseModal?.addEventListener('click', () => modal?.classList.remove('active'));
+			btnToggleScreen?.addEventListener('click', () => {
 				if (!document.fullscreenElement) {
 					document.documentElement.requestFullscreen().catch(() => {});
 				} else {
@@ -716,8 +837,8 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 
 			document.querySelectorAll('.thumbnail-card').forEach((card) => {
 				card.addEventListener('click', () => {
-					const idx = parseInt(card.getAttribute('data-index'));
-					modal.classList.remove('active');
+					const idx = parseInt(card.getAttribute('data-index') || '0', 10);
+					modal?.classList.remove('active');
 					showSlide(idx);
 				});
 			});
@@ -725,10 +846,20 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			window.addEventListener('resize', autoFit);
 
 			window.addEventListener('keydown', (e) => {
-				if (modal.classList.contains('active')) {
+				if (modal?.classList.contains('active')) {
 					if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') {
 						modal.classList.remove('active');
 					}
+					return;
+				}
+
+				// If an interactive diagram is fullscreen or focused, let the diagram handle events
+				if (document.querySelector('.interactive-diagram-container.is-fullscreen')) {
+					return;
+				}
+
+				const activeEl = document.activeElement;
+				if (activeEl?.closest('.diag-stage') || activeEl?.closest('.interactive-diagram-container')) {
 					return;
 				}
 
@@ -739,7 +870,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 					e.preventDefault();
 					prev();
 				} else if (e.key === 'g' || e.key === 'G') {
-					modal.classList.toggle('active');
+					modal?.classList.toggle('active');
 				} else if (e.key === 'f' || e.key === 'F') {
 					if (!document.fullscreenElement) {
 						document.documentElement.requestFullscreen().catch(() => {});

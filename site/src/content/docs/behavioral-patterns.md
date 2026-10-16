@@ -32,35 +32,68 @@ The Strategy Pattern is built on three foundational OO design principles:
 
 ---
 
-## 3. Pattern Structure & Class Diagram
+## 3. Pattern Architecture
 
-```text
-               Client
-              ┌─────────────────────────────┐
-              │            Duck             │
-              ├─────────────────────────────┤
-              │ - flyBehavior: FlyBehavior  │
-              │ - quackBehavior: QuackBehavior│
-              ├─────────────────────────────┤
-              │ + performFly()              │
-              │ + performQuack()            │
-              │ + setFlyBehavior(...)       │
-              │ + setQuackBehavior(...)     │
-              └──────────────┬──────────────┘
-                             │ HAS-A (Composition)
-                             ▼
-              <<interface>> FlyBehavior
-              ┌─────────────────────────────┐
-              │ + fly()                     │
-              └──────────────┬──────────────┘
-                             ▲
-              ┌──────────────┴──────────────┐
-              │                             │
-    FlyWithWings                        FlyNoWay
-  ┌─────────────────┐             ┌─────────────────┐
-  │ + fly()         │             │ + fly()         │
-  └─────────────────┘             └─────────────────┘
-````
+### Class Diagram: Participants & Interfaces
+
+```mermaid
+classDiagram
+  direction TB
+  class Duck {
+    <<abstract>>
+    #FlyBehavior flyBehavior
+    #QuackBehavior quackBehavior
+    +performFly() void
+    +performQuack() void
+    +swim() void
+    +display()* void
+    +setFlyBehavior(FlyBehavior fb) void
+    +setQuackBehavior(QuackBehavior qb) void
+  }
+  class FlyBehavior {
+    <<interface>>
+    +fly() void
+  }
+  class QuackBehavior {
+    <<interface>>
+    +quack() void
+  }
+  class FlyWithWings {
+    +fly() void
+  }
+  class FlyNoWay {
+    +fly() void
+  }
+  class FlyRocketPowered {
+    +fly() void
+  }
+  class Quack {
+    +quack() void
+  }
+  class Squeak {
+    +quack() void
+  }
+  class MuteQuack {
+    +quack() void
+  }
+  class MallardDuck {
+    +display() void
+  }
+  class ModelDuck {
+    +display() void
+  }
+
+  Duck <|-- MallardDuck : extends
+  Duck <|-- ModelDuck : extends
+  Duck o--> FlyBehavior : HAS-A
+  Duck o--> QuackBehavior : HAS-A
+  FlyBehavior <|.. FlyWithWings : implements
+  FlyBehavior <|.. FlyNoWay : implements
+  FlyBehavior <|.. FlyRocketPowered : implements
+  QuackBehavior <|.. Quack : implements
+  QuackBehavior <|.. Squeak : implements
+  QuackBehavior <|.. MuteQuack : implements
+```
 
 ---
 ## 4. Implementation: The SimUDuck Code
@@ -315,27 +348,63 @@ public class WeatherData {
 - New observers can be registered or removed at runtime without altering the `Subject` by even a single line.
 - Changes to either the subject or an observer will not break the other as long as they satisfy their respective interface contracts.
 ---
-## 4. Pattern Structure & Class Diagram
+## 4. Pattern Architecture
 
-```
-       <<interface>>                              <<interface>>
-          Subject                                    Observer
-  ┌───────────────────────┐                  ┌───────────────────────┐
-  │ + registerObserver()  │                  │ + update(...)         │
-  │ + removeObserver()    │                  └───────────────────────┘
-  │ + notifyObservers()   │                              ▲
-  └───────────────────────┘                              │
-              ▲                                          │
-              │ implements                               │ implements
-  ┌───────────────────────┐                  ┌───────────────────────┐
-  │      WeatherData      │◄───(subject)─────│CurrentConditionsDisplay│
-  ├───────────────────────┤                  ├───────────────────────┤
-  │ - observers: List     │                  │ - temp, humidity      │
-  │ - temp, humidity, pres│                  │ - weatherData: Subject│
-  ├───────────────────────┤                  ├───────────────────────┤
-  │ + notifyObservers()   │                  │ + update(...)         │
-  │ + getTemperature()    │                  │ + display()           │
-  └───────────────────────┘                  └───────────────────────┘
+### Class Diagram: Subject & Observer Contracts
+
+```mermaid
+classDiagram
+  direction TB
+  class Subject {
+    <<interface>>
+    +registerObserver(Observer o) void
+    +removeObserver(Observer o) void
+    +notifyObservers() void
+  }
+  class Observer {
+    <<interface>>
+    +update(float temp, float humidity, float pressure) void
+  }
+  class DisplayElement {
+    <<interface>>
+    +display() void
+  }
+  class WeatherData {
+    -List~Observer~ observers
+    -float temperature
+    -float humidity
+    -float pressure
+    +registerObserver(Observer o) void
+    +removeObserver(Observer o) void
+    +notifyObservers() void
+    +setMeasurements(float temp, float humidity, float pressure) void
+    +measurementsChanged() void
+  }
+  class CurrentConditionsDisplay {
+    -float temperature
+    -float humidity
+    -Subject weatherData
+    +update(float temp, float humidity, float pressure) void
+    +display() void
+  }
+  class StatisticsDisplay {
+    -float maxTemp
+    -float minTemp
+    -float tempSum
+    -int numReadings
+    -Subject weatherData
+    +update(float temp, float humidity, float pressure) void
+    +display() void
+  }
+
+  Subject <|.. WeatherData : implements
+  Observer <|.. CurrentConditionsDisplay : implements
+  Observer <|.. StatisticsDisplay : implements
+  DisplayElement <|.. CurrentConditionsDisplay : implements
+  DisplayElement <|.. StatisticsDisplay : implements
+  WeatherData o--> Observer : notifies 1..*
+  CurrentConditionsDisplay --> Subject : observes
+  StatisticsDisplay --> Subject : observes
 ```
 
 ---
@@ -606,7 +675,72 @@ You are commissioned to design a programmable remote control for a modern smart 
     - If the remote control hardcodes `if/else` checks against vendor APIs, every new appliance forces code changes directly inside the remote firmware.
     - The remote needs to know _nothing_ about lights, fans, stereos, or garage doors; it should only know how to invoke a generic command.
 ---
-## 3. The Core Command Interface & Concrete Commands
+## 3. Pattern Architecture
+
+### Class Diagram: Invoker, Command Hierarchy & Receivers
+
+```mermaid
+classDiagram
+  direction TB
+  class Command {
+    <<interface>>
+    +execute() void
+    +undo() void
+  }
+  class RemoteControl {
+    -Command[] onCommands
+    -Command[] offCommands
+    -Command undoCommand
+    +setCommand(int slot, Command onCmd, Command offCmd) void
+    +onButtonWasPushed(int slot) void
+    +offButtonWasPushed(int slot) void
+    +undoButtonWasPushed() void
+  }
+  class LightOnCommand {
+    -Light light
+    +LightOnCommand(Light light)
+    +execute() void
+    +undo() void
+  }
+  class LightOffCommand {
+    -Light light
+    +LightOffCommand(Light light)
+    +execute() void
+    +undo() void
+  }
+  class CeilingFanHighCommand {
+    -CeilingFan ceilingFan
+    -int prevSpeed
+    +execute() void
+    +undo() void
+  }
+  class Light {
+    -String location
+    +on() void
+    +off() void
+  }
+  class CeilingFan {
+    +int HIGH
+    +int MEDIUM
+    +int LOW
+    +int OFF
+    -int speed
+    +high() void
+    +off() void
+    +getSpeed() int
+  }
+
+  RemoteControl o--> Command : invoker (slots + undo)
+  Command <|.. LightOnCommand : implements
+  Command <|.. LightOffCommand : implements
+  Command <|.. CeilingFanHighCommand : implements
+  LightOnCommand --> Light : encapsulates receiver
+  LightOffCommand --> Light : encapsulates receiver
+  CeilingFanHighCommand --> CeilingFan : encapsulates receiver
+```
+
+---
+## 4. Implementation: The Remote Control Code
 ### A. The Command Interface
 All commands implement a simple interface with an execution method and an undo action:
 
@@ -883,21 +1017,61 @@ public class Waitress {
     - If the Diner later switches from an array to a `Hashtable` or `Set`, the `Waitress` class breaks and must be rewritten.
     - Violates the **Single Responsibility Principle (SRP)**: the menus handle both item storage and exposing iteration logic.
 ---
-## 3. The Solution: Encapsulating Iteration
-Instead of exposing collections directly via getters, both menus implement a common interface that returns an `Iterator`.
+## 3. Pattern Architecture
 
-```
-               <<interface>>
-                 Iterator
-              ┌─────────────┐
-              │ + hasNext() │
-              │ + next()    │
-              │ + remove()  │
-              └─────────────┘
-                     ▲
-         ┌───────────┴───────────┐
-         │                       │
-DinerMenuIterator       ArrayListIterator (Java standard)
+### Class Diagram: Aggregate & Iterator Contracts
+
+```mermaid
+classDiagram
+  direction TB
+  class Menu {
+    <<interface>>
+    +createIterator() Iterator
+  }
+  class Iterator {
+    <<interface>>
+    +hasNext() boolean
+    +next() Object
+  }
+  class DinerMenu {
+    -MenuItem[] menuItems
+    -int numberOfItems
+    +createIterator() Iterator
+    +addItem(String name, String desc, boolean veg, double price) void
+  }
+  class PancakeHouseMenu {
+    -List~MenuItem~ menuItems
+    +createIterator() Iterator
+    +addItem(String name, String desc, boolean veg, double price) void
+  }
+  class DinerMenuIterator {
+    -MenuItem[] list
+    -int position
+    +hasNext() boolean
+    +next() MenuItem
+  }
+  class Waitress {
+    -Menu pancakeHouseMenu
+    -Menu dinerMenu
+    +printMenu() void
+    -printMenu(Iterator iterator) void
+  }
+  class MenuItem {
+    -String name
+    -String description
+    -boolean vegetarian
+    -double price
+    +getName() String
+    +getPrice() double
+  }
+
+  Menu <|.. DinerMenu : implements
+  Menu <|.. PancakeHouseMenu : implements
+  Iterator <|.. DinerMenuIterator : implements
+  DinerMenu ..> DinerMenuIterator : creates
+  Waitress --> Menu : polymorphic client
+  Waitress ..> Iterator : traverses
+  DinerMenuIterator o--> MenuItem : aggregates
 ```
 
 ---
@@ -1234,3 +1408,73 @@ Principles applied at system boundaries, multi-tier backends, and distributed se
 | **Observer**         | Behavioral | Weather Monitoring Station (Push vs. Pull)                 | Define a one-to-many dependency so that when one object changes state, all dependents are updated.               | Strive for loosely coupled designs between interacting objects.                  | Spring `ApplicationEventPublisher`, Reactive Streams (`Flow`, RxJava), GUI Event Listeners.     |
 | **Command**          | Behavioral | Diner Order Slip / Smart Home Modular Remote Control       | Encapsulate a request as an object, allowing parameterization, queuing, logging, and undo.                       | Decouple Invoker from Receiver, Null Object Pattern, Macro composition.          | Task queues, Thread pools (`Runnable`/`Callable`), CQRS Command Buses.                          |
 | **Iterator**         | Behavioral | Diner Array vs. Pancake House ArrayList Traversal          | Provide a way to access elements of an aggregate sequentially without exposing underlying representation.        | Single Responsibility Principle (SRP), Encapsulate iteration.                    | Java `Iterable<T>`, enhanced for-loop, Java Streams, Database cursor pagination.                |
+
+---
+
+# Part 5: Capstone — Orchestrating Design Patterns in Clean Architecture
+
+When building production-grade enterprise systems, design patterns never operate in isolation. A clean software system orchestrates creational, structural, and behavioral patterns within an onion/hexagonal architecture:
+- **Strategy Pattern:** Swappable payment gateways and tiered discount policies.
+- **Factory Method:** Dynamic instantiation of notification dispatchers (Email, SMS, Push).
+- **Observer Pattern:** Decoupled event propagation for inventory reduction and audit logging.
+- **Command Pattern:** Encapsulated, idempotent checkout workflows with compensation/undo logic.
+
+---
+
+## Pattern Architecture
+
+### Class Diagram: Multi-Pattern Clean Architecture Domain Model
+
+```mermaid
+classDiagram
+  direction TB
+  class OrderService {
+    -DiscountStrategy discountStrategy
+    -NotificationFactory notificationFactory
+    -OrderEventPublisher eventPublisher
+    +processOrder(Order order) CheckoutResult
+  }
+  class DiscountStrategy {
+    <<interface>>
+    +applyDiscount(Order order) Money
+  }
+  class VipCustomerDiscount {
+    +applyDiscount(Order order) Money
+  }
+  class SeasonalPromotionDiscount {
+    +applyDiscount(Order order) Money
+  }
+  class NotificationFactory {
+    <<interface>>
+    +createNotifier(Channel channel) Notifier
+  }
+  class Notifier {
+    <<interface>>
+    +send(String recipient, String message) void
+  }
+  class OrderEventPublisher {
+    -List~OrderEventListener~ listeners
+    +register(OrderEventListener l) void
+    +publish(OrderPlacedEvent event) void
+  }
+  class OrderEventListener {
+    <<interface>>
+    +onOrderPlaced(OrderPlacedEvent event) void
+  }
+  class InventoryService {
+    +onOrderPlaced(OrderPlacedEvent event) void
+  }
+  class AuditLogService {
+    +onOrderPlaced(OrderPlacedEvent event) void
+  }
+
+  OrderService o--> DiscountStrategy : Strategy
+  OrderService o--> NotificationFactory : Factory
+  OrderService o--> OrderEventPublisher : Observer (Subject)
+  DiscountStrategy <|.. VipCustomerDiscount : implements
+  DiscountStrategy <|.. SeasonalPromotionDiscount : implements
+  OrderEventPublisher o--> OrderEventListener : Observer (1..*)
+  OrderEventListener <|.. InventoryService : implements
+  OrderEventListener <|.. AuditLogService : implements
+  NotificationFactory ..> Notifier : creates
+```
