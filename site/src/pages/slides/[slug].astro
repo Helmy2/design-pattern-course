@@ -1,0 +1,50 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import SlideDeck from '../../components/SlideDeck.astro';
+
+export function getStaticPaths() {
+	return [
+		{
+			params: { slug: 'clean-code' },
+			props: {
+				title: '01. Clean Code Fundamentals',
+				file: '01. Clean Code Fundamentals.md',
+				handbookSlug: 'clean-code',
+			},
+		},
+		{
+			params: { slug: 'creational-patterns' },
+			props: {
+				title: '02. Creational Design Patterns',
+				file: '02. Creational Design Patterns.md',
+				handbookSlug: 'creational-patterns',
+			},
+		},
+		{
+			params: { slug: 'structural-patterns' },
+			props: {
+				title: '03. Structural Design Patterns',
+				file: '03. Structural Design Patterns.md',
+				handbookSlug: 'structural-patterns',
+			},
+		},
+		{
+			params: { slug: 'behavioral-patterns' },
+			props: {
+				title: '04. Behavioral Design Patterns',
+				file: '04. Behavioral Design Patterns.md',
+				handbookSlug: 'behavioral-patterns',
+			},
+		},
+	];
+}
+
+const { title, file, handbookSlug } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const filePath = path.resolve(`../docs/${file}`);
+const markdown = fs.readFileSync(filePath, 'utf-8');
+const backUrl = `${baseUrl}/${handbookSlug}/`;
+---
+
+<SlideDeck title={title} markdown={markdown} backUrl={backUrl} />

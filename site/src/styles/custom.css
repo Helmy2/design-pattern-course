@@ -1,0 +1,156 @@
+/* Architectural Blueprint Design System for Design Patterns & Clean Code */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+	/* Core Palette: Technical Blueprint Slate */
+	--sl-font-system-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	--sl-font-system-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+	--sl-color-accent-low: #0f2338;
+	--sl-color-accent: #0284c7;
+	--sl-color-accent-high: #7dd3fc;
+
+	--arch-canvas: #0a0e17;
+	--arch-surface: #111726;
+	--arch-surface-raised: #182032;
+	--arch-border: #1f2a3f;
+	--arch-border-active: #38bdf8;
+	--arch-ink-primary: #f1f5f9;
+	--arch-ink-secondary: #94a3b8;
+	--arch-ink-muted: #64748b;
+	--arch-cyan: #38bdf8;
+	--arch-amber: #f59e0b;
+	--arch-emerald: #10b981;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #e0f2fe;
+	--sl-color-accent: #0284c7;
+	--sl-color-accent-high: #0369a1;
+
+	--arch-canvas: #f8fafc;
+	--arch-surface: #ffffff;
+	--arch-surface-raised: #f1f5f9;
+	--arch-border: #cbd5e1;
+	--arch-border-active: #0284c7;
+	--arch-ink-primary: #0f172a;
+	--arch-ink-secondary: #475569;
+	--arch-ink-muted: #94a3b8;
+}
+
+/* Starlight Layout & Typography Refinements */
+body {
+	font-family: var(--sl-font-system-sans);
+	background-color: var(--arch-canvas);
+	color: var(--arch-ink-primary);
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Constrain line lengths for reading comfort */
+.sl-markdown-content {
+	max-width: 76ch;
+	font-size: 1.05rem;
+	line-height: 1.75;
+}
+
+.sl-markdown-content h1 {
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	color: var(--arch-ink-primary);
+	line-height: 1.2;
+}
+
+.sl-markdown-content h2 {
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	border-bottom: 1px solid var(--arch-border);
+	padding-bottom: 0.5rem;
+	margin-top: 2.5rem;
+	color: var(--arch-ink-primary);
+}
+
+.sl-markdown-content h3 {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	color: var(--arch-cyan);
+	margin-top: 2rem;
+}
+
+.sl-markdown-content code {
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.88em;
+	border-radius: 4px;
+	padding: 0.2em 0.4em;
+	background: var(--arch-surface-raised);
+	border: 1px solid var(--arch-border);
+}
+
+/* Distinctive Slide Deck Launcher Bar */
+.slide-launch-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: var(--arch-surface);
+	border: 1px solid var(--arch-border);
+	border-left: 4px solid var(--arch-cyan);
+	border-radius: 6px;
+	padding: 1.1rem 1.4rem;
+	margin: 1.5rem 0 2.5rem 0;
+	gap: 1.5rem;
+}
+
+.slide-launch-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.slide-launch-kicker {
+	font-family: var(--sl-font-system-mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--arch-cyan);
+	letter-spacing: 0.04em;
+}
+
+.slide-launch-heading {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: var(--arch-ink-primary);
+}
+
+.slide-launch-subtext {
+	font-size: 0.875rem;
+	color: var(--arch-ink-secondary);
+	margin: 0;
+}
+
+.slide-launch-action {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.65rem 1.25rem;
+	background: #0284c7;
+	color: #ffffff !important;
+	font-weight: 600;
+	font-size: 0.9rem;
+	border-radius: 6px;
+	text-decoration: none !important;
+	white-space: nowrap;
+	transition: background-color 0.15s ease;
+}
+
+.slide-launch-action:hover {
+	background: #0369a1;
+}
+
+@media (max-width: 640px) {
+	.slide-launch-bar {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.slide-launch-action {
+		width: 100%;
+		justify-content: center;
+	}
+}

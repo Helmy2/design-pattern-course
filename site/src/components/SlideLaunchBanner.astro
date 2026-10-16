@@ -1,0 +1,30 @@
+---
+interface Props {
+	title: string;
+	slug: string;
+	slideCount?: number;
+}
+
+const { title, slug, slideCount } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+const slideUrl = `${baseUrl}/slides/${slug}`;
+---
+
+<div class="slide-launch-bar">
+	<div class="slide-launch-info">
+		<span class="slide-launch-kicker">Interactive Deck</span>
+		<span class="slide-launch-heading">{title}</span>
+		<p class="slide-launch-subtext">
+			Fullscreen presentation mode with slide index and keyboard navigation.
+			{slideCount && <span> · {slideCount} slides</span>}
+		</p>
+	</div>
+	<a href={slideUrl} class="slide-launch-action" target="_blank" rel="noopener noreferrer">
+		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+			<line x1="8" y1="21" x2="16" y2="21"></line>
+			<line x1="12" y1="17" x2="12" y2="21"></line>
+		</svg>
+		<span>Launch presentation</span>
+	</a>
+</div>

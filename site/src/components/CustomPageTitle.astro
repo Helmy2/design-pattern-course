@@ -1,0 +1,26 @@
+---
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import SlideLaunchBanner from './SlideLaunchBanner.astro';
+
+const route = Astro.locals.starlightRoute;
+const slug = route?.id || '';
+
+const moduleMap: Record<string, { title: string; count: number }> = {
+	'clean-code': { title: '01. Clean Code Fundamentals', count: 70 },
+	'creational-patterns': { title: '02. Creational Design Patterns', count: 54 },
+	'structural-patterns': { title: '03. Structural Design Patterns', count: 59 },
+	'behavioral-patterns': { title: '04. Behavioral Design Patterns', count: 57 },
+};
+
+const currentModule = moduleMap[slug];
+---
+
+<Default {...Astro.props}><slot /></Default>
+
+{currentModule && (
+	<SlideLaunchBanner 
+		title={currentModule.title} 
+		slug={slug} 
+		slideCount={currentModule.count} 
+	/>
+)}

@@ -20,3 +20,8 @@ out/
 
 ### Crash logs & heap dumps ###
 *.hprof
+
+### Website ###
+site/node_modules/
+site/dist/
+site/.astro/

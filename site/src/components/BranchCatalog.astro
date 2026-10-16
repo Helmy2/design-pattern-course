@@ -1,0 +1,422 @@
+---
+const modules = [
+	{
+		module: "Module 1: Clean Code Foundations & Refactoring",
+		concepts: [
+			{
+				id: "01",
+				title: "Meaningful Naming & Readability",
+				starter: "01-clean-naming-starter",
+				solution: "01-clean-naming-solution",
+				focus: "Intent-revealing names, eliminate disinformation, pronounceable/searchable names, no redundant prefixes.",
+				tests: "CleanNamingTest",
+			},
+			{
+				id: "02",
+				title: "Functions, Arguments & CQS",
+				starter: "02-functions-and-cqs-starter",
+				solution: "02-functions-and-cqs-solution",
+				focus: "Small methods, Single Level of Abstraction (SLA), Monadic/Dyadic args, Parameter Objects, Command-Query Separation.",
+				tests: "FunctionsAndCqsTest",
+			},
+			{
+				id: "03",
+				title: "Code Smells & Antipatterns",
+				starter: "03-code-smells-starter",
+				solution: "03-code-smells-solution",
+				focus: "Bloaters (Primitive Obsession with records), OO Abusers (Refused Bequest), Couplers (Feature Envy, Law of Demeter).",
+				tests: "CodeSmellsTest",
+			},
+			{
+				id: "04",
+				title: "Core Refactoring Techniques",
+				starter: "04-refactoring-techniques-starter",
+				solution: "04-refactoring-techniques-solution",
+				focus: "Extract Method, Replace Temp with Query, Introduce Parameter Object, Replace Conditional with Polymorphism.",
+				tests: "RefactoringTechniquesTest",
+			},
+			{
+				id: "05",
+				title: "Architecture Smells & ArchUnit Enforcement",
+				starter: "05-architecture-and-archunit-starter",
+				solution: "05-architecture-and-archunit-solution",
+				focus: "Package-by-Feature (vertical slicing), cyclic dependencies, avoiding 1:1 interfaces with Impl, ArchUnit rules.",
+				tests: "ArchitectureEnforcementArchUnitTest",
+			}
+		]
+	},
+	{
+		module: "Module 2: Creational Design Patterns",
+		concepts: [
+			{
+				id: "06",
+				title: "Singleton Pattern & Modern Evolution",
+				starter: "06-pattern-singleton-starter",
+				solution: "06-pattern-singleton-solution",
+				focus: "Thread-safe Singleton evolution: Unsafe Lazy, Double-Checked Locking (volatile), Holder idiom, Enum Singleton, Kotlin object.",
+				tests: "SingletonConcurrencyTest",
+			},
+			{
+				id: "07",
+				title: "Factory Method & Simple Factory",
+				starter: "07-pattern-factory-method-starter",
+				solution: "07-pattern-factory-method-solution",
+				focus: "Linear progression: inline instantiation anti-pattern -> Simple Factory extraction -> GoF Factory Method framework.",
+				tests: "FactoryMethodTest",
+			},
+			{
+				id: "08",
+				title: "Abstract Factory Pattern",
+				starter: "08-pattern-abstract-factory-starter",
+				solution: "08-pattern-abstract-factory-solution",
+				focus: "Families of related products (UI Component suites, Cross-cloud connectors) without specifying concrete classes.",
+				tests: "AbstractFactoryTest",
+			},
+			{
+				id: "09",
+				title: "Builder Pattern",
+				starter: "09-pattern-builder-starter",
+				solution: "09-pattern-builder-solution",
+				focus: "Telescoping constructor anti-pattern, fluent step builder, immutable objects, input validation invariants.",
+				tests: "BuilderPatternTest",
+			},
+			{
+				id: "10",
+				title: "Prototype Pattern",
+				starter: "10-pattern-prototype-starter",
+				solution: "10-pattern-prototype-solution",
+				focus: "Object cloning, deep vs shallow copy, cost-heavy instantiation bypass, copy constructors vs clone().",
+				tests: "PrototypePatternTest",
+			}
+		]
+	},
+	{
+		module: "Module 3: Structural Design Patterns",
+		concepts: [
+			{
+				id: "11",
+				title: "Adapter Pattern",
+				starter: "11-pattern-adapter-starter",
+				solution: "11-pattern-adapter-solution",
+				focus: "Incompatible interface bridging, Object Adapter (composition) vs Class Adapter (inheritance), legacy API integration.",
+				tests: "AdapterPatternTest",
+			},
+			{
+				id: "12",
+				title: "Decorator Pattern",
+				starter: "12-pattern-decorator-starter",
+				solution: "12-pattern-decorator-solution",
+				focus: "Dynamic runtime responsibility attachment, open/closed principle, wrapper chains (Logging, Caching, Encryption).",
+				tests: "DecoratorPatternTest",
+			},
+			{
+				id: "13",
+				title: "Composite Pattern",
+				starter: "13-pattern-composite-starter",
+				solution: "13-pattern-composite-solution",
+				focus: "Tree structures, treating individual objects and compositions uniformly (UI hierarchies, File systems, Org charts).",
+				tests: "CompositePatternTest",
+			},
+			{
+				id: "14",
+				title: "Facade Pattern",
+				starter: "14-pattern-facade-starter",
+				solution: "14-pattern-facade-solution",
+				focus: "Simplified interface to complex subsystems, Principle of Least Knowledge (Demeter), reducing subsystem coupling.",
+				tests: "FacadePatternTest",
+			},
+			{
+				id: "15",
+				title: "Proxy Pattern",
+				starter: "15-pattern-proxy-starter",
+				solution: "15-pattern-proxy-solution",
+				focus: "Surrogate/placeholder controlling access: Virtual Proxy (lazy loading), Protection Proxy (auth), Dynamic Proxy.",
+				tests: "ProxyPatternTest",
+			}
+		]
+	},
+	{
+		module: "Module 4: Behavioral Design Patterns & Capstone",
+		concepts: [
+			{
+				id: "16",
+				title: "Strategy Pattern",
+				starter: "16-pattern-strategy-starter",
+				solution: "16-pattern-strategy-solution",
+				focus: "Encapsulate algorithms, family of interchangeable behaviors, eliminating conditional branches at runtime.",
+				tests: "StrategyPatternTest",
+			},
+			{
+				id: "17",
+				title: "Observer Pattern",
+				starter: "17-pattern-observer-starter",
+				solution: "17-pattern-observer-solution",
+				focus: "One-to-many dependency, pub-sub notification, decoupling publisher state changes from listener reactions.",
+				tests: "ObserverPatternTest",
+			},
+			{
+				id: "18",
+				title: "Command Pattern",
+				starter: "18-pattern-command-starter",
+				solution: "18-pattern-command-solution",
+				focus: "Encapsulate requests as objects, parameterize clients with queues, undo/redo stacks, logging transactions.",
+				tests: "CommandPatternTest",
+			},
+			{
+				id: "19",
+				title: "Iterator Pattern",
+				starter: "19-pattern-iterator-starter",
+				solution: "19-pattern-iterator-solution",
+				focus: "Sequential traversal without exposing internal representation, fail-fast vs fail-safe semantics.",
+				tests: "IteratorPatternTest",
+			},
+			{
+				id: "20",
+				title: "Capstone: Clean Architecture Application",
+				starter: "20-capstone-clean-architecture-starter",
+				solution: "20-capstone-clean-architecture-solution",
+				focus: "End-to-end integration: Domain Entities, Use Cases, Driven Ports/Adapters, ArchUnit regression testing.",
+				tests: "FullCapstoneIntegrationTest",
+			}
+		]
+	}
+];
+---
+
+<div class="registry-container">
+	<div class="registry-toolbar">
+		<input 
+			type="text" 
+			id="branch-search" 
+			placeholder="Search concept, pattern name, or test target..." 
+			class="registry-search"
+		/>
+	</div>
+
+	{modules.map((mod) => (
+		<div class="module-group">
+			<div class="module-banner">{mod.module}</div>
+			<div class="ledger-table">
+				{mod.concepts.map((c) => (
+					<div class="ledger-row" data-search={`${c.title} ${c.focus} ${c.starter} ${c.solution} ${c.tests}`.toLowerCase()}>
+						<div class="ledger-main">
+							<div class="ledger-title-line">
+								<span class="concept-id">Concept {c.id}</span>
+								<span class="concept-name">{c.title}</span>
+							</div>
+							<p class="concept-desc">{c.focus}</p>
+							<div class="test-label">
+								<span>Verified by:</span> <code>{c.tests}</code>
+							</div>
+						</div>
+
+						<div class="ledger-actions">
+							<div class="action-cell">
+								<span class="action-tag tag-starter">Starter (Smell)</span>
+								<code>{c.starter}</code>
+								<button class="action-btn" data-copy={`git switch ${c.starter}`}>
+									Copy switch
+								</button>
+							</div>
+							<div class="action-cell">
+								<span class="action-tag tag-solution">Solution (Pattern)</span>
+								<code>{c.solution}</code>
+								<button class="action-btn" data-copy={`git switch ${c.solution}`}>
+									Copy switch
+								</button>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	))}
+</div>
+
+<style>
+	.registry-container {
+		margin: 2rem 0;
+	}
+	.registry-toolbar {
+		margin-bottom: 2rem;
+	}
+	.registry-search {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		border-radius: 4px;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		background: var(--arch-surface, #111726);
+		color: var(--arch-ink-primary, #f1f5f9);
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.9rem;
+		outline: none;
+	}
+	.registry-search:focus {
+		border-color: var(--arch-cyan, #38bdf8);
+	}
+	.module-group {
+		margin-bottom: 2.5rem;
+	}
+	.module-banner {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: var(--arch-cyan, #38bdf8);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		margin-bottom: 1rem;
+	}
+	.ledger-table {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 6px;
+		background: var(--arch-surface, #111726);
+		overflow: hidden;
+	}
+	.ledger-row {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 1.5rem;
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		align-items: center;
+	}
+	.ledger-row:last-child {
+		border-bottom: none;
+	}
+	.ledger-title-line {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 0.4rem;
+	}
+	.concept-id {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--arch-cyan, #38bdf8);
+	}
+	.concept-name {
+		font-size: 1.05rem;
+		font-weight: 700;
+		color: var(--arch-ink-primary, #f1f5f9);
+	}
+	.concept-desc {
+		font-size: 0.88rem;
+		color: var(--arch-ink-secondary, #94a3b8);
+		line-height: 1.5;
+		margin: 0 0 0.5rem 0;
+	}
+	.test-label {
+		font-size: 0.78rem;
+		color: var(--arch-ink-muted, #64748b);
+	}
+	.test-label code {
+		font-family: var(--sl-font-system-mono, monospace);
+		color: var(--arch-ink-secondary, #94a3b8);
+		background: var(--arch-canvas, #0a0e17);
+		padding: 0.1rem 0.35rem;
+		border-radius: 3px;
+	}
+	.ledger-actions {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.action-cell {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: var(--arch-canvas, #0a0e17);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 4px;
+		padding: 0.35rem 0.65rem;
+		gap: 0.5rem;
+	}
+	.action-tag {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		min-width: 65px;
+	}
+	.tag-starter {
+		color: var(--arch-amber, #f59e0b);
+	}
+	.tag-solution {
+		color: var(--arch-emerald, #10b981);
+	}
+	.action-cell code {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.78rem;
+		color: var(--arch-ink-primary, #f1f5f9);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.action-btn {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.72rem;
+		color: var(--arch-cyan, #38bdf8);
+		background: var(--arch-surface, #111726);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 3px;
+		padding: 0.2rem 0.5rem;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: all 0.15s ease;
+	}
+	.action-btn:hover {
+		background: var(--arch-border, #1f2a3f);
+		color: var(--arch-ink-primary, #f1f5f9);
+	}
+
+	@media (max-width: 768px) {
+		.ledger-row {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+	}
+</style>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const search = document.getElementById('branch-search');
+		const rows = document.querySelectorAll('.ledger-row');
+
+		if (search) {
+			search.addEventListener('input', (e) => {
+				const query = e.target.value.toLowerCase().trim();
+				rows.forEach((row) => {
+					const text = row.getAttribute('data-search') || '';
+					if (!query || text.includes(query)) {
+						row.style.display = 'grid';
+					} else {
+						row.style.display = 'none';
+					}
+				});
+			});
+		}
+
+		document.querySelectorAll('.action-btn').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const cmd = btn.getAttribute('data-copy');
+				if (cmd) {
+					navigator.clipboard.writeText(cmd);
+					const orig = btn.textContent;
+					btn.textContent = 'Copied';
+					btn.style.borderColor = 'var(--arch-emerald, #10b981)';
+					btn.style.color = 'var(--arch-emerald, #10b981)';
+					setTimeout(() => {
+						btn.textContent = orig;
+						btn.style.borderColor = '';
+						btn.style.color = '';
+					}, 1400);
+				}
+			});
+		});
+	});
+</script>

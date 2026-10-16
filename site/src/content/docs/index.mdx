@@ -1,0 +1,139 @@
+---
+title: "Software Design Patterns & Clean Code"
+description: "A technical reference and curriculum covering Clean Code fundamentals, SOLID principles, and Gang of Four design patterns in Java and Kotlin."
+---
+
+## Curriculum Architecture
+
+This course is structured as four progressive modules, moving from local code hygiene and refactoring up to subsystem composition and full architectural boundaries.
+
+<div class="module-matrix">
+  <div class="matrix-row">
+    <div class="matrix-col-id">01</div>
+    <div class="matrix-col-content">
+      <h3>Clean Code Fundamentals & Refactoring</h3>
+      <p>Intent-revealing naming, Single Level of Abstraction (SLA), Command-Query Separation (CQS), primitive obsession bloaters, and automated boundary enforcement with ArchUnit.</p>
+      <div class="matrix-links">
+        <a href="/design-pattern-course/clean-code/">Handbook</a>
+        <span>·</span>
+        <a href="/design-pattern-course/slides/clean-code/" target="_blank">Slide deck</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="matrix-row">
+    <div class="matrix-col-id">02</div>
+    <div class="matrix-col-content">
+      <h3>Creational Design Patterns</h3>
+      <p>Isolating instantiation logic from client usage. Covers thread-safe Singleton evolution, Simple Factory vs Factory Method hierarchies, Abstract Factory suites, fluent Builders, and Prototype cloning.</p>
+      <div class="matrix-links">
+        <a href="/design-pattern-course/creational-patterns/">Handbook</a>
+        <span>·</span>
+        <a href="/design-pattern-course/slides/creational-patterns/" target="_blank">Slide deck</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="matrix-row">
+    <div class="matrix-col-id">03</div>
+    <div class="matrix-col-content">
+      <h3>Structural Design Patterns</h3>
+      <p>Assembling objects into flexible, loosely-coupled graphs. Covers Adapter bridging, dynamic runtime Decorator chains, uniform Composite tree hierarchies, Facade subsystems, and Proxy access control.</p>
+      <div class="matrix-links">
+        <a href="/design-pattern-course/structural-patterns/">Handbook</a>
+        <span>·</span>
+        <a href="/design-pattern-course/slides/structural-patterns/" target="_blank">Slide deck</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="matrix-row">
+    <div class="matrix-col-id">04</div>
+    <div class="matrix-col-content">
+      <h3>Behavioral Patterns & Clean Architecture</h3>
+      <p>Distributing runtime algorithms and responsibilities. Covers Strategy algorithm swapping, pub-sub Observer, undoable Command queues, fail-safe Iterators, and the full Clean Architecture Capstone.</p>
+      <div class="matrix-links">
+        <a href="/design-pattern-course/behavioral-patterns/">Handbook</a>
+        <span>·</span>
+        <a href="/design-pattern-course/slides/behavioral-patterns/" target="_blank">Slide deck</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+---
+
+## Hands-On Branch Catalog
+
+The repository contains 40 dedicated git branches organized as 20 starter and solution pairs:
+
+- **`*-starter` branches:** Contain working but flawed code exhibiting specific design smells (e.g. rigid switches, leaky abstractions, or God objects).
+- **`*-solution` branches:** Contain refactored, pattern-driven implementations verified by automated JUnit 5 and ArchUnit tests.
+
+View the complete [Branch Catalog](/design-pattern-course/reference/branches/) to copy checkout commands and inspect test targets.
+
+---
+
+## Architectural Index
+
+Review the [Principles Master Index](/design-pattern-course/reference/master-index/) for a searchable reference connecting SOLID rules, common anti-patterns, and the corresponding GoF patterns that resolve them.
+
+<style>{`
+  .module-matrix {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--arch-border, #1f2a3f);
+    border-radius: 6px;
+    background: var(--arch-surface, #111726);
+    margin: 2rem 0;
+  }
+  .matrix-row {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--arch-border, #1f2a3f);
+  }
+  .matrix-row:last-child {
+    border-bottom: none;
+  }
+  .matrix-col-id {
+    font-family: var(--sl-font-system-mono, monospace);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--arch-cyan, #38bdf8);
+    min-width: 2.5rem;
+  }
+  .matrix-col-content {
+    flex: 1;
+  }
+  .matrix-col-content h3 {
+    margin: 0 0 0.5rem 0 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700;
+    color: var(--arch-ink-primary, #f1f5f9) !important;
+  }
+  .matrix-col-content p {
+    margin: 0 0 0.75rem 0 !important;
+    font-size: 0.95rem;
+    color: var(--arch-ink-secondary, #94a3b8);
+    line-height: 1.6;
+  }
+  .matrix-links {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--sl-font-system-mono, monospace);
+    font-size: 0.85rem;
+  }
+  .matrix-links a {
+    color: var(--arch-cyan, #38bdf8);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .matrix-links a:hover {
+    text-decoration: underline;
+  }
+  .matrix-links span {
+    color: var(--arch-ink-muted, #64748b);
+  }
+`}</style>

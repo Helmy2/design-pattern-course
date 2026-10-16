@@ -1,0 +1,254 @@
+---
+const principles = [
+	{
+		type: "SOLID",
+		name: "Single Responsibility (SRP)",
+		meaning: "A module should have one, and only one, reason to change.",
+		smell: "God objects, mixing domain logic with serialization, logging, or presentation.",
+		solution: "Iterator (separating traversal from storage), Command, Hexagonal Ports."
+	},
+	{
+		type: "SOLID",
+		name: "Open/Closed (OCP)",
+		meaning: "Software entities should be open for extension, but closed for modification.",
+		smell: "Modifying cascading switch or if/else ladders on every release to support new types.",
+		solution: "Decorator, Strategy, Factory Method."
+	},
+	{
+		type: "SOLID",
+		name: "Liskov Substitution (LSP)",
+		meaning: "Subtypes must be substitutable for their base types without altering correctness.",
+		smell: "Refused Bequest: overriding base methods to throw UnsupportedOperationException.",
+		solution: "Favor composition over inheritance, Interface Segregation."
+	},
+	{
+		type: "SOLID",
+		name: "Interface Segregation (ISP)",
+		meaning: "Clients should not be forced to depend on methods they do not use.",
+		smell: "Fat interfaces requiring consumers to implement dummy or no-op methods.",
+		solution: "Role interfaces, Adapter pattern."
+	},
+	{
+		type: "SOLID",
+		name: "Dependency Inversion (DIP)",
+		meaning: "High-level modules and low-level modules must both depend on abstractions.",
+		smell: "Direct inline instantiation (new ConcreteRepository()) inside core domain entities.",
+		solution: "Factory Method, Abstract Factory, Dependency Injection containers."
+	},
+	{
+		type: "Foundational",
+		name: "Encapsulate What Varies",
+		meaning: "Identify aspects of your application that change and isolate them from what stays constant.",
+		smell: "Scattered changes across multiple classes whenever business rules evolve.",
+		solution: "Strategy, Factory Method, Iterator."
+	},
+	{
+		type: "Foundational",
+		name: "Program to Interfaces, Not Implementations",
+		meaning: "Declare references using abstract contracts so clients remain decoupled from concrete classes.",
+		smell: "Coupling client routines to concrete vendor or driver implementations.",
+		solution: "Strategy, Abstract Factory, Adapter, Proxy."
+	},
+	{
+		type: "Foundational",
+		name: "Favor Composition Over Inheritance",
+		meaning: "Assemble behavior dynamically at runtime (HAS-A) rather than static hierarchies (IS-A).",
+		smell: "Brittle, deep inheritance trees that force behavior onto subclasses.",
+		solution: "Strategy, Decorator, Adapter, Composite."
+	},
+	{
+		type: "Foundational",
+		name: "Principle of Least Knowledge (Law of Demeter)",
+		meaning: "Talk only to your immediate collaborators. Avoid chaining calls across object boundaries.",
+		smell: "Long method chains (order.getCustomer().getAddress().getCity().getPostalCode()).",
+		solution: "Facade, Delegator methods."
+	},
+	{
+		type: "Foundational",
+		name: "The Hollywood Principle",
+		meaning: "\"Don't call us, we'll call you.\" High-level frameworks invoke low-level hooks.",
+		smell: "Subclasses attempting to manage high-level orchestration control flow.",
+		solution: "Template Method, Factory Method, IoC containers."
+	}
+];
+---
+
+<div class="matrix-wrapper">
+	<div class="matrix-header-bar">
+		<input 
+			type="text" 
+			id="matrix-search" 
+			placeholder="Filter principles, smells, or patterns..." 
+			class="matrix-search-box"
+		/>
+		<div class="filter-group">
+			<button class="filter-tab active" data-type="all">All</button>
+			<button class="filter-tab" data-type="SOLID">SOLID</button>
+			<button class="filter-tab" data-type="Foundational">Foundational</button>
+		</div>
+	</div>
+
+	<div class="table-frame">
+		<table class="arch-table">
+			<thead>
+				<tr>
+					<th>Principle</th>
+					<th>Core Intent</th>
+					<th>Common Smell</th>
+					<th>Pattern Resolution</th>
+				</tr>
+			</thead>
+			<tbody id="matrix-body">
+				{principles.map((p) => (
+					<tr data-category={p.type} data-search={`${p.name} ${p.meaning} ${p.smell} ${p.solution}`.toLowerCase()}>
+						<td class="col-name">
+							<span class="type-tag">{p.type}</span>
+							<strong>{p.name}</strong>
+						</td>
+						<td class="col-meaning">{p.meaning}</td>
+						<td class="col-smell">{p.smell}</td>
+						<td class="col-solution">{p.solution}</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<style>
+	.matrix-wrapper {
+		margin: 2rem 0;
+	}
+	.matrix-header-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+	}
+	.matrix-search-box {
+		flex: 1;
+		min-width: 260px;
+		padding: 0.65rem 1rem;
+		border-radius: 4px;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		background: var(--arch-surface, #111726);
+		color: var(--arch-ink-primary, #f1f5f9);
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.88rem;
+		outline: none;
+	}
+	.matrix-search-box:focus {
+		border-color: var(--arch-cyan, #38bdf8);
+	}
+	.filter-group {
+		display: flex;
+		gap: 0.35rem;
+	}
+	.filter-tab {
+		background: var(--arch-surface, #111726);
+		color: var(--arch-ink-secondary, #94a3b8);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		padding: 0.45rem 0.85rem;
+		border-radius: 4px;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.78rem;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+	.filter-tab.active, .filter-tab:hover {
+		color: var(--arch-ink-primary, #f1f5f9);
+		border-color: var(--arch-cyan, #38bdf8);
+		background: var(--arch-surface-raised, #182032);
+	}
+	.table-frame {
+		overflow-x: auto;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-radius: 6px;
+		background: var(--arch-surface, #111726);
+	}
+	.arch-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.92rem;
+		text-align: left;
+	}
+	.arch-table th {
+		background: var(--arch-canvas, #0a0e17);
+		padding: 0.85rem 1rem;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.78rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--arch-cyan, #38bdf8);
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+	}
+	.arch-table td {
+		padding: 1rem;
+		border-bottom: 1px solid var(--arch-border, #1f2a3f);
+		vertical-align: top;
+		line-height: 1.6;
+	}
+	.arch-table tr:last-child td {
+		border-bottom: none;
+	}
+	.col-name {
+		width: 220px;
+	}
+	.col-name strong {
+		display: block;
+		color: var(--arch-ink-primary, #f1f5f9);
+		font-size: 0.98rem;
+		margin-top: 0.25rem;
+	}
+	.type-tag {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.68rem;
+		color: var(--arch-ink-muted, #64748b);
+		text-transform: uppercase;
+	}
+	.col-smell {
+		color: #fca5a5;
+		font-size: 0.88rem;
+	}
+	.col-solution {
+		color: var(--arch-emerald, #10b981);
+		font-size: 0.88rem;
+		font-weight: 500;
+	}
+</style>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const search = document.getElementById('matrix-search');
+		const tabs = document.querySelectorAll('.filter-tab');
+		const rows = document.querySelectorAll('#matrix-body tr');
+		let activeFilter = 'all';
+
+		function filter() {
+			const q = search ? search.value.toLowerCase().trim() : '';
+			rows.forEach((row) => {
+				const cat = row.getAttribute('data-category');
+				const text = row.getAttribute('data-search') || '';
+				const matchesCat = activeFilter === 'all' || cat === activeFilter;
+				const matchesSearch = !q || text.includes(q);
+
+				if (matchesCat && matchesSearch) row.style.display = '';
+				else row.style.display = 'none';
+			});
+		}
+
+		if (search) search.addEventListener('input', filter);
+
+		tabs.forEach((tab) => {
+			tab.addEventListener('click', () => {
+				tabs.forEach((t) => t.classList.remove('active'));
+				tab.classList.add('active');
+				activeFilter = tab.getAttribute('data-type') || 'all';
+				filter();
+			});
+		});
+	});
+</script>

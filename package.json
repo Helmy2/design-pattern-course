@@ -1,0 +1,10 @@
+{
+  "name": "design-pattern-course",
+  "private": true,
+  "scripts": {
+    "site:dev": "npm --prefix site run dev",
+    "site:build": "npm --prefix site run build",
+    "site:preview": "npm --prefix site run preview",
+    "site:sync": "npm --prefix site run sync"
+  }
+}
