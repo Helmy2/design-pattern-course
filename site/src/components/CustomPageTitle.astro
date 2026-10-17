@@ -6,6 +6,7 @@ const route = Astro.locals.starlightRoute;
 const slug = route?.id || '';
 
 const moduleMap: Record<string, { title: string; count: number }> = {
+	'prologue': { title: '00. Architectural Prologue', count: 12 },
 	'clean-code': { title: '01. Clean Code Fundamentals', count: 70 },
 	'creational-patterns': { title: '02. Creational Design Patterns', count: 54 },
 	'structural-patterns': { title: '03. Structural Design Patterns', count: 59 },

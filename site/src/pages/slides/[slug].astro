@@ -6,6 +6,14 @@ import SlideDeck from '../../components/SlideDeck.astro';
 export function getStaticPaths() {
 	return [
 		{
+			params: { slug: 'prologue' },
+			props: {
+				title: '00. Architectural Prologue',
+				file: '00. Architectural Prologue.md',
+				handbookSlug: 'prologue',
+			},
+		},
+		{
 			params: { slug: 'clean-code' },
 			props: {
 				title: '01. Clean Code Fundamentals',

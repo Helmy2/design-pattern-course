@@ -39,65 +39,65 @@ export function setupMermaid(isLight = false) {
 		theme: 'base',
 		themeVariables: isLight
 			? {
-					primaryColor: '#f1f5f9',
-					primaryTextColor: '#0f172a',
-					primaryBorderColor: '#0284c7',
-					lineColor: '#0284c7',
-					secondaryColor: '#f8fafc',
-					tertiaryColor: '#e0f2fe',
-					mainBkg: '#ffffff',
-					nodeBorder: '#cbd5e1',
-					clusterBkg: '#f8fafc',
-					clusterBorder: '#cbd5e1',
-					titleColor: '#0284c7',
-					edgeLabelBackground: '#ffffff',
-					actorBkg: '#f1f5f9',
-					actorBorder: '#0284c7',
-					actorTextColor: '#0f172a',
-					actorLineColor: '#0284c7',
-					signalColor: '#0284c7',
-					signalTextColor: '#0f172a',
-					labelBoxBkgColor: '#f1f5f9',
-					labelBoxBorderColor: '#0284c7',
-					labelTextColor: '#0f172a',
-					loopTextColor: '#0f172a',
-					noteBorderColor: '#f59e0b',
-					noteBkgColor: '#fffbeb',
-					noteTextColor: '#92400e',
-					activationBorderColor: '#0284c7',
-					activationBkgColor: '#e0f2fe',
-					sequenceNumberColor: '#ffffff',
-				}
+				primaryColor: '#f1f5f9',
+				primaryTextColor: '#0f172a',
+				primaryBorderColor: '#0284c7',
+				lineColor: '#0284c7',
+				secondaryColor: '#f8fafc',
+				tertiaryColor: '#e0f2fe',
+				mainBkg: '#ffffff',
+				nodeBorder: '#cbd5e1',
+				clusterBkg: '#f8fafc',
+				clusterBorder: '#cbd5e1',
+				titleColor: '#0284c7',
+				edgeLabelBackground: '#ffffff',
+				actorBkg: '#f1f5f9',
+				actorBorder: '#0284c7',
+				actorTextColor: '#0f172a',
+				actorLineColor: '#0284c7',
+				signalColor: '#0284c7',
+				signalTextColor: '#0f172a',
+				labelBoxBkgColor: '#f1f5f9',
+				labelBoxBorderColor: '#0284c7',
+				labelTextColor: '#0f172a',
+				loopTextColor: '#0f172a',
+				noteBorderColor: '#f59e0b',
+				noteBkgColor: '#fffbeb',
+				noteTextColor: '#92400e',
+				activationBorderColor: '#0284c7',
+				activationBkgColor: '#e0f2fe',
+				sequenceNumberColor: '#ffffff',
+			}
 			: {
-					primaryColor: '#0d1322',
-					primaryTextColor: '#f8fafc',
-					primaryBorderColor: '#38bdf8',
-					lineColor: '#38bdf8',
-					secondaryColor: '#111726',
-					tertiaryColor: '#182032',
-					mainBkg: '#0d1322',
-					nodeBorder: '#1f2a3f',
-					clusterBkg: '#090d16',
-					clusterBorder: '#1f2a3f',
-					titleColor: '#38bdf8',
-					edgeLabelBackground: '#0d1322',
-					actorBkg: '#0f172a',
-					actorBorder: '#38bdf8',
-					actorTextColor: '#f8fafc',
-					actorLineColor: '#38bdf8',
-					signalColor: '#38bdf8',
-					signalTextColor: '#cbd5e1',
-					labelBoxBkgColor: '#111726',
-					labelBoxBorderColor: '#1f2a3f',
-					labelTextColor: '#38bdf8',
-					loopTextColor: '#cbd5e1',
-					noteBorderColor: '#f59e0b',
-					noteBkgColor: '#1e1b10',
-					noteTextColor: '#fbbf24',
-					activationBorderColor: '#38bdf8',
-					activationBkgColor: '#1e293b',
-					sequenceNumberColor: '#070a12',
-				},
+				primaryColor: '#0d1322',
+				primaryTextColor: '#f8fafc',
+				primaryBorderColor: '#38bdf8',
+				lineColor: '#38bdf8',
+				secondaryColor: '#111726',
+				tertiaryColor: '#182032',
+				mainBkg: '#0d1322',
+				nodeBorder: '#1f2a3f',
+				clusterBkg: '#090d16',
+				clusterBorder: '#1f2a3f',
+				titleColor: '#38bdf8',
+				edgeLabelBackground: '#0d1322',
+				actorBkg: '#0f172a',
+				actorBorder: '#38bdf8',
+				actorTextColor: '#f8fafc',
+				actorLineColor: '#38bdf8',
+				signalColor: '#38bdf8',
+				signalTextColor: '#cbd5e1',
+				labelBoxBkgColor: '#111726',
+				labelBoxBorderColor: '#1f2a3f',
+				labelTextColor: '#38bdf8',
+				loopTextColor: '#cbd5e1',
+				noteBorderColor: '#f59e0b',
+				noteBkgColor: '#1e1b10',
+				noteTextColor: '#fbbf24',
+				activationBorderColor: '#38bdf8',
+				activationBkgColor: '#1e293b',
+				sequenceNumberColor: '#070a12',
+			},
 	});
 }
 
@@ -169,13 +169,12 @@ function renderWidgetUI(container: HTMLElement, group: DiagramGroup) {
 					<span class="diag-badge-icon">📐</span>
 					<span class="diag-group-title">${group.title}</span>
 				</div>
-				${
-					hasMultiple
-						? `
+				${hasMultiple
+			? `
 					<div class="diag-tabs" role="tablist">
 						${group.items
-							.map(
-								(item, idx) => `
+				.map(
+					(item, idx) => `
 							<button 
 								type="button" 
 								class="diag-tab-btn ${idx === group.activeIndex ? 'active' : ''}" 
@@ -186,12 +185,12 @@ function renderWidgetUI(container: HTMLElement, group: DiagramGroup) {
 								${item.type === 'class' ? '🏛️ Class Diagram' : item.type === 'sequence' ? '⚡ Sequence Lifecycle' : '📐 Diagram'}
 							</button>
 						`
-							)
-							.join('')}
+				)
+				.join('')}
 					</div>
 				`
-						: ''
-				}
+			: ''
+		}
 			</div>
 			<div class="diag-toolbar">
 				<div class="diag-zoom-group">

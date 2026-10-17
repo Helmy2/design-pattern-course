@@ -10,6 +10,13 @@ if (!fs.existsSync(TARGET_DIR)) {
 
 const modules = [
 	{
+		source: '00. Architectural Prologue.md',
+		target: 'prologue.md',
+		title: '00. Architectural Prologue: The Silicon Pendulum',
+		description: 'The historical rivalry of CISC vs. RISC, the collapse of mutable state under concurrency, and the modern synthesis of Clean Architecture in Kotlin and Spring Boot.',
+		slug: 'prologue',
+	},
+	{
 		source: '01. Clean Code Fundamentals.md',
 		target: 'clean-code.md',
 		title: '01. Clean Code Fundamentals',

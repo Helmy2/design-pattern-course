@@ -23,6 +23,7 @@ export default defineConfig({
 					label: 'Course Overview',
 					items: [
 						{ label: 'Introduction & Quick Start', slug: 'index' },
+						{ label: '00. Architectural Prologue', slug: 'prologue' },
 					],
 				},
 				{
