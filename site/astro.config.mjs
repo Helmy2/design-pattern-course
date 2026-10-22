@@ -33,6 +33,7 @@ export default defineConfig({
 						{ label: '02. Creational Patterns', slug: 'creational-patterns' },
 						{ label: '03. Structural Patterns', slug: 'structural-patterns' },
 						{ label: '04. Behavioral Patterns', slug: 'behavioral-patterns' },
+						{ label: '05. Functional Programming in Kotlin', slug: 'functional-programming' },
 					],
 				},
 				{

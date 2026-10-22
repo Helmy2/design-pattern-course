@@ -44,6 +44,13 @@ const modules = [
 		description: 'Behavioral patterns: Strategy, Observer, Command, Iterator, and Capstone Architecture.',
 		slug: 'behavioral-patterns',
 	},
+	{
+		source: '05. Functional Programming in Kotlin.md',
+		target: 'functional-programming.md',
+		title: '05. Functional Programming in Kotlin',
+		description: 'Core FP principles, migrating OOP patterns to FP, architectural trade-offs, and modern Kotlin FP features.',
+		slug: 'functional-programming',
+	},
 ];
 
 for (const mod of modules) {

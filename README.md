@@ -116,6 +116,8 @@ git checkout 06-pattern-singleton-solution
 - 📖 **[Comprehensive Presentation Slide Deck](COURSE_PRESENTATION.md)**: Full course lecture notes and slides.
 - 📐 **[Design Principles Master Index](MASTER_INDEX.md)**: SOLID principles, OO design heuristics, and pattern comparison matrix.
 - 🗂️ **[Detailed Branch Catalog & Learning Objectives](docs/BRANCHES.md)**: Guide to all 40 concept branches.
+- ⚡ **[05. Functional Programming in Kotlin](docs/05.%20Functional%20Programming%20in%20Kotlin.md)**: Bridging OOP and FP, migrating GoF patterns to functions, trade-off matrices, and modern Kotlin FP features.
+- 🎓 **[Companion Kotlin Course](https://helmy.is-a.dev/kotlin-course/)**: Master Kotlin syntax, language fundamentals, and coroutines.
 
 ---
 

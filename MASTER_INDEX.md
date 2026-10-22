@@ -74,7 +74,7 @@ This document provides a single, unified reference for all software design princ
 | **Composite** | Structural | Nested Restaurant Menus | Tree hierarchies treating leaves and composites uniformly. | GUI widget trees (Swing, Android Views, DOM), permission nodes. |
 | **Facade** | Structural | Home Theater Subsystem | Provide a simplified high-level interface to a complex subsystem. | Service Facades, API Gateways. |
 | **Proxy** | Structural | Matchmaking Profile Security | Surrogate controlling access (security, lazy loading, remote). | Spring AOP (`@Transactional`, `@Async`, `@Cacheable`). |
-| **Strategy** | Behavioral | SimUDuck Simulator | Encapsulate interchangeable algorithms. | Spring Boot Strategy Map injection (`Map<Provider, Strategy>`). |
+| **Strategy** | Behavioral | SimUDuck Simulator | Encapsulate interchangeable algorithms. | Spring Boot Strategy Map injection (`Map<Provider, Strategy>`), Kotlin function types (`() -> Unit`). |
 | **Observer** | Behavioral | Weather Station | One-to-many state change notification. | Spring `ApplicationEventPublisher`, Reactive Streams (`Flow`). |
 | **Command** | Behavioral | Smart Home Remote Control | Encapsulate requests as objects (undo, queues, macros). | Thread pools (`Runnable`), CQRS Command Bus. |
 | **Iterator** | Behavioral | Diner vs Pancake House | Sequential access without exposing underlying collection structure. | Java `Iterable<T>`, Streams, cursor pagination. |
