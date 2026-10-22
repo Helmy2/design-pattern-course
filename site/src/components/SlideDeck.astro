@@ -70,8 +70,32 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
 			rel="stylesheet"
 		/>
+		<script is:inline>
+			(function () {
+				try {
+					const urlParams = new URLSearchParams(window.location.search);
+					const paramTheme = urlParams.get('theme');
+					const storedTheme =
+						typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+					let theme = 'dark';
+					if (paramTheme === 'light' || paramTheme === 'dark') {
+						theme = paramTheme;
+					} else if (storedTheme === 'light' || storedTheme === 'dark') {
+						theme = storedTheme;
+					} else if (
+						window.matchMedia &&
+						window.matchMedia('(prefers-color-scheme: light)').matches
+					) {
+						theme = 'light';
+					}
+					document.documentElement.dataset.theme = theme;
+					document.documentElement.setAttribute('data-theme', theme);
+				} catch (e) {}
+			})();
+		</script>
 		<style is:global>
-			:root {
+			:root,
+			html[data-theme='dark'] {
 				--bg-canvas: #070a12;
 				--bg-panel: #0d1322;
 				--bg-code: #040711;
@@ -84,6 +108,60 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				--accent-amber: #f59e0b;
 				--accent-emerald: #10b981;
 				--accent-rose: #f43f5e;
+				--board-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+				--th-bg: #111827;
+				--btn-hover-bg: #141d30;
+				--modal-bg: rgba(7, 10, 18, 0.96);
+				--hint-bg: rgba(7, 10, 18, 0.75);
+				--diag-container-bg: rgba(13, 19, 34, 0.6);
+				--compare-bad-bg: rgba(244, 63, 94, 0.08);
+				--compare-bad-text: #fda4af;
+				--compare-clean-bg: rgba(16, 185, 129, 0.08);
+				--compare-clean-text: #86efac;
+				--inline-code-color: #f472b6;
+				--blockquote-bg: rgba(56, 189, 248, 0.05);
+				--svg-shadow: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4));
+			}
+
+			html[data-theme='light'] {
+				--bg-canvas: #f1f5f9;
+				--bg-panel: #ffffff;
+				--bg-code: #f8fafc;
+				--border-subtle: #cbd5e1;
+				--border-active: #0284c7;
+				--text-title: #0f172a;
+				--text-body: #334155;
+				--text-meta: #64748b;
+				--accent-cyan: #0284c7;
+				--accent-amber: #d97706;
+				--accent-emerald: #059669;
+				--accent-rose: #e11d48;
+				--board-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+				--th-bg: #e2e8f0;
+				--btn-hover-bg: #e2e8f0;
+				--modal-bg: rgba(248, 250, 252, 0.96);
+				--hint-bg: rgba(255, 255, 255, 0.88);
+				--diag-container-bg: rgba(241, 245, 249, 0.7);
+				--compare-bad-bg: rgba(244, 63, 94, 0.08);
+				--compare-bad-text: #be123c;
+				--compare-clean-bg: rgba(16, 185, 129, 0.08);
+				--compare-clean-text: #047857;
+				--inline-code-color: #be185d;
+				--blockquote-bg: rgba(2, 132, 199, 0.06);
+				--svg-shadow: drop-shadow(0 4px 16px rgba(15, 23, 42, 0.08));
+			}
+
+			/* Shiki Dual-Theme Token Styling */
+			html[data-theme='light'] .shiki,
+			html[data-theme='light'] .shiki span {
+				color: var(--shiki-light) !important;
+			}
+
+			html[data-theme='dark'] .shiki,
+			html[data-theme='dark'] .shiki span,
+			html:not([data-theme='light']) .shiki,
+			html:not([data-theme='light']) .shiki span {
+				color: var(--shiki-dark) !important;
 			}
 
 			* {
@@ -209,7 +287,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				overflow: hidden;
 				user-select: text;
 				position: relative;
-				box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+				box-shadow: var(--board-shadow);
 			}
 
 			/* Auto-fitting slide wrapper */
@@ -284,7 +362,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 
 			.slide-board blockquote {
 				border-left: 3px solid var(--accent-cyan);
-				background: rgba(56, 189, 248, 0.05);
+				background: var(--blockquote-bg);
 				padding: 0.85rem 1.25rem;
 				border-radius: 0 4px 4px 0;
 				font-size: 1.05rem;
@@ -299,7 +377,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				border: 1px solid var(--border-subtle);
 				padding: 0.12rem 0.35rem;
 				border-radius: 4px;
-				color: #f472b6;
+				color: var(--inline-code-color);
 				font-size: 0.88em;
 			}
 
@@ -338,7 +416,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			}
 
 			.slide-board th {
-				background: #111827;
+				background: var(--th-bg);
 				color: var(--accent-cyan);
 				font-weight: 600;
 				font-family: 'JetBrains Mono', monospace;
@@ -390,8 +468,8 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			}
 
 			.compare-bad .compare-header {
-				background: rgba(244, 63, 94, 0.08);
-				color: #fda4af;
+				background: var(--compare-bad-bg);
+				color: var(--compare-bad-text);
 			}
 
 			.compare-clean {
@@ -399,8 +477,8 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			}
 
 			.compare-clean .compare-header {
-				background: rgba(16, 185, 129, 0.08);
-				color: #86efac;
+				background: var(--compare-clean-bg);
+				color: var(--compare-clean-text);
 			}
 
 			.compare-dot {
@@ -465,7 +543,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 
 			.step-btn:hover:not(:disabled) {
 				border-color: var(--accent-cyan);
-				background: #141d30;
+				background: var(--btn-hover-bg);
 			}
 
 			.step-btn:disabled {
@@ -489,7 +567,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				left: 0;
 				width: 100vw;
 				height: 100vh;
-				background: rgba(7, 10, 18, 0.96);
+				background: var(--modal-bg);
 				backdrop-filter: blur(8px);
 				z-index: 200;
 				padding: 2.5rem;
@@ -561,7 +639,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			/* Diagram presentation styling inside slides */
 			.slide-board .interactive-diagram-container {
 				margin: 0.5rem 0 1rem 0;
-				background: rgba(13, 19, 34, 0.6);
+				background: var(--diag-container-bg);
 				border: 1px solid var(--border-subtle);
 				border-radius: 8px;
 				overflow: hidden;
@@ -615,7 +693,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				max-height: 95% !important;
 				height: auto;
 				pointer-events: auto;
-				filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4));
+				filter: var(--svg-shadow);
 			}
 
 			.slide-board .diag-stage-hint {
@@ -625,7 +703,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				font-family: 'JetBrains Mono', monospace;
 				font-size: 0.65rem;
 				color: var(--text-meta);
-				background: rgba(7, 10, 18, 0.75);
+				background: var(--hint-bg);
 				padding: 0.15rem 0.45rem;
 				border-radius: 3px;
 				pointer-events: none;
@@ -678,6 +756,9 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				<div class="deck-meta-title">{title}</div>
 			</div>
 			<div class="header-right">
+				<button id="toggle-theme-btn" class="tool-btn" title="Toggle Theme (T)">
+					<span id="theme-btn-label">Theme [T]</span>
+				</button>
 				<button id="toggle-index-btn" class="tool-btn" title="Slide Index (G)">
 					<span>Sheet Index [G]</span>
 				</button>
@@ -700,7 +781,7 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 
 		<footer>
 			<div class="key-reference">
-				<kbd>Space</kbd> / <kbd>→</kbd> Next · <kbd>←</kbd> Prev · <kbd>G</kbd> Index · <kbd>F</kbd> Fullscreen
+				<kbd>Space</kbd> / <kbd>→</kbd> Next · <kbd>←</kbd> Prev · <kbd>T</kbd> Theme · <kbd>G</kbd> Index · <kbd>F</kbd> Fullscreen
 			</div>
 			<div class="nav-dock">
 				<button id="btn-prev" class="step-btn" title="Previous">
@@ -760,9 +841,36 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 			const btnPrev = document.getElementById('btn-prev') as HTMLButtonElement;
 			const btnNext = document.getElementById('btn-next') as HTMLButtonElement;
 			const modal = document.getElementById('index-modal') as HTMLElement;
+			const btnToggleTheme = document.getElementById('toggle-theme-btn') as HTMLButtonElement;
+			const themeBtnLabel = document.getElementById('theme-btn-label') as HTMLElement;
 			const btnToggleIndex = document.getElementById('toggle-index-btn') as HTMLElement;
 			const btnCloseModal = document.getElementById('close-modal-btn') as HTMLElement;
 			const btnToggleScreen = document.getElementById('toggle-screen-btn') as HTMLElement;
+
+			function syncThemeUI() {
+				const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+				if (themeBtnLabel) {
+					themeBtnLabel.textContent = isLight ? 'Dark [T]' : 'Light [T]';
+				}
+				if (btnToggleTheme) {
+					btnToggleTheme.title = isLight ? 'Switch to Dark Mode (T)' : 'Switch to Light Mode (T)';
+				}
+			}
+
+			function toggleTheme() {
+				const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+				const nextTheme = isLight ? 'dark' : 'light';
+				document.documentElement.dataset.theme = nextTheme;
+				document.documentElement.setAttribute('data-theme', nextTheme);
+				try {
+					localStorage.setItem('starlight-theme', nextTheme);
+				} catch (e) {}
+				syncThemeUI();
+				showSlide(current);
+			}
+
+			btnToggleTheme?.addEventListener('click', toggleTheme);
+			syncThemeUI();
 
 			// Dynamic Auto-fit engine: scales slide content so it never overflows
 			function autoFit() {
@@ -869,6 +977,8 @@ const slidesHtml = rawSlides.map((slideMarkdown) => {
 				} else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
 					e.preventDefault();
 					prev();
+				} else if (e.key === 't' || e.key === 'T') {
+					toggleTheme();
 				} else if (e.key === 'g' || e.key === 'G') {
 					modal?.classList.toggle('active');
 				} else if (e.key === 'f' || e.key === 'F') {

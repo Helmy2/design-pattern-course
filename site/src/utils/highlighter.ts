@@ -3,7 +3,7 @@ import { Marked } from 'marked';
 
 // Singleton highlighter instance for the build
 const highlighter = await createHighlighter({
-	themes: ['one-dark-pro'],
+	themes: ['one-dark-pro', 'one-light'],
 	langs: ['java', 'kotlin', 'groovy', 'bash', 'sql', 'xml', 'json', 'yaml', 'markdown', 'text'],
 });
 
@@ -27,7 +27,11 @@ export function parseMarkdownWithHighlight(markdown: string): string {
 
 				return highlighter.codeToHtml(text, {
 					lang: safeLang,
-					theme: 'one-dark-pro',
+					themes: {
+						light: 'one-light',
+						dark: 'one-dark-pro',
+					},
+					defaultColor: false,
 				});
 			},
 		},
