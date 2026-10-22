@@ -39,6 +39,35 @@ import InteractiveDiagramEnhancer from './InteractiveDiagramEnhancer.astro';
 	</div>
 </div>
 
+<!-- Free Palestine Solidarity & Boycott Footer Strip -->
+<div class="palestine-footer-strip" role="complementary" aria-label="Solidarity with Palestine">
+	<div class="palestine-footer-inner">
+		<div class="palestine-footer-flag-group">
+			<div class="palestine-mini-flag" title="Flag of Palestine">
+				<svg viewBox="0 0 1200 600" width="30" height="15" preserveAspectRatio="none" aria-hidden="true">
+					<rect width="1200" height="200" y="0" fill="#000000" />
+					<rect width="1200" height="200" y="200" fill="#FFFFFF" />
+					<rect width="1200" height="200" y="400" fill="#007A3D" />
+					<polygon points="0,0 600,300 0,600" fill="#E4312B" />
+				</svg>
+			</div>
+			<span class="palestine-footer-title">FREE PALESTINE</span>
+			<span class="palestine-footer-arabic" lang="ar" dir="rtl">فلسطين حرة</span>
+		</div>
+
+		<div class="palestine-footer-message">
+			<span>Standing for human dignity, justice, peace, and universal human rights.</span>
+		</div>
+
+		<div class="palestine-footer-badge-group">
+			<a href="https://bdsmovement.net/" target="_blank" rel="noopener noreferrer" class="palestine-footer-boycott" title="Support the Boycott Movement">
+				<span class="p-dot"></span>
+				<span>BOYCOTT · قاطع</span>
+			</a>
+		</div>
+	</div>
+</div>
+
 <style>
 	.instructor-footer-block {
 		margin-top: 3rem;
@@ -135,6 +164,140 @@ import InteractiveDiagramEnhancer from './InteractiveDiagramEnhancer.astro';
 		color: var(--arch-border, #1f2a3f);
 	}
 
+	/* Palestine Solidarity Footer Strip */
+	.palestine-footer-strip {
+		margin-top: 1rem;
+		margin-bottom: 2rem;
+		font-family: var(--sl-font-system-sans);
+	}
+
+	.palestine-footer-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.25rem;
+		flex-wrap: wrap;
+		padding: 0.85rem 1.35rem;
+		background: var(--arch-surface, #111726);
+		border: 1px solid var(--arch-border, #1f2a3f);
+		border-left: 3px solid #E4312B;
+		border-right: 3px solid #007A3D;
+		border-radius: 6px;
+		box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.35);
+		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.palestine-footer-inner:hover {
+		border-color: rgba(56, 189, 248, 0.35);
+		box-shadow: 0 6px 20px -4px rgba(0, 122, 61, 0.2);
+	}
+
+	.palestine-footer-flag-group {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.palestine-mini-flag {
+		display: flex;
+		align-items: center;
+		border-radius: 3px;
+		overflow: hidden;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
+		line-height: 0;
+	}
+
+	.palestine-footer-title {
+		font-family: var(--sl-font-system-sans);
+		font-weight: 800;
+		font-size: 0.88rem;
+		letter-spacing: 0.04em;
+		color: var(--arch-ink-primary, #f1f5f9);
+	}
+
+	.palestine-footer-arabic {
+		font-family: 'Amiri', 'Traditional Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
+		font-weight: 700;
+		font-size: 1.05rem;
+		color: #10b981;
+		line-height: 1;
+	}
+
+	.palestine-footer-message {
+		font-size: 0.82rem;
+		color: var(--arch-ink-secondary, #94a3b8);
+	}
+
+	.palestine-footer-badge-group {
+		display: flex;
+		align-items: center;
+	}
+
+	.palestine-footer-boycott {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.25rem 0.65rem;
+		background: rgba(239, 68, 68, 0.14);
+		border: 1px solid rgba(239, 68, 68, 0.4);
+		border-radius: 9999px;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		color: #fca5a5;
+		text-decoration: none !important;
+		transition: all 0.15s ease;
+	}
+
+	.palestine-footer-boycott:hover {
+		background: rgba(239, 68, 68, 0.25);
+		border-color: #ef4444;
+		color: #ffffff;
+		transform: translateY(-1px);
+	}
+
+	.p-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: #ef4444;
+		box-shadow: 0 0 6px #ef4444;
+	}
+
+	/* Light mode styles */
+	:root[data-theme='light'] .palestine-footer-inner {
+		background: #ffffff;
+		border-color: #cbd5e1;
+		border-left-color: #dc2626;
+		border-right-color: #059669;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	}
+
+	:root[data-theme='light'] .palestine-footer-title {
+		color: #0f172a;
+	}
+
+	:root[data-theme='light'] .palestine-footer-arabic {
+		color: #047857;
+	}
+
+	:root[data-theme='light'] .palestine-footer-message {
+		color: #475569;
+	}
+
+	:root[data-theme='light'] .palestine-footer-boycott {
+		background: rgba(239, 68, 68, 0.08);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #dc2626;
+	}
+
+	:root[data-theme='light'] .palestine-footer-boycott:hover {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: #dc2626;
+		color: #b91c1c;
+	}
+
 	@media (max-width: 768px) {
 		.instructor-footer-inner {
 			flex-direction: column;
@@ -142,6 +305,11 @@ import InteractiveDiagramEnhancer from './InteractiveDiagramEnhancer.astro';
 		}
 		.instructor-meta {
 			align-items: flex-start;
+		}
+		.palestine-footer-inner {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.85rem;
 		}
 	}
 </style>
