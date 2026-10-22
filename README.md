@@ -1,5 +1,19 @@
 # Clean Code & Design Patterns Master Course
 
+<div align="center">
+
+### 🇵🇸 Free Palestine · فلسطين حرة · Boycott
+
+[![Free Palestine](https://img.shields.io/badge/Free-Palestine-007A3D?style=for-the-badge&logoColor=white)](https://bdsmovement.net/)
+[![Solidarity](https://img.shields.io/badge/Solidarity-Peace%20%26%20Justice-E4312B?style=for-the-badge)](https://bdsmovement.net/)
+[![Boycott](https://img.shields.io/badge/Boycott-قاطع-000000?style=for-the-badge)](https://bdsmovement.net/)
+
+*Standing in solidarity with Palestine for human dignity, justice, freedom, and universal human rights.*
+
+---
+
+</div>
+
 Welcome to the hands-on repository for the **Clean Code & Design Patterns Master Course**!
 
 This project bridges classical Gang of Four (GoF) object-oriented architectures with modern JVM engineering, using **Java 21 LTS**, **Kotlin 2.x**, and **Spring Boot 4.x/3.4+** idioms.

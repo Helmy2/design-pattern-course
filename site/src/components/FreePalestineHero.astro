@@ -1,0 +1,457 @@
+---
+// site/src/components/FreePalestineHero.astro
+---
+
+<section class="palestine-hero-card" role="region" aria-label="Free Palestine Solidarity">
+	<!-- Atmospheric Multi-Layer Background Glows -->
+	<div class="ambient-glow glow-red" aria-hidden="true"></div>
+	<div class="ambient-glow glow-green" aria-hidden="true"></div>
+
+	<!-- Authentic Keffiyeh Pattern Watermark -->
+	<div class="keffiyeh-pattern-watermark" aria-hidden="true">
+		<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+			<defs>
+				<pattern id="keffiyeh-mesh" width="40" height="40" patternUnits="userSpaceOnUse">
+					<path d="M0,20 L20,0 L40,20 L20,40 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.32" />
+					<path d="M10,10 L30,30 M30,10 L10,30" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2,2" />
+					<circle cx="20" cy="20" r="2" fill="currentColor" fill-opacity="0.3" />
+					<circle cx="0" cy="0" r="1.2" fill="currentColor" fill-opacity="0.3" />
+					<circle cx="40" cy="0" r="1.2" fill="currentColor" fill-opacity="0.3" />
+					<circle cx="0" cy="40" r="1.2" fill="currentColor" fill-opacity="0.3" />
+					<circle cx="40" cy="40" r="1.2" fill="currentColor" fill-opacity="0.3" />
+				</pattern>
+			</defs>
+			<rect width="100%" height="100%" fill="url(#keffiyeh-mesh)" />
+		</svg>
+	</div>
+
+	<div class="palestine-hero-inner">
+		<!-- Flag Visual Column -->
+		<div class="flag-column">
+			<div class="flag-frame" title="Flag of Palestine">
+				<div class="flag-canvas">
+					<svg class="palestine-flag-svg" viewBox="0 0 1200 600" width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
+						<!-- Black Stripe (Top) -->
+						<rect width="1200" height="200" y="0" fill="#000000" />
+						<!-- White Stripe (Middle) -->
+						<rect width="1200" height="200" y="200" fill="#FFFFFF" />
+						<!-- Green Stripe (Bottom) -->
+						<rect width="1200" height="200" y="400" fill="#007A3D" />
+						<!-- Red Hoist Chevron / Triangle -->
+						<polygon points="0,0 600,300 0,600" fill="#E4312B" />
+					</svg>
+					<!-- Subtle lighting ripple overlay -->
+					<div class="flag-ripple-sheen" aria-hidden="true"></div>
+				</div>
+				<div class="flag-stand-tag">
+					<span class="flag-dot"></span>
+					<span>PALESTINE</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Typography & Message Column -->
+		<div class="message-column">
+			<div class="message-header-row">
+				<div class="kicker-badge">
+					<span class="kicker-pulse"></span>
+					<span class="kicker-text">SOLIDARITY</span>
+				</div>
+				<span class="arabic-kicker" lang="ar" dir="rtl">فلسطين حرة</span>
+			</div>
+
+			<div class="title-row">
+				<h2 class="headline-title">
+					<span class="title-solid">FREE</span>
+					<span class="title-accent">PALESTINE</span>
+				</h2>
+				<span class="boycott-badge">
+					<span class="boycott-dot"></span>
+					<span class="boycott-text">BOYCOTT</span>
+					<span class="boycott-sep">·</span>
+					<span class="boycott-arabic" lang="ar" dir="rtl">قاطع</span>
+				</span>
+			</div>
+
+			<p class="solidarity-statement">
+				Standing in solidarity with Palestine — Support the boycott movement for human dignity, justice, and self-determination.
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	.palestine-hero-card {
+		position: relative;
+		margin: 1.25rem 0 2rem 0;
+		padding: 1.25rem 1.6rem;
+		background: var(--arch-surface, #111726);
+		border-radius: 10px;
+		border: 1px solid var(--arch-border, #1f2a3f);
+		overflow: hidden;
+		box-shadow: 
+			0 6px 20px -6px rgba(0, 0, 0, 0.4),
+			0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+		transition: border-color 0.25s ease, box-shadow 0.25s ease;
+	}
+
+	.palestine-hero-card:hover {
+		border-color: rgba(56, 189, 248, 0.35);
+		box-shadow: 
+			0 10px 28px -6px rgba(0, 0, 0, 0.5),
+			0 0 20px -6px rgba(0, 122, 61, 0.2);
+	}
+
+	/* Ambient Background Glows */
+	.ambient-glow {
+		position: absolute;
+		pointer-events: none;
+		border-radius: 50%;
+		filter: blur(50px);
+		z-index: 1;
+		opacity: 0.55;
+	}
+
+	.glow-red {
+		top: -30px;
+		left: -30px;
+		width: 180px;
+		height: 180px;
+		background: radial-gradient(circle, rgba(228, 49, 43, 0.25) 0%, transparent 75%);
+	}
+
+	.glow-green {
+		bottom: -35px;
+		right: -30px;
+		width: 200px;
+		height: 200px;
+		background: radial-gradient(circle, rgba(0, 122, 61, 0.28) 0%, transparent 80%);
+	}
+
+	/* Keffiyeh Pattern Watermark */
+	.keffiyeh-pattern-watermark {
+		position: absolute;
+		inset: 0;
+		color: var(--arch-ink-primary, #ffffff);
+		opacity: 0.05;
+		pointer-events: none;
+		z-index: 1;
+		mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.1) 100%);
+		-webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.1) 100%);
+	}
+
+	/* Main Layout Container */
+	.palestine-hero-inner {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		grid-template-columns: 140px 1fr;
+		gap: 1.5rem;
+		align-items: center;
+	}
+
+	/* Flag Presentation */
+	.flag-column {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.flag-frame {
+		width: 100%;
+		max-width: 140px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.flag-canvas {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 2 / 1;
+		border-radius: 6px;
+		overflow: hidden;
+		box-shadow: 
+			0 8px 18px -4px rgba(0, 0, 0, 0.55),
+			0 0 0 1px rgba(255, 255, 255, 0.15);
+		transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+	}
+
+	.flag-canvas:hover {
+		transform: translateY(-2px) scale(1.02);
+		box-shadow: 
+			0 12px 24px -4px rgba(0, 0, 0, 0.65),
+			0 0 14px rgba(228, 49, 43, 0.25);
+	}
+
+	.palestine-flag-svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.flag-ripple-sheen {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			115deg,
+			rgba(255, 255, 255, 0.14) 0%,
+			transparent 45%,
+			rgba(0, 0, 0, 0.12) 75%,
+			rgba(255, 255, 255, 0.08) 100%
+		);
+		pointer-events: none;
+	}
+
+	.flag-stand-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.64rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--arch-ink-muted, #94a3b8);
+	}
+
+	.flag-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: #007A3D;
+		box-shadow: 0 0 5px #007A3D;
+	}
+
+	/* Message Column */
+	.message-column {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		min-width: 0;
+	}
+
+	.message-header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.kicker-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.2rem 0.55rem;
+		background: rgba(228, 49, 43, 0.1);
+		border: 1px solid rgba(228, 49, 43, 0.25);
+		border-radius: 9999px;
+	}
+
+	.kicker-pulse {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #E4312B;
+		box-shadow: 0 0 6px #E4312B;
+		animation: pulse-glow 2s infinite ease-in-out;
+	}
+
+	@keyframes pulse-glow {
+		0%, 100% { opacity: 1; transform: scale(1); }
+		50% { opacity: 0.4; transform: scale(0.85); }
+	}
+
+	.kicker-text {
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		color: #f87171;
+	}
+
+	.arabic-kicker {
+		font-family: 'Amiri', 'Traditional Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: #10b981;
+		letter-spacing: 0.02em;
+		text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+		line-height: 1;
+	}
+
+	/* Title Row with Boycott Badge */
+	.title-row {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		flex-wrap: wrap;
+	}
+
+	.headline-title {
+		margin: 0 !important;
+		padding: 0 !important;
+		border: none !important;
+		font-family: var(--sl-font-system-sans, sans-serif);
+		font-size: clamp(1.35rem, 2.5vw, 1.7rem) !important;
+		font-weight: 900 !important;
+		letter-spacing: -0.02em !important;
+		line-height: 1.15 !important;
+		display: flex;
+		gap: 0.45rem;
+		flex-wrap: wrap;
+	}
+
+	.title-solid {
+		color: var(--arch-ink-primary, #ffffff);
+	}
+
+	.title-accent {
+		background: linear-gradient(135deg, #38bdf8 0%, #10b981 60%, #4ade80 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	.boycott-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.22rem 0.65rem;
+		background: rgba(239, 68, 68, 0.15);
+		border: 1px solid rgba(239, 68, 68, 0.4);
+		border-radius: 9999px;
+		font-family: var(--sl-font-system-mono, monospace);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		color: #fca5a5;
+		transition: all 0.15s ease;
+		line-height: 1;
+	}
+
+	.boycott-badge:hover {
+		background: rgba(239, 68, 68, 0.25);
+		border-color: #ef4444;
+		color: #ffffff;
+		transform: translateY(-1px);
+	}
+
+	.boycott-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: #ef4444;
+		box-shadow: 0 0 6px #ef4444;
+	}
+
+	.boycott-sep {
+		color: rgba(252, 165, 165, 0.5);
+	}
+
+	.boycott-arabic {
+		font-family: 'Amiri', 'Traditional Arabic', system-ui, sans-serif;
+		font-size: 0.82rem;
+		font-weight: 700;
+		color: #fca5a5;
+		line-height: 1;
+	}
+
+	.solidarity-statement {
+		margin: 0 !important;
+		font-size: 0.9rem;
+		line-height: 1.45;
+		color: var(--arch-ink-secondary, #94a3b8);
+	}
+
+	/* Light Mode Adjustments */
+	:root[data-theme='light'] .palestine-hero-card {
+		background: #ffffff;
+		border-color: #e2e8f0;
+		box-shadow: 
+			0 4px 16px -4px rgba(0, 0, 0, 0.06),
+			0 0 0 1px rgba(0, 0, 0, 0.03);
+	}
+
+	:root[data-theme='light'] .palestine-hero-card:hover {
+		border-color: #0284c7;
+		box-shadow: 
+			0 8px 22px -4px rgba(0, 0, 0, 0.1),
+			0 0 14px rgba(0, 122, 61, 0.12);
+	}
+
+	:root[data-theme='light'] .keffiyeh-pattern-watermark {
+		color: #0f172a;
+		opacity: 0.035;
+	}
+
+	:root[data-theme='light'] .kicker-badge {
+		background: rgba(228, 49, 43, 0.06);
+		border-color: rgba(228, 49, 43, 0.2);
+	}
+
+	:root[data-theme='light'] .kicker-text {
+		color: #dc2626;
+	}
+
+	:root[data-theme='light'] .arabic-kicker {
+		color: #047857;
+		text-shadow: none;
+	}
+
+	:root[data-theme='light'] .title-solid {
+		color: #0f172a;
+	}
+
+	:root[data-theme='light'] .title-accent {
+		background: linear-gradient(135deg, #0284c7 0%, #059669 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	:root[data-theme='light'] .boycott-badge {
+		background: rgba(239, 68, 68, 0.08);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #dc2626;
+	}
+
+	:root[data-theme='light'] .boycott-badge:hover {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: #dc2626;
+		color: #b91c1c;
+	}
+
+	:root[data-theme='light'] .boycott-arabic {
+		color: #dc2626;
+	}
+
+	:root[data-theme='light'] .solidarity-statement {
+		color: #475569;
+	}
+
+	:root[data-theme='light'] .flag-canvas {
+		box-shadow: 
+			0 4px 14px -3px rgba(0, 0, 0, 0.18),
+			0 0 0 1px rgba(0, 0, 0, 0.08);
+	}
+
+	/* Responsive Layout */
+	@media (max-width: 640px) {
+		.palestine-hero-inner {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		.flag-column {
+			align-items: flex-start;
+		}
+
+		.flag-frame {
+			max-width: 130px;
+		}
+
+		.palestine-hero-card {
+			padding: 1.1rem 1.25rem;
+		}
+	}
+</style>
